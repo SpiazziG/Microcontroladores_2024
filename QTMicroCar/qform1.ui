@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QForm1</class>
+ <widget class="QMainWindow" name="QForm1">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>620</width>
+    <height>450</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>QForm1</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(32, 31, 49);</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="3" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <property name="spacing">
+         <number>6</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QPlainTextEdit" name="plainTextEdit">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTipDuration">
+           <number>-1</number>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+color: rgb(0, 232, 0);
+background-color: rgb(0, 0, 0);</string>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="lineWidth">
+           <number>1</number>
+          </property>
+          <property name="cursorWidth">
+           <number>1</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="styleSheet">
+             <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+color: rgb(172, 173, 183);</string>
+            </property>
+            <property name="text">
+             <string>IR 1 (RIGHT)</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="label_6">
+            <property name="styleSheet">
+             <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+color: rgb(172, 173, 183);</string>
+            </property>
+            <property name="text">
+             <string>IR 2</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="2">
+           <widget class="QLCDNumber" name="lcdIR3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>89</width>
+              <height>23</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(0, 232, 0);
+background-color: rgb(0, 0, 0);</string>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Box</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Sunken</enum>
+            </property>
+            <property name="digitCount">
+             <number>1</number>
+            </property>
+            <property name="segmentStyle">
+             <enum>QLCDNumber::Flat</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLCDNumber" name="lcdIR1">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>108</width>
+              <height>23</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(0, 232, 0);
+background-color: rgb(0, 0, 0);</string>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Box</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Sunken</enum>
+            </property>
+            <property name="digitCount">
+             <number>1</number>
+            </property>
+            <property name="segmentStyle">
+             <enum>QLCDNumber::Flat</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+color: rgb(172, 173, 183);</string>
+            </property>
+            <property name="text">
+             <string>RIGHT ENGINE</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLCDNumber" name="lcdDistance">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(0, 232, 0);
+background-color: rgb(0, 0, 0);</string>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Box</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Sunken</enum>
+            </property>
+            <property name="digitCount">
+             <number>3</number>
+            </property>
+            <property name="segmentStyle">
+             <enum>QLCDNumber::Flat</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2" rowspan="2">
+           <widget class="QPushButton" name="powerButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">font: 9pt &quot;MS Sans Serif&quot;;
+font-weight: bold;
+background-color: rgb(189, 206, 214);
+color: rgb(47, 55, 77);</string>
+            </property>
+            <property name="text">
+             <string>ENGINES &amp;&amp;
+ SERVO</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSlider" name="RightEngineSlide">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QSlider::groove:horizontal {
+    background-color: rgb(196,219,50);
+	height: 7px;
+    width: 90px;
+}
+
+QSlider::handle:horizontal {
+	background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:0.011, y2:0, stop:0 rgba(74, 90, 107, 255), stop:1 rgba(173, 189, 198, 255));
+	width: 10px;
+	height: 25px;
+	margin: -10px 3px;
+}</string>
+            </property>
+            <property name="minimum">
+             <number>-100</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="pageStep">
+             <number>1</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="aliveButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">font: 9pt &quot;MS Sans Serif&quot;;
+font-weight: bold;
+background-color: rgb(189, 206, 214);
+color: rgb(47, 55, 77);</string>
+            </property>
+            <property name="text">
+             <string>ALIVE</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+color: rgb(172, 173, 183);</string>
+            </property>
+            <property name="text">
+             <string>DISTANCE</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSlider" name="LeftEngineSlide">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QSlider::groove:horizontal {
+    background-color: rgb(196,219,50);
+	height: 7px;
+    width: 90px;
+}
+
+QSlider::handle:horizontal {
+	background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:0.011, y2:0, stop:0 rgba(74, 90, 107, 255), stop:1 rgba(173, 189, 198, 255));
+	width: 10px;
+	height: 25px;
+	margin: -10px 3px;
+}</string>
+            </property>
+            <property name="minimum">
+             <number>-100</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="pageStep">
+             <number>1</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLCDNumber" name="lcdIR2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>84</width>
+              <height>23</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(0, 232, 0);
+background-color: rgb(0, 0, 0);</string>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Box</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Sunken</enum>
+            </property>
+            <property name="digitCount">
+             <number>1</number>
+            </property>
+            <property name="segmentStyle">
+             <enum>QLCDNumber::Flat</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+color: rgb(172, 173, 183);</string>
+            </property>
+            <property name="text">
+             <string>LEFT ENGINE</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="QLabel" name="label_8">
+            <property name="styleSheet">
+             <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+color: rgb(172, 173, 183);</string>
+            </property>
+            <property name="text">
+             <string>IR 3 (LEFT)</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="2">
+           <widget class="QPushButton" name="pushButtonUDP">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>MS Sans Serif</family>
+              <pointsize>9</pointsize>
+              <italic>false</italic>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">font: 9pt &quot;MS Sans Serif&quot;;
+font-weight: bold;
+background-color: rgb(189, 206, 214);
+color: rgb(47, 55, 77);</string>
+            </property>
+            <property name="text">
+             <string>OPEN</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0" colspan="2">
+           <widget class="QLineEdit" name="lineEdit">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+color: rgb(0, 232, 0);
+background-color: rgb(0, 0, 0);</string>
+            </property>
+            <property name="inputMask">
+             <string/>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="maxLength">
+             <number>32767</number>
+            </property>
+            <property name="placeholderText">
+             <string>Wifi</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_8">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QWidget" name="widget" native="true">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_3">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">font: 9pt &quot;MS Sans Serif&quot;;
+font-weight: bold;
+background-color: rgb(189, 206, 214);
+color: rgb(47, 55, 77);</string>
+          </property>
+          <property name="text">
+           <string>CLEAR</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_10">
+      <item>
+       <widget class="Line" name="line">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(236, 206, 122);</string>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_9">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
+        </property>
+        <property name="text">
+         <string>MICROCONTROLADORES</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="margin">
+         <number>0</number>
+        </property>
+        <property name="indent">
+         <number>-1</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="line_2">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(236, 206, 122);</string>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_7">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="styleSheet">
+           <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+color: rgb(172, 173, 183);</string>
+          </property>
+          <property name="text">
+           <string>COM PORT</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboBox">
+          <property name="styleSheet">
+           <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+background-color: rgb(0, 0 ,0);
+color: rgb(0, 232, 0);</string>
+          </property>
+          <property name="frame">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton">
+          <property name="styleSheet">
+           <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+background-color: rgb(189, 206, 214);
+color: rgb(47, 55, 77);</string>
+          </property>
+          <property name="text">
+           <string>OPEN</string>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="styleSheet">
+           <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+color: rgb(172, 173, 183);</string>
+          </property>
+          <property name="text">
+           <string>CMD</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboBox_2">
+          <property name="styleSheet">
+           <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+background-color: rgb(0, 0 ,0);
+color: rgb(0, 232, 0);</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_2">
+          <property name="styleSheet">
+           <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+background-color: rgb(189, 206, 214);
+color: rgb(47, 55, 77);</string>
+          </property>
+          <property name="text">
+           <string>SEND</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item row="2" column="0">
+     <widget class="Line" name="line_3">
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(135, 119, 76);</string>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>620</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
