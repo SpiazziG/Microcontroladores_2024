@@ -44,11 +44,11 @@ private slots:
 
     bool eventFilter(QObject *watched, QEvent *event) override;
 
-    void on_pushButton_clicked();
+    void on_OpenPortButton_clicked();
 
-    void on_pushButton_3_clicked();
+    void on_ClearButton_clicked();
 
-    void on_pushButton_2_clicked();
+    void on_SendCommandButton_clicked();
 
     void InitPaintBox();
 
@@ -60,45 +60,50 @@ private slots:
 
     void DecodeCmd(uint8_t *rxBuf);
 
-    void servoDeg(uint8_t servDeg);
-
-    void configServo(uint16_t min, uint16_t max);
-
-    void readServo();
-
     void EngineTest(int32_t Eng1, int32_t Eng2);
-
-    void Scanning();
 
     void on_aliveButton_clicked();
 
-    void on_powerButton_clicked();
-
-    void on_pushButtonUDP_clicked();
+    void on_OpenWifiButton_clicked();
 
     void onRxUDP();
 
-    void on_LeftEngineSlide_sliderMoved(int position);
+    //void on_LeftEngineSlide_sliderMoved(int position);
+
+    //void Scanning();
+
+    //void servoDeg(uint8_t servDeg);
+
+    //void configServo(uint16_t min, uint16_t max);
+
+    //void readServo();
+
+    //void on_powerButton_clicked();
 
 private:
     Ui::QForm1 *ui;
 
+    void Heartbeat();
+
     QTimer *QTimer1;
     QSerialPort *QSerialPort1;
-
-    uint8_t rxBuf[256], header, nBytes, cks, index, tmoRX;
-
     QUdpSocket *QUdpSocket1;
     QHostAddress hostAddres;
+    QPaintBox *QPaintBox1;
+
+    uint16_t    mask = 0xAAF;
+    uint16_t 	moveMask = 0;
+
+    uint8_t     rxBuf[256], header, nBytes, cks, index, tmoRX;
+
+
     quint16 remotePort;
 
     int8_t measureAngle, indexWifi;
     int32_t measureTime, distance;
-    bool SCAN = false;
+    //bool SCAN = false;
 
     Dialog *dialog;
-
-    QPaintBox *QPaintBox1;
 
     typedef enum{
         ALIVE=0xF0,

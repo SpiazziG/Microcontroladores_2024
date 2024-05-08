@@ -50,9 +50,9 @@ static constexpr auto qt_meta_stringdata_CLASSQForm1ENDCLASS = QtMocHelpers::str
     "watched",
     "QEvent*",
     "event",
-    "on_pushButton_clicked",
-    "on_pushButton_3_clicked",
-    "on_pushButton_2_clicked",
+    "on_OpenPortButton_clicked",
+    "on_ClearButton_clicked",
+    "on_SendCommandButton_clicked",
     "InitPaintBox",
     "DrawBackground",
     "SendCMD",
@@ -62,25 +62,17 @@ static constexpr auto qt_meta_stringdata_CLASSQForm1ENDCLASS = QtMocHelpers::str
     "length",
     "DecodeCmd",
     "rxBuf",
-    "servoDeg",
-    "servDeg",
-    "configServo",
-    "readServo",
     "EngineTest",
     "int32_t",
     "Eng1",
     "Eng2",
-    "Scanning",
     "on_aliveButton_clicked",
-    "on_powerButton_clicked",
-    "on_pushButtonUDP_clicked",
-    "onRxUDP",
-    "on_LeftEngineSlide_sliderMoved",
-    "position"
+    "on_OpenWifiButton_clicked",
+    "onRxUDP"
 );
 #else  // !QT_MOC_HAS_STRING_DATA
 struct qt_meta_stringdata_CLASSQForm1ENDCLASS_t {
-    uint offsetsAndSizes[78];
+    uint offsetsAndSizes[62];
     char stringdata0[7];
     char stringdata1[13];
     char stringdata2[1];
@@ -93,9 +85,9 @@ struct qt_meta_stringdata_CLASSQForm1ENDCLASS_t {
     char stringdata9[8];
     char stringdata10[8];
     char stringdata11[6];
-    char stringdata12[22];
-    char stringdata13[24];
-    char stringdata14[24];
+    char stringdata12[26];
+    char stringdata13[23];
+    char stringdata14[29];
     char stringdata15[13];
     char stringdata16[15];
     char stringdata17[8];
@@ -105,21 +97,13 @@ struct qt_meta_stringdata_CLASSQForm1ENDCLASS_t {
     char stringdata21[7];
     char stringdata22[10];
     char stringdata23[6];
-    char stringdata24[9];
+    char stringdata24[11];
     char stringdata25[8];
-    char stringdata26[12];
-    char stringdata27[10];
-    char stringdata28[11];
-    char stringdata29[8];
-    char stringdata30[5];
-    char stringdata31[5];
-    char stringdata32[9];
-    char stringdata33[23];
-    char stringdata34[23];
-    char stringdata35[25];
-    char stringdata36[8];
-    char stringdata37[31];
-    char stringdata38[9];
+    char stringdata26[5];
+    char stringdata27[5];
+    char stringdata28[23];
+    char stringdata29[26];
+    char stringdata30[8];
 };
 #define QT_MOC_LITERAL(ofs, len) \
     uint(sizeof(qt_meta_stringdata_CLASSQForm1ENDCLASS_t::offsetsAndSizes) + ofs), len 
@@ -137,33 +121,25 @@ Q_CONSTINIT static const qt_meta_stringdata_CLASSQForm1ENDCLASS_t qt_meta_string
         QT_MOC_LITERAL(69, 7),  // "watched"
         QT_MOC_LITERAL(77, 7),  // "QEvent*"
         QT_MOC_LITERAL(85, 5),  // "event"
-        QT_MOC_LITERAL(91, 21),  // "on_pushButton_clicked"
-        QT_MOC_LITERAL(113, 23),  // "on_pushButton_3_clicked"
-        QT_MOC_LITERAL(137, 23),  // "on_pushButton_2_clicked"
-        QT_MOC_LITERAL(161, 12),  // "InitPaintBox"
-        QT_MOC_LITERAL(174, 14),  // "DrawBackground"
-        QT_MOC_LITERAL(189, 7),  // "SendCMD"
-        QT_MOC_LITERAL(197, 8),  // "uint8_t*"
-        QT_MOC_LITERAL(206, 3),  // "buf"
-        QT_MOC_LITERAL(210, 7),  // "uint8_t"
-        QT_MOC_LITERAL(218, 6),  // "length"
-        QT_MOC_LITERAL(225, 9),  // "DecodeCmd"
-        QT_MOC_LITERAL(235, 5),  // "rxBuf"
-        QT_MOC_LITERAL(241, 8),  // "servoDeg"
-        QT_MOC_LITERAL(250, 7),  // "servDeg"
-        QT_MOC_LITERAL(258, 11),  // "configServo"
-        QT_MOC_LITERAL(270, 9),  // "readServo"
-        QT_MOC_LITERAL(280, 10),  // "EngineTest"
-        QT_MOC_LITERAL(291, 7),  // "int32_t"
-        QT_MOC_LITERAL(299, 4),  // "Eng1"
-        QT_MOC_LITERAL(304, 4),  // "Eng2"
-        QT_MOC_LITERAL(309, 8),  // "Scanning"
-        QT_MOC_LITERAL(318, 22),  // "on_aliveButton_clicked"
-        QT_MOC_LITERAL(341, 22),  // "on_powerButton_clicked"
-        QT_MOC_LITERAL(364, 24),  // "on_pushButtonUDP_clicked"
-        QT_MOC_LITERAL(389, 7),  // "onRxUDP"
-        QT_MOC_LITERAL(397, 30),  // "on_LeftEngineSlide_sliderMoved"
-        QT_MOC_LITERAL(428, 8)   // "position"
+        QT_MOC_LITERAL(91, 25),  // "on_OpenPortButton_clicked"
+        QT_MOC_LITERAL(117, 22),  // "on_ClearButton_clicked"
+        QT_MOC_LITERAL(140, 28),  // "on_SendCommandButton_clicked"
+        QT_MOC_LITERAL(169, 12),  // "InitPaintBox"
+        QT_MOC_LITERAL(182, 14),  // "DrawBackground"
+        QT_MOC_LITERAL(197, 7),  // "SendCMD"
+        QT_MOC_LITERAL(205, 8),  // "uint8_t*"
+        QT_MOC_LITERAL(214, 3),  // "buf"
+        QT_MOC_LITERAL(218, 7),  // "uint8_t"
+        QT_MOC_LITERAL(226, 6),  // "length"
+        QT_MOC_LITERAL(233, 9),  // "DecodeCmd"
+        QT_MOC_LITERAL(243, 5),  // "rxBuf"
+        QT_MOC_LITERAL(249, 10),  // "EngineTest"
+        QT_MOC_LITERAL(260, 7),  // "int32_t"
+        QT_MOC_LITERAL(268, 4),  // "Eng1"
+        QT_MOC_LITERAL(273, 4),  // "Eng2"
+        QT_MOC_LITERAL(278, 22),  // "on_aliveButton_clicked"
+        QT_MOC_LITERAL(301, 25),  // "on_OpenWifiButton_clicked"
+        QT_MOC_LITERAL(327, 7)   // "onRxUDP"
     },
     "QForm1",
     "maxMinValues",
@@ -177,9 +153,9 @@ Q_CONSTINIT static const qt_meta_stringdata_CLASSQForm1ENDCLASS_t qt_meta_string
     "watched",
     "QEvent*",
     "event",
-    "on_pushButton_clicked",
-    "on_pushButton_3_clicked",
-    "on_pushButton_2_clicked",
+    "on_OpenPortButton_clicked",
+    "on_ClearButton_clicked",
+    "on_SendCommandButton_clicked",
     "InitPaintBox",
     "DrawBackground",
     "SendCMD",
@@ -189,21 +165,13 @@ Q_CONSTINIT static const qt_meta_stringdata_CLASSQForm1ENDCLASS_t qt_meta_string
     "length",
     "DecodeCmd",
     "rxBuf",
-    "servoDeg",
-    "servDeg",
-    "configServo",
-    "readServo",
     "EngineTest",
     "int32_t",
     "Eng1",
     "Eng2",
-    "Scanning",
     "on_aliveButton_clicked",
-    "on_powerButton_clicked",
-    "on_pushButtonUDP_clicked",
-    "onRxUDP",
-    "on_LeftEngineSlide_sliderMoved",
-    "position"
+    "on_OpenWifiButton_clicked",
+    "onRxUDP"
 };
 #undef QT_MOC_LITERAL
 #endif // !QT_MOC_HAS_STRING_DATA
@@ -215,7 +183,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSQForm1ENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      21,   14, // methods
+      15,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -223,29 +191,23 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSQForm1ENDCLASS[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    2,  140,    2, 0x06,    1 /* Public */,
+       1,    2,  104,    2, 0x06,    1 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       6,    0,  145,    2, 0x08,    4 /* Private */,
-       7,    0,  146,    2, 0x08,    5 /* Private */,
-       8,    2,  147,    2, 0x08,    6 /* Private */,
-      12,    0,  152,    2, 0x08,    9 /* Private */,
-      13,    0,  153,    2, 0x08,   10 /* Private */,
-      14,    0,  154,    2, 0x08,   11 /* Private */,
-      15,    0,  155,    2, 0x08,   12 /* Private */,
-      16,    0,  156,    2, 0x08,   13 /* Private */,
-      17,    2,  157,    2, 0x08,   14 /* Private */,
-      22,    1,  162,    2, 0x08,   17 /* Private */,
-      24,    1,  165,    2, 0x08,   19 /* Private */,
-      26,    2,  168,    2, 0x08,   21 /* Private */,
-      27,    0,  173,    2, 0x08,   24 /* Private */,
-      28,    2,  174,    2, 0x08,   25 /* Private */,
-      32,    0,  179,    2, 0x08,   28 /* Private */,
-      33,    0,  180,    2, 0x08,   29 /* Private */,
-      34,    0,  181,    2, 0x08,   30 /* Private */,
-      35,    0,  182,    2, 0x08,   31 /* Private */,
-      36,    0,  183,    2, 0x08,   32 /* Private */,
-      37,    1,  184,    2, 0x08,   33 /* Private */,
+       6,    0,  109,    2, 0x08,    4 /* Private */,
+       7,    0,  110,    2, 0x08,    5 /* Private */,
+       8,    2,  111,    2, 0x08,    6 /* Private */,
+      12,    0,  116,    2, 0x08,    9 /* Private */,
+      13,    0,  117,    2, 0x08,   10 /* Private */,
+      14,    0,  118,    2, 0x08,   11 /* Private */,
+      15,    0,  119,    2, 0x08,   12 /* Private */,
+      16,    0,  120,    2, 0x08,   13 /* Private */,
+      17,    2,  121,    2, 0x08,   14 /* Private */,
+      22,    1,  126,    2, 0x08,   17 /* Private */,
+      24,    2,  129,    2, 0x08,   19 /* Private */,
+      28,    0,  134,    2, 0x08,   22 /* Private */,
+      29,    0,  135,    2, 0x08,   23 /* Private */,
+      30,    0,  136,    2, 0x08,   24 /* Private */,
 
  // signals: parameters
     QMetaType::Void, 0x80000000 | 3, 0x80000000 | 3,    4,    5,
@@ -261,16 +223,10 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSQForm1ENDCLASS[] = {
     QMetaType::Void,
     QMetaType::Void, 0x80000000 | 18, 0x80000000 | 20,   19,   21,
     QMetaType::Void, 0x80000000 | 18,   23,
-    QMetaType::Void, 0x80000000 | 20,   25,
-    QMetaType::Void, 0x80000000 | 3, 0x80000000 | 3,    4,    5,
-    QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 29, 0x80000000 | 29,   30,   31,
+    QMetaType::Void, 0x80000000 | 25, 0x80000000 | 25,   26,   27,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   38,
 
        0        // eod
 };
@@ -296,11 +252,11 @@ Q_CONSTINIT const QMetaObject QForm1::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<bool, std::false_type>,
         QtPrivate::TypeAndForceComplete<QObject *, std::false_type>,
         QtPrivate::TypeAndForceComplete<QEvent *, std::false_type>,
-        // method 'on_pushButton_clicked'
+        // method 'on_OpenPortButton_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'on_pushButton_3_clicked'
+        // method 'on_ClearButton_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'on_pushButton_2_clicked'
+        // method 'on_SendCommandButton_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'InitPaintBox'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
@@ -313,32 +269,16 @@ Q_CONSTINIT const QMetaObject QForm1::staticMetaObject = { {
         // method 'DecodeCmd'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<uint8_t *, std::false_type>,
-        // method 'servoDeg'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<uint8_t, std::false_type>,
-        // method 'configServo'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<uint16_t, std::false_type>,
-        QtPrivate::TypeAndForceComplete<uint16_t, std::false_type>,
-        // method 'readServo'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'EngineTest'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<int32_t, std::false_type>,
         QtPrivate::TypeAndForceComplete<int32_t, std::false_type>,
-        // method 'Scanning'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'on_aliveButton_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'on_powerButton_clicked'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'on_pushButtonUDP_clicked'
+        // method 'on_OpenWifiButton_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'onRxUDP'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'on_LeftEngineSlide_sliderMoved'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<int, std::false_type>
+        QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
 } };
@@ -354,23 +294,17 @@ void QForm1::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 2: _t->OnRxChar(); break;
         case 3: { bool _r = _t->eventFilter((*reinterpret_cast< std::add_pointer_t<QObject*>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QEvent*>>(_a[2])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 4: _t->on_pushButton_clicked(); break;
-        case 5: _t->on_pushButton_3_clicked(); break;
-        case 6: _t->on_pushButton_2_clicked(); break;
+        case 4: _t->on_OpenPortButton_clicked(); break;
+        case 5: _t->on_ClearButton_clicked(); break;
+        case 6: _t->on_SendCommandButton_clicked(); break;
         case 7: _t->InitPaintBox(); break;
         case 8: _t->DrawBackground(); break;
         case 9: _t->SendCMD((*reinterpret_cast< std::add_pointer_t<uint8_t*>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<uint8_t>>(_a[2]))); break;
         case 10: _t->DecodeCmd((*reinterpret_cast< std::add_pointer_t<uint8_t*>>(_a[1]))); break;
-        case 11: _t->servoDeg((*reinterpret_cast< std::add_pointer_t<uint8_t>>(_a[1]))); break;
-        case 12: _t->configServo((*reinterpret_cast< std::add_pointer_t<uint16_t>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<uint16_t>>(_a[2]))); break;
-        case 13: _t->readServo(); break;
-        case 14: _t->EngineTest((*reinterpret_cast< std::add_pointer_t<int32_t>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<int32_t>>(_a[2]))); break;
-        case 15: _t->Scanning(); break;
-        case 16: _t->on_aliveButton_clicked(); break;
-        case 17: _t->on_powerButton_clicked(); break;
-        case 18: _t->on_pushButtonUDP_clicked(); break;
-        case 19: _t->onRxUDP(); break;
-        case 20: _t->on_LeftEngineSlide_sliderMoved((*reinterpret_cast< std::add_pointer_t<int>>(_a[1]))); break;
+        case 11: _t->EngineTest((*reinterpret_cast< std::add_pointer_t<int32_t>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<int32_t>>(_a[2]))); break;
+        case 12: _t->on_aliveButton_clicked(); break;
+        case 13: _t->on_OpenWifiButton_clicked(); break;
+        case 14: _t->onRxUDP(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -404,13 +338,13 @@ int QForm1::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 21)
+        if (_id < 15)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 21;
+        _id -= 15;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 21)
+        if (_id < 15)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 21;
+        _id -= 15;
     }
     return _id;
 }

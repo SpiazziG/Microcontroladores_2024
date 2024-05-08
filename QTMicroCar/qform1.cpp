@@ -11,24 +11,24 @@ QForm1::QForm1(QWidget *parent)
     ui->comboBox->installEventFilter(this);
 
     ui->comboBox_2->addItem("ALIVE", 0xF0);
-    ui->comboBox_2->addItem("FIRMWARE", 0xF1);
-    ui->comboBox_2->addItem("LEDS", 0x10);
-    ui->comboBox_2->addItem("BUTTONS", 0x12);
-    ui->comboBox_2->addItem("IR SENSORS", 0xA0);
-    ui->comboBox_2->addItem("ENGINE TEST", 0xA1);
-    ui->comboBox_2->addItem("SERVO", 0xA2);
-    ui->comboBox_2->addItem("HC-SR04", 0xA3);
-    ui->comboBox_2->addItem("SPEED", 0xA4);
+    //ui->comboBox_2->addItem("FIRMWARE", 0xF1);
+    //ui->comboBox_2->addItem("LEDS", 0x10);
+    //ui->comboBox_2->addItem("BUTTONS", 0x12);
+    ui->comboBox_2->addItem("INFRARED SENSORS", 0xA0);
+    //ui->comboBox_2->addItem("ENGINE TEST", 0xA1);
+    //ui->comboBox_2->addItem("SERVO", 0xA2);
+    //ui->comboBox_2->addItem("HC-SR04", 0xA3);
+    //ui->comboBox_2->addItem("ENGINES", 0xA4);
 
     QUdpSocket1 = new QUdpSocket(this);
     connect(QUdpSocket1,&QUdpSocket::readyRead,this,&QForm1::onRxUDP);
 
     header=0;
     connect(QSerialPort1,&QSerialPort::readyRead, this,&QForm1::OnRxChar);
-    connect(dialog, &Dialog::takeDeg, this, &QForm1::servoDeg);
+    //connect(dialog, &Dialog::takeDeg, this, &QForm1::servoDeg);
     connect(dialog, &Dialog::powEng, this, &QForm1::EngineTest);
-    connect(dialog, &Dialog::configMaxMin, this, &QForm1::configServo);
-    connect(dialog, &Dialog::readMaxMin, this, &QForm1::readServo);
+    //connect(dialog, &Dialog::configMaxMin, this, &QForm1::configServo);
+    //connect(dialog, &Dialog::readMaxMin, this, &QForm1::readServo);
     connect(this, &QForm1::maxMinValues, dialog, &Dialog::displayMaxMin);
 
     //QPaintBox1 = new QPaintBox(0, 0, ui->widget);
@@ -64,6 +64,57 @@ bool QForm1::eventFilter(QObject *watched, QEvent *event){
     else{
          return QMainWindow::eventFilter(watched, event);
     }
+}
+
+void QForm1::OnQTimer1(){
+    uint8_t buf[8];
+    static uint8_t time100ms = 2;
+    uint8_t fiveSec = 100;
+
+    //if(SCAN == true)
+    //    Scanning();
+
+    if(widgetSize.width != ui->widget->width() || widgetSize.height != ui->widget->height()){
+        //QPaintBox1->resize(ui->widget->width(), ui->widget->height());
+
+        widgetSize.width = ui->widget->width();
+        widgetSize.height = ui->widget->height();
+        QPaintBox1->resize(widgetSize.width, widgetSize.height);
+        DrawBackground();
+    }
+
+    if(time100ms == 0){
+        time100ms = 2;
+        Heartbeat();
+        //buf[0] = IRSENSOR;
+        //SendCMD(buf, 1);
+    } else {
+        time100ms--;
+    }
+    /*
+        buf[0] = IRSENSOR;
+        SendCMD(buf, 1);
+*/
+    /*
+    buf[0] = SPEED;
+    SendCMD(buf, 1);
+
+    buf[0] = DISTANCIA;
+    SendCMD(buf, 1);
+    */
+}
+
+void QForm1::Heartbeat(){
+    uint8_t write;
+    uint8_t buf[1];
+    write = ~(mask>>moveMask) & 1;
+    moveMask++;
+    moveMask ^= (moveMask & 16);
+
+    if(write == 0){
+         buf[0] = ALIVE, SendCMD(buf ,1);
+    } else
+        ui->aliveButton->setStyleSheet("color: white; background-color: rgb(189, 206, 214); font: 9pt MS Sans Serif; font-weight: bold; color: rgb(47, 55, 77);");
 }
 
 void QForm1::onRxUDP(){
@@ -108,7 +159,7 @@ void QForm1::OnRxChar(){
         strHex = strHex + QString("%1").arg(buf[a], 2, 16, QChar('0')).toUpper();
     }
 
-    ui->plainTextEdit->appendPlainText(strHex);
+    //ui->plainTextEdit->appendPlainText(strHex);
 
     for (int i=0; i<count; i++) {
         strHex = strHex + QString("%1").arg(buf[i], 2, 16, QChar('0')).toUpper();
@@ -178,32 +229,6 @@ void QForm1::OnRxChar(){
     delete [] buf;
 }
 
-void QForm1::OnQTimer1(){
-    //uint8_t buf[24];
-
-    if(SCAN == true)
-        Scanning();
-
-    if(widgetSize.width != ui->widget->width() || widgetSize.height != ui->widget->height()){
-        //QPaintBox1->resize(ui->widget->width(), ui->widget->height());
-
-        widgetSize.width = ui->widget->width();
-        widgetSize.height = ui->widget->height();
-        QPaintBox1->resize(widgetSize.width, widgetSize.height);
-        DrawBackground();
-    }
-    /*
-    buf[0] = SPEED;
-    SendCMD(buf, 1);
-
-    buf[0] = IRSENSOR;
-    SendCMD(buf, 1);
-
-    buf[0] = DISTANCIA;
-    SendCMD(buf, 1);
-    */
-}
-
 void QForm1::SendCMD(uint8_t *buf, uint8_t length){
     uint8_t tx[256];
     uint8_t cks, i;
@@ -235,7 +260,7 @@ void QForm1::SendCMD(uint8_t *buf, uint8_t length){
         strHex = strHex + QString("%1").arg(tx[i], 2, 16, QChar('0')).toUpper();
     }
 
-    ui->plainTextEdit->appendPlainText(strHex);
+    //ui->plainTextEdit->appendPlainText(strHex);
 
     if (QUdpSocket1->isOpen())
         QUdpSocket1->writeDatagram((char *)tx, length+7, hostAddres, remotePort); //+9
@@ -244,13 +269,13 @@ void QForm1::SendCMD(uint8_t *buf, uint8_t length){
         QSerialPort1->write((char *)tx, length+7); //+9
 }
 
-void QForm1::on_pushButtonUDP_clicked(){
+void QForm1::on_OpenWifiButton_clicked(){
     qint16 port;
     bool ok;
     if(QUdpSocket1->isOpen()){
         QUdpSocket1->abort();
         QUdpSocket1->close();
-        ui->pushButtonUDP->setText("OPEN");
+        ui->OpenWifiButton->setText("OPEN");
     }else{
         port = ui->lineEdit->text().toInt(&ok);
         if(!ok)
@@ -258,17 +283,17 @@ void QForm1::on_pushButtonUDP_clicked(){
         QUdpSocket1->bind(port);
 
         if(QUdpSocket1->open(QUdpSocket::ReadWrite)){
-            ui->pushButtonUDP->setText("CLOSE");
+                ui->OpenWifiButton->setText("CLOSE");
         }else{
             QMessageBox::information(this, tr("SERVER PORT"),tr("ERRRO. Number PORT."));
         }
     }
 }
 
-void QForm1::on_pushButton_clicked(){
+void QForm1::on_OpenPortButton_clicked(){
     if(QSerialPort1->isOpen()){
         QSerialPort1->close();
-        ui->pushButton->setText("OPEN");
+        ui->OpenPortButton->setText("OPEN");
     } else {
         if(ui->comboBox->currentText() == "")
             return;
@@ -281,20 +306,20 @@ void QForm1::on_pushButton_clicked(){
         QSerialPort1->setFlowControl(QSerialPort::NoFlowControl);
 
         if(QSerialPort1->open(QSerialPort::ReadWrite)){
-            ui->pushButton->setText("CLOSE");
+            ui->OpenPortButton->setText("CLOSE");
         }
         else
             QMessageBox::information(this, "Serial PORT", "ERROR. Opening PORT");
     }
 }
 
-void QForm1::on_pushButton_3_clicked(){
+void QForm1::on_ClearButton_clicked(){
     ui->plainTextEdit->clear();
     DrawBackground();
     ui->aliveButton->setStyleSheet("color: white; background-color: rgb(189, 206, 214); font: 9pt MS Sans Serif; font-weight: bold; color: rgb(47, 55, 77);");
 }
 
-void QForm1::on_pushButton_2_clicked(){
+void QForm1::on_SendCommandButton_clicked(){
     uint8_t cmd, buf[24];
 //    _work w;
     int n;
@@ -325,10 +350,12 @@ void QForm1::on_pushButton_2_clicked(){
             n = 1;
             ok = true;
             break;
+        /*
         case SERVO://SERVO    PC=>MBED POSICIONAR_SERVO; MBED=>PC ACKNOWLEDGE FIN_MOVIMIENTO_SERVO
             if(dialog->isHidden())
                 dialog->show();
             break;
+        */
         case DISTANCIA://HC-SR04   PC=>MBED LAST_DISTANCE; MBED=>PC ACKWNOWLEDGE;  MBED=>PC DISTANCE_US
             n = 1;
             ok = true;
@@ -407,10 +434,55 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
 //        ui->plainTextEdit->appendPlainText("Distance: " + QString("%1 cm").arg(distance, 4, 10, QChar('0')));
         break;
     case IRSENSOR:
-        ui->lcdIR1->display(QString("%1").arg(rxBuf[1+2], 1, 10, QChar('0')));
-        ui->lcdIR2->display(QString("%1").arg(rxBuf[2+2], 1, 10, QChar('0')));
-        ui->lcdIR3->display(QString("%1").arg(rxBuf[3+2], 1, 10, QChar('0')));
-//        ui->lastIRLCD->display(QString("%1").arg(rxBuf[4+2], 1, 10, QChar('0')));
+        w.i32 = 0;
+        w.u8[0] = rxBuf[1];
+        w.u8[1] = rxBuf[2];
+        ui->lcdIR1->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
+        ui->plainTextEdit->appendPlainText("IR1: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
+
+/*
+        //w.i32 = 0;
+        w.u8[0] = rxBuf[3];
+        w.u8[1] = rxBuf[4];
+        ui->lcdIR2->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
+        ui->plainTextEdit->appendPlainText("IR2: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
+
+        //w.i32 = 0;
+        w.u8[0] = rxBuf[5];
+        w.u8[1] = rxBuf[6];
+        ui->lcdIR3->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
+        ui->plainTextEdit->appendPlainText("IR3: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
+
+        //w.i32 = 0;
+        w.u8[0] = rxBuf[7];
+        w.u8[1] = rxBuf[8];
+        ui->lcdIR4->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
+        ui->plainTextEdit->appendPlainText("IR4: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
+
+        //w.i32 = 0;
+        w.u8[0] = rxBuf[9];
+        w.u8[1] = rxBuf[10];
+        ui->lcdIR5->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
+        ui->plainTextEdit->appendPlainText("IR5: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
+
+        //w.i32 = 0;
+        w.u8[0] = rxBuf[11];
+        w.u8[1] = rxBuf[12];
+        ui->lcdIR6->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
+        ui->plainTextEdit->appendPlainText("IR6: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
+
+        //w.i32 = 0;
+        w.u8[0] = rxBuf[13];
+        w.u8[1] = rxBuf[14];
+        ui->lcdIR7->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
+        ui->plainTextEdit->appendPlainText("IR7: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
+
+        //w.i32 = 0;
+        w.u8[0] = rxBuf[15];
+        w.u8[1] = rxBuf[16];
+        ui->lcdIR8->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
+        ui->plainTextEdit->appendPlainText("IR8: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
+*/
 //        ui->plainTextEdit->appendPlainText("IR1: " + QString("%1").arg(rxBuf[1], 1, 10, QChar('0')));
 //        ui->plainTextEdit->appendPlainText("IR2: " + QString("%1").arg(rxBuf[2], 1, 10, QChar('0')));
 //        ui->plainTextEdit->appendPlainText("IR3: " + QString("%1").arg(rxBuf[3], 1, 10, QChar('0')));
@@ -451,37 +523,6 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         emit maxMinValues(min, max);
         break;
     }
-}
-
-void QForm1::servoDeg(uint8_t servDeg){
-    uint8_t buf[2];
-    buf[0] = SERVO;
-    buf[1] = servDeg;
-    SendCMD(buf, 2);
-}
-
-void QForm1::configServo(uint16_t min, uint16_t max){
-    uint8_t buf[6];
-    _work w;
-    buf[0] = SERVO_CONFIG;
-    buf[1] = 1;
-
-    w.u32 = min;
-    buf[2] = w.i8[0];
-    buf[3] = w.i8[1];
-
-    w.u32 = max;
-    buf[4] = w.i8[0];
-    buf[5] = w.i8[1];
-
-    SendCMD(buf, 6);
-}
-
-void QForm1::readServo(){
-    uint8_t buf[2];
-    buf[0] = SERVO_CONFIG;
-    buf[1] = 0;
-    SendCMD(buf, 2);
 }
 
 void QForm1::EngineTest(int32_t Eng1, int32_t Eng2){
@@ -570,6 +611,91 @@ void QForm1::on_pushButton_4_clicked()
         SCAN = false;
 }
 */
+
+
+void QForm1::on_aliveButton_clicked()
+{
+    uint8_t buf[24];
+    buf[0] = ALIVE;
+    SendCMD(buf, 1);
+}
+
+/*
+void QForm1::on_powerButton_clicked()
+{
+    if(dialog->isHidden())
+        dialog->show();
+}
+
+void QForm1::on_LeftEngineSlide_sliderMoved(int position)
+{
+    QString strHex;
+    int r, g, b;
+
+    if(position <= 0){
+        r = 24 + position * (200 / 100);
+        g = 146 + position * (59 / 100);
+        b = 11 + position * (37 / 100);
+    } else {
+        r = 224 - position * (200 / 100);
+        g = 205 - position * (157 / 100);
+        b = 48 - position * (37 / 100);
+    }
+
+    r = int((position + 100) * (224 - 24) / 200 + 24);
+    g = int((position + 100) * (14 - 146) / 200 + 146);
+    b = int((position + 100) * (21 - 11) / 200 + 11);
+
+    strHex = strHex + QString("%1 ").arg(r, 3, 10, QChar('0'));
+    strHex = strHex + QString("%1 ").arg(g, 3, 10, QChar('0'));
+    strHex = strHex + QString("%1").arg(b, 3, 10, QChar('0'));
+    ui->plainTextEdit->appendPlainText(strHex);
+
+    strHex = "QSlider::groove:horizontal{background-color: rgb(";
+    strHex = strHex + QString("%1,").arg(r, 3, 10, QChar('0'));
+    strHex = strHex + QString("%1,").arg(g, 3, 10, QChar('0'));
+    strHex = strHex + QString("%1);").arg(b, 3, 10, QChar('0'));
+    strHex = strHex + "height: 7px; width: 90px;}QSlider::handle:horizontal{background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:0.011, y2:0, stop:0 rgba(74, 90, 107, 255), stop:1 rgba(173, 189, 198, 255)); width: 10px; height: 25px; margin: -10px 0px;}";
+    strHex = strHex + ")";
+    ui->LeftEngineSlide->setStyleSheet(strHex);
+
+    ui->LeftEngineSlide->setStyleSheet("QSlider::groove:horizontal{background-color: rgb(196,219,50); height: 7px; width: 90px;}"
+                                       "QSlider::handle:horizontal{background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:0.011, y2:0, stop:0 rgba(74, 90, 107, 255), stop:1 rgba(173, 189, 198, 255));"
+                                       "width: 10px; height: 25px; margin: -10px 0px;}");
+
+}
+
+void QForm1::servoDeg(uint8_t servDeg){
+    uint8_t buf[2];
+    buf[0] = SERVO;
+    buf[1] = servDeg;
+    SendCMD(buf, 2);
+}
+
+void QForm1::configServo(uint16_t min, uint16_t max){
+    uint8_t buf[6];
+    _work w;
+    buf[0] = SERVO_CONFIG;
+    buf[1] = 1;
+
+    w.u32 = min;
+    buf[2] = w.i8[0];
+    buf[3] = w.i8[1];
+
+    w.u32 = max;
+    buf[4] = w.i8[0];
+    buf[5] = w.i8[1];
+
+    SendCMD(buf, 6);
+}
+
+void QForm1::readServo(){
+    uint8_t buf[2];
+    buf[0] = SERVO_CONFIG;
+    buf[1] = 0;
+    SendCMD(buf, 2);
+}
+
 void QForm1::Scanning(){
     uint8_t buf[1];
     int32_t x, y;
@@ -613,58 +739,4 @@ void QForm1::Scanning(){
 
     QPaintBox1->update();
 }
-
-void QForm1::on_aliveButton_clicked()
-{
-    uint8_t buf[24];
-    buf[0] = ALIVE;
-    SendCMD(buf, 1);
-}
-
-
-void QForm1::on_powerButton_clicked()
-{
-    if(dialog->isHidden())
-        dialog->show();
-}
-
-
-void QForm1::on_LeftEngineSlide_sliderMoved(int position)
-{
-    /*
-    QString strHex;
-    int r, g, b;
-
-    if(position <= 0){
-        r = 24 + position * (200 / 100);
-        g = 146 + position * (59 / 100);
-        b = 11 + position * (37 / 100);
-    } else {
-        r = 224 - position * (200 / 100);
-        g = 205 - position * (157 / 100);
-        b = 48 - position * (37 / 100);
-    }
-
-    r = int((position + 100) * (224 - 24) / 200 + 24);
-    g = int((position + 100) * (14 - 146) / 200 + 146);
-    b = int((position + 100) * (21 - 11) / 200 + 11);
-
-    strHex = strHex + QString("%1 ").arg(r, 3, 10, QChar('0'));
-    strHex = strHex + QString("%1 ").arg(g, 3, 10, QChar('0'));
-    strHex = strHex + QString("%1").arg(b, 3, 10, QChar('0'));
-    ui->plainTextEdit->appendPlainText(strHex);
-
-    strHex = "QSlider::groove:horizontal{background-color: rgb(";
-    strHex = strHex + QString("%1,").arg(r, 3, 10, QChar('0'));
-    strHex = strHex + QString("%1,").arg(g, 3, 10, QChar('0'));
-    strHex = strHex + QString("%1);").arg(b, 3, 10, QChar('0'));
-    strHex = strHex + "height: 7px; width: 90px;}QSlider::handle:horizontal{background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:0.011, y2:0, stop:0 rgba(74, 90, 107, 255), stop:1 rgba(173, 189, 198, 255)); width: 10px; height: 25px; margin: -10px 0px;}";
-    strHex = strHex + ")";
-    ui->LeftEngineSlide->setStyleSheet(strHex);
-
-    ui->LeftEngineSlide->setStyleSheet("QSlider::groove:horizontal{background-color: rgb(196,219,50); height: 7px; width: 90px;}"
-                                       "QSlider::handle:horizontal{background-color: qlineargradient(spread:reflect, x1:1, y1:1, x2:0.011, y2:0, stop:0 rgba(74, 90, 107, 255), stop:1 rgba(173, 189, 198, 255));"
-                                       "width: 10px; height: 25px; margin: -10px 0px;}");
 */
-}
-
