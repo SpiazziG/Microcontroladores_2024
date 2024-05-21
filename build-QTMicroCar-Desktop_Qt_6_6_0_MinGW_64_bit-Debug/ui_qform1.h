@@ -41,7 +41,7 @@ public:
     QComboBox *comboBox;
     QPushButton *OpenPortButton;
     QHBoxLayout *horizontalLayout_6;
-    QLineEdit *lineEdit;
+    QLineEdit *WifiLineEdit;
     QPushButton *OpenWifiButton;
     QVBoxLayout *verticalLayout_6;
     QLabel *label_2;
@@ -153,19 +153,19 @@ public:
 
         horizontalLayout_6 = new QHBoxLayout();
         horizontalLayout_6->setObjectName("horizontalLayout_6");
-        lineEdit = new QLineEdit(centralwidget);
-        lineEdit->setObjectName("lineEdit");
+        WifiLineEdit = new QLineEdit(centralwidget);
+        WifiLineEdit->setObjectName("WifiLineEdit");
         QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Fixed);
         sizePolicy2.setHorizontalStretch(0);
         sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(lineEdit->sizePolicy().hasHeightForWidth());
-        lineEdit->setSizePolicy(sizePolicy2);
-        lineEdit->setStyleSheet(QString::fromUtf8("font: 700 9pt \"MS Sans Serif\";\n"
+        sizePolicy2.setHeightForWidth(WifiLineEdit->sizePolicy().hasHeightForWidth());
+        WifiLineEdit->setSizePolicy(sizePolicy2);
+        WifiLineEdit->setStyleSheet(QString::fromUtf8("font: 700 9pt \"MS Sans Serif\";\n"
 "color: rgb(0, 232, 0);\n"
 "background-color: rgb(0, 0, 0);"));
-        lineEdit->setMaxLength(32767);
+        WifiLineEdit->setMaxLength(32767);
 
-        horizontalLayout_6->addWidget(lineEdit);
+        horizontalLayout_6->addWidget(WifiLineEdit);
 
         OpenWifiButton = new QPushButton(centralwidget);
         OpenWifiButton->setObjectName("OpenWifiButton");
@@ -729,9 +729,9 @@ public:
         label->setText(QCoreApplication::translate("QForm1", "COMMUNICATION", nullptr));
         comboBox->setPlaceholderText(QCoreApplication::translate("QForm1", "USB/UART", nullptr));
         OpenPortButton->setText(QCoreApplication::translate("QForm1", "OPEN", nullptr));
-        lineEdit->setInputMask(QString());
-        lineEdit->setText(QString());
-        lineEdit->setPlaceholderText(QCoreApplication::translate("QForm1", "Wifi", nullptr));
+        WifiLineEdit->setInputMask(QString());
+        WifiLineEdit->setText(QString());
+        WifiLineEdit->setPlaceholderText(QCoreApplication::translate("QForm1", "Wifi Port", nullptr));
         OpenWifiButton->setText(QCoreApplication::translate("QForm1", "OPEN", nullptr));
         label_2->setText(QCoreApplication::translate("QForm1", "COMMAND", nullptr));
         SendCommandButton->setText(QCoreApplication::translate("QForm1", "SEND", nullptr));

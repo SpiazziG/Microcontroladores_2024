@@ -68,6 +68,8 @@ private slots:
 
     void onRxUDP();
 
+    void DecodeHeader(uint8_t *buf, int count);
+
     //void on_LeftEngineSlide_sliderMoved(int position);
 
     //void Scanning();
@@ -97,7 +99,7 @@ private:
     uint8_t     rxBuf[256], header, nBytes, cks, index, tmoRX;
 
 
-    quint16 remotePort;
+    quint16 remotePort, port;
 
     int8_t measureAngle, indexWifi;
     int32_t measureTime, distance;

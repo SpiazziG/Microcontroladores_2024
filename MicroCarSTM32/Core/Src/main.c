@@ -23,18 +23,82 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "usbd_cdc_if.h"
+#include "ESP01.h"
+#include "UNERBUS.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+typedef union{
+	struct{
+		uint8_t	ON10MS:	1;
+		uint8_t	b1:	1;
+		uint8_t	b2:	1;
+		uint8_t	b3:	1;
+		uint8_t	b4:	1;
+		uint8_t	b5:	1;
+		uint8_t	b6:	1;
+		uint8_t	b7:	1;
+	} bit;
+	uint8_t byte;
+} _uFlag;
+
+typedef union{
+	uint8_t		u8[4];
+	int8_t		i8[4];
+	uint16_t	u16[2];
+	int16_t		i16[2];
+	uint32_t	u32;
+	int32_t		i32;
+} _uWork;
+
+typedef enum{
+	ACKNOWLEDGE = 0x0D,
+    ALIVE = 0xF0,
+    BUTTONS = 0x12,
+    FIRMWARE = 0xF1,
+    IRSENSORS = 0xA0,
+    TEST_ENGINE = 0xA1,
+	ACCELERATION = 0xA2,
+    SPEED = 0xA4,
+    LEDS = 0x10,
+	UNKNOWNCMD = 0xFF,
+} _eCommand;
+
+typedef struct{
+	uint8_t t10ms;
+	uint8_t t100ms;
+	uint8_t t500ms;
+	uint8_t t1s;
+	uint8_t tOutAliveUDP;
+} _sTime;
 
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define NBYTES		4
-#define ALIVE		0xF0
-#define ACKNOWLEDGE	0x0D
+#define SIZEBUFADC				64
+#define SIZEBUFRXPC				128
+#define SIZEBUFTXPC				256
+#define SIZEBUFRXESP01			128
+#define SIZEBUFTXESP01			128
+
+#define	HEARTBEAT_IDLE			0xF4000000
+#define	HEARTBEAT_WIFI_READY	0xF5000000
+#define	HEARTBEAT_UDP_READY		0xF5400000
+
+#define WIFI_SSID				"InternetPlus_86aa10"//"FCAL"
+#define WIFI_PASSWORD			"wlan7955ef"//"fcalconcordia.06-2019"
+#define WIFI_UDP_REMOTE_IP		"192.168.1.7"//"192.168.1.18"		//La IP de la PC 172.23.229.43
+#define WIFI_UDP_REMOTE_PORT	30010				//El puerto UDP en la PC
+#define WIFI_UDP_LOCAL_PORT		30000
+
+#define on10MS					flag1.bit.ON10MS
+#define t10MS					timeCounter.t10ms
+#define t100MS					timeCounter.t100ms
+#define t500MS					timeCounter.t500ms
+#define t1S						timeCounter.t1s
+#define tOutAliveUDP 			timeCounter.tOutAliveUDP
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -43,176 +107,209 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc1;
+DMA_HandleTypeDef hdma_adc1;
+
+I2C_HandleTypeDef hi2c2;
+
 TIM_HandleTypeDef htim1;
+TIM_HandleTypeDef htim4;
 
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-uint8_t rx[256], rIndR, rIndW;
-uint8_t tx[256], tIndR, tIndW;
-uint8_t checksum, length, ID;
+_uFlag flag1;
+_uWork w;
+_eCommand cmds;
+_sTime timeCounter;
 
-uint8_t time100ms;
-uint32_t mask;
-uint8_t moveMask;
+_sESP01Handle esp01;
+_sUNERBUSHandle unerbusPC;
+_sUNERBUSHandle unerbusESP01;
+
+char localIP[16];
+uint8_t bufRXPC[SIZEBUFRXPC], bufTXPC[SIZEBUFTXPC];
+uint8_t bufRXESP01[SIZEBUFRXESP01], bufTXESP01[SIZEBUFTXESP01], dataRXESP01;
+
+//uint32_t heartbeat, heartbeatmask;
+uint16_t mask;
+uint16_t moveMask;
+uint32_t heartbeat;
+//uint8_t time10ms, time100ms, timeOutAliveUDP;
 
 uint8_t rxUSBData, newData;
+
+uint16_t bufADC[SIZEBUFADC][8];
+uint8_t iwBufADC, irBufADC;
+uint8_t aux8;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
+static void MX_ADC1_Init(void);
+static void MX_I2C2_Init(void);
 static void MX_TIM1_Init(void);
+static void MX_TIM4_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
-/**
- * @brief toggles the LED of the blue pill after a certain amount of time
- *
- */
-void heartbeat();
+void ESP01DoCHPD(uint8_t value);
+int ESP01WriteUSARTByte(uint8_t value);
+void ESP01WriteByteToBufRX(uint8_t value);
+void ESP01ChangeState(_eESP01STATUS esp01State);
 
-/**
- * @brief decodes the header of the RX buffer (UNER Protocol)
- * @details returns 0 if there is an error, returns 1 if it is OK
- *
- */
-int decode(uint8_t index);
+void DecodeCMD(struct UNERBUSHandle *aBus, uint8_t iStartData);
 
-/**
- * @brief writes commands data in the TX buffer
- *
- */
-void encode(uint8_t index);
+void Do10ms();
+void Do100ms();
+void Heartbeat();
 
-/**
- * @brief Receive data via USB
- *
- */
 void USBReceive(uint8_t *buf, uint16_t len);
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+////////////////////////////// CALLBACKS FUNCTIONS //////////////////////////////
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+	if(htim->Instance == TIM1){
+		t10MS--;
+		if(!t10MS){
+			on10MS = 1;
+			t10MS = 40;
+		}
 
-void heartbeat(){
+		HAL_ADC_Start_DMA(&hadc1, (uint32_t *)&bufADC[iwBufADC], 8);
+	}
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
+	iwBufADC++;
+	iwBufADC &= (SIZEBUFADC-1);
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+	if(huart->Instance == USART1){
+		ESP01_WriteRX(dataRXESP01);
+		HAL_UART_Receive_IT(&huart1, &dataRXESP01, 1);
+	}
+}
+
+//////////////////////////// COMMUNICATION FUNCTIONS ////////////////////////////
+void ESP01DoCHPD(uint8_t value){
+	HAL_GPIO_WritePin(CH_EN_GPIO_Port, CH_EN_Pin, value);
+}
+
+int ESP01WriteUSARTByte(uint8_t value){
+	if(__HAL_UART_GET_FLAG(&huart1, USART_SR_TXE)){
+		USART1->DR = value;
+		return 1;
+	}
+	return 0;
+}
+
+void ESP01WriteByteToBufRX(uint8_t value){
+	UNERBUS_ReceiveByte(&unerbusESP01, value);
+}
+
+void ESP01ChangeState(_eESP01STATUS esp01State){
+	switch((uint32_t)esp01State){
+	case ESP01_WIFI_CONNECTED:
+		heartbeat = HEARTBEAT_WIFI_READY;
+		break;
+	case ESP01_UDPTCP_CONNECTED:
+		heartbeat = HEARTBEAT_UDP_READY;
+		break;
+	case ESP01_UDPTCP_DISCONNECTED:
+		heartbeat = HEARTBEAT_WIFI_READY;
+		break;
+	case ESP01_WIFI_DISCONNECTED:
+		heartbeat = HEARTBEAT_IDLE;
+		break;
+	}
+}
+
+void DecodeCMD(struct UNERBUSHandle *aBus, uint8_t iStartData){
+	uint8_t id;
+	uint8_t length = 0;
+
+	id = UNERBUS_GetUInt8(aBus);
+	switch(id){
+	case 0xE0://GET LOCAL IP
+		UNERBUS_Write(aBus, (uint8_t *)ESP01_GetLocalIP(), 16);
+		length = 17;
+		break;
+	case ALIVE://ALIVE
+		UNERBUS_WriteByte(aBus, 0x0D);
+		length = 2;
+		break;
+	case IRSENSORS:
+		aux8 = iwBufADC - 1;
+		aux8 &= (SIZEBUFADC - 1);
+		UNERBUS_Write(aBus, (uint8_t*)&bufADC[aux8], 16);
+		length = 17;
+		break;
+	case ACCELERATION:
+		break;
+	}
+
+	if(length){
+		UNERBUS_Send(aBus, id, length);
+	}
+}
+
+
+void USBReceive(uint8_t *buf, uint16_t len){
+	UNERBUS_ReceiveBuf(&unerbusPC, buf, len);
+}
+
+/////////////////////////////// PROGRAM FUNCTIONS ///////////////////////////////
+void Do10ms(){
+	on10MS = 0;
+
+	if(t100MS)
+		t100MS--;
+
+	ESP01_Timeout10ms();
+	UNERBUS_Timeout(&unerbusESP01);
+	UNERBUS_Timeout(&unerbusPC);
+}
+
+void Do100ms(){
+	t100MS = 10;
+
+	Heartbeat();
+
+	/*
+	aux8 = iwBufADC - 1;
+	aux8 &= (SIZEBUFADC - 1);
+
+	UNERBUS_Write(&unerbusPC, (uint8_t*)&bufADC[aux8], 16);
+	UNERBUS_Send(&unerbusPC, 0xA0, 17);
+
+	UNERBUS_Write(&unerbusESP01, (uint8_t*)&bufADC[aux8], 16);
+	UNERBUS_Send(&unerbusESP01, 0xA0, 17);
+	*/
+	/*
+	if(heartbeatmask & heartbeat)
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+	else
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+
+	heartbeatmask >>= 1;
+	if(!heartbeatmask)
+		heartbeatmask = 0x80000000;
+	*/
+	if(tOutAliveUDP)
+		tOutAliveUDP--;
+}
+
+void Heartbeat(){
 	uint8_t write;
 	write = ~(mask>>moveMask) & 1;
 	moveMask++;
 	moveMask ^= (moveMask & 16);
 	HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, write);
-}
-
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-	if(htim->Instance == TIM1){
-		if(time100ms)
-			time100ms--;
-	}
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef * huart){
-	if(huart->Instance == USART1){
-		rIndW++;
-		HAL_UART_Receive_IT(&huart1, &rx[rIndW], 1);
-	}
-}
-
-int decode(uint8_t index){
-	static uint8_t header = 0, ind = 0;
-
-	while(rIndR != index){
-		switch(header){
-			case 0:
-				if(rx[rIndR] == 'U')
-					header = 1;
-				break;
-			case 1:
-				if(rx[rIndR] == 'N')
-					header = 2;
-				else
-					header = 0, rIndR--;
-				break;
-			case 2:
-				if(rx[rIndR] == 'E')
-					header = 3;
-				else
-					header = 0, rIndR--;
-				break;
-			case 3:
-				if(rx[rIndR] == 'R')
-					header = 4;
-				else
-					header = 0, rIndR--;
-				break;
-			case 4:
-				length = rx[rIndR];
-				header = 5;
-				break;
-			case 5:
-				if(rx[rIndR] == ':'){
-					ind = rIndR+1;
-					header = 6;
-					checksum = 'U' ^ 'N' ^ 'E' ^ 'R' ^ length ^ ':';
-				} else {
-					header = 0;
-					rIndR--;
-				}
-				break;
-			case 6:
-				length--;
-				if(length!=0)
-					checksum ^= rx[rIndR];
-				else {
-					if(checksum == rx[rIndR])
-						encode(ind);
-					header = 0;
-					rIndR--;
-				}
-				break;
-			default:
-				header = 0;
-				break;
-		}
-		rIndR++;
-	}
-	return 0;
-}
-
-void encode(uint8_t index){
-	uint8_t auxBuf[20], auxIndex = 0;
-
-	auxBuf[auxIndex++]	= 'U';
-	auxBuf[auxIndex++]	= 'N';
-	auxBuf[auxIndex++]	= 'E';
-	auxBuf[auxIndex++]	= 'R';
-	auxBuf[auxIndex++]	=  0 ;
-	auxBuf[auxIndex++]	= ':';
-
-	switch(rx[index]){
-		case ALIVE:
-			auxBuf[auxIndex++] = ALIVE;
-			auxBuf[auxIndex++] = ACKNOWLEDGE;
-			auxBuf[NBYTES] = 0x03;
-			break;
-		default:
-			auxBuf[auxIndex++]	= 0xFF;
-			auxBuf[NBYTES]		= 0x02;
-			break;
-	}
-
-	checksum = 0;
-
-	for(uint8_t i = 0; i < auxIndex; i++){
-		checksum ^= auxBuf[i];
-		tx[tIndW++] = auxBuf[i];
-	}
-
-	tx[tIndW++] = checksum;
-}
-
-void USBReceive(uint8_t *buf, uint16_t len){
-	rxUSBData = buf[0];
-	newData = 1;
 }
 /* USER CODE END 0 */
 
@@ -222,7 +319,37 @@ void USBReceive(uint8_t *buf, uint16_t len){
   */
 int main(void)
 {
+
   /* USER CODE BEGIN 1 */
+	mask = 0xAAF;
+	moveMask = 0;
+	//heartbeat = HEARTBEAT_IDLE;
+	//heartbeatmask = 0x80000000;
+
+	t10MS = 40;
+	t100MS = 10;
+	tOutAliveUDP = 50;
+
+	iwBufADC = 0;
+	irBufADC = 0;
+
+	esp01.DoCHPD = ESP01DoCHPD;
+	esp01.WriteByteToBufRX = ESP01WriteByteToBufRX;
+	esp01.WriteUSARTByte = ESP01WriteUSARTByte;
+
+	unerbusESP01.MyDataReady = DecodeCMD;
+	unerbusESP01.WriteUSARTByte = NULL;
+	unerbusESP01.rx.buf = bufRXESP01;
+	unerbusESP01.rx.maxIndexRingBuf = (SIZEBUFRXESP01 - 1);
+	unerbusESP01.tx.buf = bufTXESP01;
+	unerbusESP01.tx.maxIndexRingBuf = (SIZEBUFTXESP01 - 1);
+
+	unerbusPC.MyDataReady = DecodeCMD;
+	unerbusPC.WriteUSARTByte = NULL;
+	unerbusPC.rx.buf = bufRXPC;
+	unerbusPC.rx.maxIndexRingBuf = (SIZEBUFRXPC - 1);
+	unerbusPC.tx.buf = bufTXPC;
+	unerbusPC.tx.maxIndexRingBuf = (SIZEBUFTXPC - 1);
 
   /* USER CODE END 1 */
 
@@ -244,22 +371,34 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_TIM1_Init();
-  MX_USART1_UART_Init();
+  MX_DMA_Init();
   MX_USB_DEVICE_Init();
+  MX_ADC1_Init();
+  MX_I2C2_Init();
+  MX_TIM1_Init();
+  MX_TIM4_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  rIndW = rIndR = 0;
-
-  time100ms = 10;
-
-  mask = 0xFF00;
-  moveMask = 0;
+  CDC_AttachRxData(USBReceive);
 
   HAL_TIM_Base_Start_IT(&htim1);
-  HAL_UART_Receive_IT(&huart1, &rx[rIndW], 1);
-  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, 1);
 
-  CDC_AttachRxData(USBReceive);
+  __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 0);
+  __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, 0);
+  __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, 0);
+  __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, 0);
+  HAL_TIM_Base_Start(&htim4);
+
+  ESP01_Init(&esp01);
+  UNERBUS_Init(&unerbusESP01);
+  UNERBUS_Init(&unerbusPC);
+
+  ESP01_AttachChangeState(ESP01ChangeState);
+  ESP01_SetWIFI(WIFI_SSID, WIFI_PASSWORD);
+  ESP01_StartUDP(WIFI_UDP_REMOTE_IP, WIFI_UDP_REMOTE_PORT, WIFI_UDP_LOCAL_PORT);
+
+  HAL_UART_Receive_IT(&huart1, &dataRXESP01, 1);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -269,36 +408,47 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  if(!time100ms){
-		  time100ms = 10;
-		  heartbeat();
-		  //HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+	  if(!tOutAliveUDP){
+		  tOutAliveUDP = 50;
+		  UNERBUS_WriteByte(&unerbusESP01, 0x0D);
+		  UNERBUS_Send(&unerbusESP01, 0xF0, 2);
+
+		  //UNERBUS_WriteConstString(&unerbusPC, "UNER\x03:\xF0\x0D\xC8", 0);
+		  //UNERBUS_WriteConstString(&unerbusPC, " El ALIVE", 1);
 	  }
-	/*If the indices are different, receive (decode) what is on the serial port*/
-	  if(rIndR != rIndW)
-		  decode(rIndW);
 
-	/* If the indices are different, transmit what is on the serial port */
-	  if(tIndR != tIndW)
-		  HAL_UART_Transmit(&huart1, &tx[tIndR++], 1, 1);
 
-	/* If there is new data, transmit via USB */
-	  if(newData){
-		  if(CDC_Transmit_FS(&rxUSBData, 1) == USBD_OK)
-			  newData = 0;
+	  if(!t100MS)
+		  Do100ms();
+
+	  if(on10MS)
+		  Do10ms();
+
+	  if(unerbusESP01.tx.iRead != unerbusESP01.tx.iWrite){
+		  w.u8[0] = unerbusESP01.tx.iWrite - unerbusESP01.tx.iRead;
+		  w.u8[0] &= unerbusESP01.tx.maxIndexRingBuf;
+		  if(ESP01_Send(unerbusESP01.tx.buf, unerbusESP01.tx.iRead, w.u8[0], unerbusESP01.tx.maxIndexRingBuf+1) == ESP01_SEND_READY)
+			  unerbusESP01.tx.iRead = unerbusESP01.tx.iWrite;
 	  }
-	  /*
-	  {
 
-		  if(__HAL_UART_GET_FLAG(&huart1, UART_FLAG_TXE))
-		  {
-			  RindR = RindW-1;
-			  USART1->DR = rx[rIndR];
-			  //HAL_UART_Transmit(&huart1, &rx[ir], 1, 0);
-			  RindR = RindW;
+	  if(unerbusPC.tx.iRead != unerbusPC.tx.iWrite){
+		  if(unerbusPC.tx.iRead < unerbusPC.tx.iWrite)
+			  w.u8[0] = unerbusPC.tx.iWrite - unerbusPC.tx.iRead;
+		  else
+			  w.u8[0] = unerbusPC.tx.maxIndexRingBuf+1 - unerbusPC.tx.iRead;
+
+		  if(CDC_Transmit_FS(&unerbusPC.tx.buf[unerbusPC.tx.iRead], w.u8[0]) == USBD_OK){
+			  unerbusPC.tx.iRead += w.u8[0];
+			  unerbusPC.tx.iRead &= unerbusPC.tx.maxIndexRingBuf;
 		  }
 	  }
-	  */
+
+	  ESP01_Task();
+
+	  UNERBUS_Task(&unerbusESP01);
+
+	  UNERBUS_Task(&unerbusPC);
+
   }
   /* USER CODE END 3 */
 }
@@ -341,12 +491,157 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USB;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC|RCC_PERIPHCLK_USB;
+  PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV6;
   PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_PLL_DIV1_5;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief ADC1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_ADC1_Init(void)
+{
+
+  /* USER CODE BEGIN ADC1_Init 0 */
+
+  /* USER CODE END ADC1_Init 0 */
+
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /* USER CODE BEGIN ADC1_Init 1 */
+
+  /* USER CODE END ADC1_Init 1 */
+
+  /** Common config
+  */
+  hadc1.Instance = ADC1;
+  hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
+  hadc1.Init.DiscontinuousConvMode = DISABLE;
+  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc1.Init.NbrOfConversion = 8;
+  if (HAL_ADC_Init(&hadc1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_0;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Rank = ADC_REGULAR_RANK_2;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_2;
+  sConfig.Rank = ADC_REGULAR_RANK_3;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_3;
+  sConfig.Rank = ADC_REGULAR_RANK_4;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_4;
+  sConfig.Rank = ADC_REGULAR_RANK_5;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_5;
+  sConfig.Rank = ADC_REGULAR_RANK_6;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_6;
+  sConfig.Rank = ADC_REGULAR_RANK_7;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_7;
+  sConfig.Rank = ADC_REGULAR_RANK_8;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN ADC1_Init 2 */
+
+  /* USER CODE END ADC1_Init 2 */
+
+}
+
+/**
+  * @brief I2C2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C2_Init(void)
+{
+
+  /* USER CODE BEGIN I2C2_Init 0 */
+
+  /* USER CODE END I2C2_Init 0 */
+
+  /* USER CODE BEGIN I2C2_Init 1 */
+
+  /* USER CODE END I2C2_Init 1 */
+  hi2c2.Instance = I2C2;
+  hi2c2.Init.ClockSpeed = 100000;
+  hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c2.Init.OwnAddress1 = 0;
+  hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c2.Init.OwnAddress2 = 0;
+  hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C2_Init 2 */
+
+  /* USER CODE END I2C2_Init 2 */
+
 }
 
 /**
@@ -370,7 +665,7 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 71;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 10000;
+  htim1.Init.Period = 249;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -392,6 +687,77 @@ static void MX_TIM1_Init(void)
   /* USER CODE BEGIN TIM1_Init 2 */
 
   /* USER CODE END TIM1_Init 2 */
+
+}
+
+/**
+  * @brief TIM4 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM4_Init(void)
+{
+
+  /* USER CODE BEGIN TIM4_Init 0 */
+
+  /* USER CODE END TIM4_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  /* USER CODE BEGIN TIM4_Init 1 */
+
+  /* USER CODE END TIM4_Init 1 */
+  htim4.Instance = TIM4;
+  htim4.Init.Prescaler = 71;
+  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim4.Init.Period = 9999;
+  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_Init(&htim4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM4_Init 2 */
+
+  /* USER CODE END TIM4_Init 2 */
+  HAL_TIM_MspPostInit(&htim4);
 
 }
 
@@ -429,6 +795,22 @@ static void MX_USART1_UART_Init(void)
 }
 
 /**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -446,7 +828,10 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(CH_EN_GPIO_Port, CH_EN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : LED_Pin */
   GPIO_InitStruct.Pin = LED_Pin;
@@ -455,19 +840,24 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : BUTTON_Pin */
-  GPIO_InitStruct.Pin = BUTTON_Pin;
+  /*Configure GPIO pin : SW0_Pin */
+  GPIO_InitStruct.Pin = SW0_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(BUTTON_GPIO_Port, &GPIO_InitStruct);
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(SW0_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : CH_EN_Pin */
+  GPIO_InitStruct.Pin = CH_EN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(CH_EN_GPIO_Port, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
-
-
 
 /* USER CODE END 4 */
 

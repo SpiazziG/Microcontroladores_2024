@@ -311,6 +311,7 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
 void CDC_AttachRxData(void (*ptrRxAttach)(uint8_t *buf, uint16_t len)){
 	aPtrFunRx = ptrRxAttach;
 }
+
 /* USER CODE END PRIVATE_FUNCTIONS_IMPLEMENTATION */
 
 /**
