@@ -103,7 +103,6 @@ private:
 
     int8_t measureAngle, indexWifi;
     int32_t measureTime, distance;
-    //bool SCAN = false;
 
     Dialog *dialog;
 
@@ -114,7 +113,7 @@ private:
         BUTTONS=0x12,
         IRSENSOR=0xA0,
         TEST_ENGINE=0xA1,
-        SERVO=0xA2,
+        ACCELERATION=0xA2,
         DISTANCIA=0xA3,
         SPEED=0xA4,
         SERVO_CONFIG=0xA5,

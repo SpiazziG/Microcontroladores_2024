@@ -59,9 +59,31 @@ public:
     QVBoxLayout *verticalLayout_3;
     QPlainTextEdit *plainTextEdit;
     QVBoxLayout *verticalLayout;
+    QHBoxLayout *horizontalLayout_14;
+    QFrame *line_9;
+    QLabel *label_19;
+    QFrame *line_8;
+    QVBoxLayout *verticalLayout_2;
     QHBoxLayout *horizontalLayout_3;
+    QLabel *label_16;
+    QLabel *label_15;
     QLabel *label_3;
-    QLCDNumber *lcdDistance;
+    QHBoxLayout *horizontalLayout_11;
+    QLCDNumber *lcdAccX;
+    QLCDNumber *lcdAccY;
+    QLCDNumber *lcdAccZ;
+    QHBoxLayout *horizontalLayout_15;
+    QFrame *line_10;
+    QLabel *label_20;
+    QFrame *line_11;
+    QVBoxLayout *verticalLayout_4;
+    QHBoxLayout *horizontalLayout_16;
+    QLCDNumber *lcdGyroX;
+    QLCDNumber *lcdGyroY;
+    QLCDNumber *lcdGyroZ;
+    QHBoxLayout *horizontalLayout_12;
+    QFrame *line_6;
+    QLabel *label_17;
     QFrame *line_4;
     QHBoxLayout *horizontalLayout_4;
     QLabel *label_4;
@@ -72,7 +94,10 @@ public:
     QSlider *RightEngineSlide;
     QLCDNumber *lcdRightEngine;
     QPushButton *powerButton;
+    QHBoxLayout *horizontalLayout_13;
     QFrame *line_5;
+    QLabel *label_18;
+    QFrame *line_7;
     QGridLayout *gridLayout_2;
     QLCDNumber *lcdIR1;
     QLCDNumber *lcdIR7;
@@ -100,7 +125,7 @@ public:
     {
         if (QForm1->objectName().isEmpty())
             QForm1->setObjectName("QForm1");
-        QForm1->resize(640, 503);
+        QForm1->resize(850, 640);
         QSizePolicy sizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -316,38 +341,190 @@ public:
 
         verticalLayout = new QVBoxLayout();
         verticalLayout->setObjectName("verticalLayout");
+        horizontalLayout_14 = new QHBoxLayout();
+        horizontalLayout_14->setObjectName("horizontalLayout_14");
+        line_9 = new QFrame(centralwidget);
+        line_9->setObjectName("line_9");
+        line_9->setStyleSheet(QString::fromUtf8("background-color: rgb(135, 119, 76);"));
+        line_9->setFrameShape(QFrame::HLine);
+        line_9->setFrameShadow(QFrame::Sunken);
+
+        horizontalLayout_14->addWidget(line_9);
+
+        label_19 = new QLabel(centralwidget);
+        label_19->setObjectName("label_19");
+        label_19->setStyleSheet(QString::fromUtf8("font: 700 9pt \"MS Sans Serif\";\n"
+"color: rgb(172, 173, 183);"));
+        label_19->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_14->addWidget(label_19);
+
+        line_8 = new QFrame(centralwidget);
+        line_8->setObjectName("line_8");
+        line_8->setStyleSheet(QString::fromUtf8("background-color: rgb(135, 119, 76);"));
+        line_8->setFrameShape(QFrame::HLine);
+        line_8->setFrameShadow(QFrame::Sunken);
+
+        horizontalLayout_14->addWidget(line_8);
+
+
+        verticalLayout->addLayout(horizontalLayout_14);
+
+        verticalLayout_2 = new QVBoxLayout();
+        verticalLayout_2->setObjectName("verticalLayout_2");
         horizontalLayout_3 = new QHBoxLayout();
         horizontalLayout_3->setObjectName("horizontalLayout_3");
+        label_16 = new QLabel(centralwidget);
+        label_16->setObjectName("label_16");
+        label_16->setStyleSheet(QString::fromUtf8("font: 700 9pt \"MS Sans Serif\";\n"
+"color: rgb(172, 173, 183);"));
+        label_16->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_3->addWidget(label_16);
+
+        label_15 = new QLabel(centralwidget);
+        label_15->setObjectName("label_15");
+        label_15->setStyleSheet(QString::fromUtf8("font: 700 9pt \"MS Sans Serif\";\n"
+"color: rgb(172, 173, 183);"));
+        label_15->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_3->addWidget(label_15);
+
         label_3 = new QLabel(centralwidget);
         label_3->setObjectName("label_3");
-        sizePolicy1.setHeightForWidth(label_3->sizePolicy().hasHeightForWidth());
-        label_3->setSizePolicy(sizePolicy1);
-        label_3->setMinimumSize(QSize(108, 0));
         label_3->setStyleSheet(QString::fromUtf8("font: 700 9pt \"MS Sans Serif\";\n"
 "color: rgb(172, 173, 183);"));
+        label_3->setAlignment(Qt::AlignCenter);
 
         horizontalLayout_3->addWidget(label_3);
 
-        lcdDistance = new QLCDNumber(centralwidget);
-        lcdDistance->setObjectName("lcdDistance");
-        sizePolicy2.setHeightForWidth(lcdDistance->sizePolicy().hasHeightForWidth());
-        lcdDistance->setSizePolicy(sizePolicy2);
-        lcdDistance->setMinimumSize(QSize(30, 0));
-        QFont font1;
-        font1.setBold(false);
-        lcdDistance->setFont(font1);
-        lcdDistance->setFocusPolicy(Qt::NoFocus);
-        lcdDistance->setStyleSheet(QString::fromUtf8("color: rgb(0, 232, 0);\n"
+
+        verticalLayout_2->addLayout(horizontalLayout_3);
+
+        horizontalLayout_11 = new QHBoxLayout();
+        horizontalLayout_11->setObjectName("horizontalLayout_11");
+        lcdAccX = new QLCDNumber(centralwidget);
+        lcdAccX->setObjectName("lcdAccX");
+        lcdAccX->setStyleSheet(QString::fromUtf8("color: rgb(0, 232, 0);\n"
 "background-color: rgb(0, 0, 0);"));
-        lcdDistance->setFrameShape(QFrame::Box);
-        lcdDistance->setFrameShadow(QFrame::Sunken);
-        lcdDistance->setDigitCount(3);
-        lcdDistance->setSegmentStyle(QLCDNumber::Flat);
+        lcdAccX->setFrameShadow(QFrame::Sunken);
+        lcdAccX->setDigitCount(8);
+        lcdAccX->setSegmentStyle(QLCDNumber::Flat);
 
-        horizontalLayout_3->addWidget(lcdDistance);
+        horizontalLayout_11->addWidget(lcdAccX);
+
+        lcdAccY = new QLCDNumber(centralwidget);
+        lcdAccY->setObjectName("lcdAccY");
+        lcdAccY->setStyleSheet(QString::fromUtf8("color: rgb(0, 232, 0);\n"
+"background-color: rgb(0, 0, 0);"));
+        lcdAccY->setFrameShadow(QFrame::Sunken);
+        lcdAccY->setDigitCount(8);
+        lcdAccY->setSegmentStyle(QLCDNumber::Flat);
+
+        horizontalLayout_11->addWidget(lcdAccY);
+
+        lcdAccZ = new QLCDNumber(centralwidget);
+        lcdAccZ->setObjectName("lcdAccZ");
+        lcdAccZ->setStyleSheet(QString::fromUtf8("color: rgb(0, 232, 0);\n"
+"background-color: rgb(0, 0, 0);"));
+        lcdAccZ->setFrameShadow(QFrame::Sunken);
+        lcdAccZ->setDigitCount(8);
+        lcdAccZ->setSegmentStyle(QLCDNumber::Flat);
+
+        horizontalLayout_11->addWidget(lcdAccZ);
 
 
-        verticalLayout->addLayout(horizontalLayout_3);
+        verticalLayout_2->addLayout(horizontalLayout_11);
+
+
+        verticalLayout->addLayout(verticalLayout_2);
+
+        horizontalLayout_15 = new QHBoxLayout();
+        horizontalLayout_15->setObjectName("horizontalLayout_15");
+        line_10 = new QFrame(centralwidget);
+        line_10->setObjectName("line_10");
+        line_10->setStyleSheet(QString::fromUtf8("background-color: rgb(135, 119, 76);"));
+        line_10->setFrameShape(QFrame::HLine);
+        line_10->setFrameShadow(QFrame::Sunken);
+
+        horizontalLayout_15->addWidget(line_10);
+
+        label_20 = new QLabel(centralwidget);
+        label_20->setObjectName("label_20");
+        label_20->setStyleSheet(QString::fromUtf8("font: 700 9pt \"MS Sans Serif\";\n"
+"color: rgb(172, 173, 183);"));
+        label_20->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_15->addWidget(label_20);
+
+        line_11 = new QFrame(centralwidget);
+        line_11->setObjectName("line_11");
+        line_11->setStyleSheet(QString::fromUtf8("background-color: rgb(135, 119, 76);"));
+        line_11->setFrameShape(QFrame::HLine);
+        line_11->setFrameShadow(QFrame::Sunken);
+
+        horizontalLayout_15->addWidget(line_11);
+
+
+        verticalLayout->addLayout(horizontalLayout_15);
+
+        verticalLayout_4 = new QVBoxLayout();
+        verticalLayout_4->setObjectName("verticalLayout_4");
+        horizontalLayout_16 = new QHBoxLayout();
+        horizontalLayout_16->setObjectName("horizontalLayout_16");
+        lcdGyroX = new QLCDNumber(centralwidget);
+        lcdGyroX->setObjectName("lcdGyroX");
+        lcdGyroX->setStyleSheet(QString::fromUtf8("color: rgb(0, 232, 0);\n"
+"background-color: rgb(0, 0, 0);"));
+        lcdGyroX->setFrameShadow(QFrame::Sunken);
+        lcdGyroX->setDigitCount(8);
+        lcdGyroX->setSegmentStyle(QLCDNumber::Flat);
+
+        horizontalLayout_16->addWidget(lcdGyroX);
+
+        lcdGyroY = new QLCDNumber(centralwidget);
+        lcdGyroY->setObjectName("lcdGyroY");
+        lcdGyroY->setStyleSheet(QString::fromUtf8("color: rgb(0, 232, 0);\n"
+"background-color: rgb(0, 0, 0);"));
+        lcdGyroY->setFrameShadow(QFrame::Sunken);
+        lcdGyroY->setDigitCount(8);
+        lcdGyroY->setSegmentStyle(QLCDNumber::Flat);
+
+        horizontalLayout_16->addWidget(lcdGyroY);
+
+        lcdGyroZ = new QLCDNumber(centralwidget);
+        lcdGyroZ->setObjectName("lcdGyroZ");
+        lcdGyroZ->setStyleSheet(QString::fromUtf8("color: rgb(0, 232, 0);\n"
+"background-color: rgb(0, 0, 0);"));
+        lcdGyroZ->setFrameShadow(QFrame::Sunken);
+        lcdGyroZ->setDigitCount(8);
+        lcdGyroZ->setSegmentStyle(QLCDNumber::Flat);
+
+        horizontalLayout_16->addWidget(lcdGyroZ);
+
+
+        verticalLayout_4->addLayout(horizontalLayout_16);
+
+
+        verticalLayout->addLayout(verticalLayout_4);
+
+        horizontalLayout_12 = new QHBoxLayout();
+        horizontalLayout_12->setObjectName("horizontalLayout_12");
+        line_6 = new QFrame(centralwidget);
+        line_6->setObjectName("line_6");
+        line_6->setStyleSheet(QString::fromUtf8("background-color: rgb(135, 119, 76);"));
+        line_6->setFrameShape(QFrame::HLine);
+        line_6->setFrameShadow(QFrame::Sunken);
+
+        horizontalLayout_12->addWidget(line_6);
+
+        label_17 = new QLabel(centralwidget);
+        label_17->setObjectName("label_17");
+        label_17->setStyleSheet(QString::fromUtf8("font: 700 9pt \"MS Sans Serif\";\n"
+"color: rgb(172, 173, 183);"));
+        label_17->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_12->addWidget(label_17);
 
         line_4 = new QFrame(centralwidget);
         line_4->setObjectName("line_4");
@@ -355,7 +532,10 @@ public:
         line_4->setFrameShape(QFrame::HLine);
         line_4->setFrameShadow(QFrame::Sunken);
 
-        verticalLayout->addWidget(line_4);
+        horizontalLayout_12->addWidget(line_4);
+
+
+        verticalLayout->addLayout(horizontalLayout_12);
 
         horizontalLayout_4 = new QHBoxLayout();
         horizontalLayout_4->setObjectName("horizontalLayout_4");
@@ -475,13 +655,34 @@ public:
 
         verticalLayout->addWidget(powerButton);
 
+        horizontalLayout_13 = new QHBoxLayout();
+        horizontalLayout_13->setObjectName("horizontalLayout_13");
         line_5 = new QFrame(centralwidget);
         line_5->setObjectName("line_5");
         line_5->setStyleSheet(QString::fromUtf8("background-color: rgb(135, 119, 76);"));
         line_5->setFrameShape(QFrame::HLine);
         line_5->setFrameShadow(QFrame::Sunken);
 
-        verticalLayout->addWidget(line_5);
+        horizontalLayout_13->addWidget(line_5);
+
+        label_18 = new QLabel(centralwidget);
+        label_18->setObjectName("label_18");
+        label_18->setStyleSheet(QString::fromUtf8("font: 700 9pt \"MS Sans Serif\";\n"
+"color: rgb(172, 173, 183);"));
+        label_18->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_13->addWidget(label_18);
+
+        line_7 = new QFrame(centralwidget);
+        line_7->setObjectName("line_7");
+        line_7->setStyleSheet(QString::fromUtf8("background-color: rgb(135, 119, 76);"));
+        line_7->setFrameShape(QFrame::HLine);
+        line_7->setFrameShadow(QFrame::Sunken);
+
+        horizontalLayout_13->addWidget(line_7);
+
+
+        verticalLayout->addLayout(horizontalLayout_13);
 
         gridLayout_2 = new QGridLayout();
         gridLayout_2->setObjectName("gridLayout_2");
@@ -494,7 +695,7 @@ public:
 "background-color: rgb(0, 0, 0);"));
         lcdIR1->setFrameShape(QFrame::Box);
         lcdIR1->setFrameShadow(QFrame::Sunken);
-        lcdIR1->setDigitCount(5);
+        lcdIR1->setDigitCount(4);
         lcdIR1->setSegmentStyle(QLCDNumber::Flat);
 
         gridLayout_2->addWidget(lcdIR1, 1, 0, 1, 1);
@@ -509,6 +710,7 @@ public:
         lcdIR7->setStyleSheet(QString::fromUtf8("color: rgb(0, 232, 0);\n"
 "background-color: rgb(0, 0, 0);"));
         lcdIR7->setFrameShadow(QFrame::Sunken);
+        lcdIR7->setDigitCount(4);
         lcdIR7->setSegmentStyle(QLCDNumber::Flat);
 
         gridLayout_2->addWidget(lcdIR7, 3, 2, 1, 1);
@@ -543,6 +745,7 @@ public:
         lcdIR5->setStyleSheet(QString::fromUtf8("color: rgb(0, 232, 0);\n"
 "background-color: rgb(0, 0, 0);"));
         lcdIR5->setFrameShadow(QFrame::Sunken);
+        lcdIR5->setDigitCount(4);
         lcdIR5->setSegmentStyle(QLCDNumber::Flat);
 
         gridLayout_2->addWidget(lcdIR5, 3, 0, 1, 1);
@@ -576,7 +779,7 @@ public:
 "background-color: rgb(0, 0, 0);"));
         lcdIR2->setFrameShape(QFrame::Box);
         lcdIR2->setFrameShadow(QFrame::Sunken);
-        lcdIR2->setDigitCount(5);
+        lcdIR2->setDigitCount(4);
         lcdIR2->setSegmentStyle(QLCDNumber::Flat);
 
         gridLayout_2->addWidget(lcdIR2, 1, 1, 1, 1);
@@ -628,6 +831,7 @@ public:
         lcdIR6->setStyleSheet(QString::fromUtf8("color: rgb(0, 232, 0);\n"
 "background-color: rgb(0, 0, 0);"));
         lcdIR6->setFrameShadow(QFrame::Sunken);
+        lcdIR6->setDigitCount(4);
         lcdIR6->setSegmentStyle(QLCDNumber::Flat);
 
         gridLayout_2->addWidget(lcdIR6, 3, 1, 1, 1);
@@ -639,6 +843,7 @@ public:
         lcdIR4->setStyleSheet(QString::fromUtf8("color: rgb(0, 232, 0);\n"
 "background-color: rgb(0, 0, 0);"));
         lcdIR4->setFrameShadow(QFrame::Sunken);
+        lcdIR4->setDigitCount(4);
         lcdIR4->setSegmentStyle(QLCDNumber::Flat);
 
         gridLayout_2->addWidget(lcdIR4, 1, 3, 1, 1);
@@ -652,7 +857,7 @@ public:
 "background-color: rgb(0, 0, 0);"));
         lcdIR3->setFrameShape(QFrame::Box);
         lcdIR3->setFrameShadow(QFrame::Sunken);
-        lcdIR3->setDigitCount(5);
+        lcdIR3->setDigitCount(4);
         lcdIR3->setSegmentStyle(QLCDNumber::Flat);
 
         gridLayout_2->addWidget(lcdIR3, 1, 2, 1, 1);
@@ -664,6 +869,7 @@ public:
         lcdIR8->setStyleSheet(QString::fromUtf8("color: rgb(0, 232, 0);\n"
 "background-color: rgb(0, 0, 0);"));
         lcdIR8->setFrameShadow(QFrame::Sunken);
+        lcdIR8->setDigitCount(4);
         lcdIR8->setSegmentStyle(QLCDNumber::Flat);
 
         gridLayout_2->addWidget(lcdIR8, 3, 3, 1, 1);
@@ -715,7 +921,7 @@ public:
         QForm1->setStatusBar(statusbar);
         menubar = new QMenuBar(QForm1);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 640, 21));
+        menubar->setGeometry(QRect(0, 0, 850, 21));
         QForm1->setMenuBar(menubar);
 
         retranslateUi(QForm1);
@@ -737,10 +943,16 @@ public:
         SendCommandButton->setText(QCoreApplication::translate("QForm1", "SEND", nullptr));
         aliveButton->setText(QCoreApplication::translate("QForm1", "ALIVE", nullptr));
         label_9->setText(QCoreApplication::translate("QForm1", "MICROCONTROLADORES", nullptr));
-        label_3->setText(QCoreApplication::translate("QForm1", "DISTANCE", nullptr));
+        label_19->setText(QCoreApplication::translate("QForm1", "ACCELERATION", nullptr));
+        label_16->setText(QCoreApplication::translate("QForm1", "X", nullptr));
+        label_15->setText(QCoreApplication::translate("QForm1", "Y", nullptr));
+        label_3->setText(QCoreApplication::translate("QForm1", "Z", nullptr));
+        label_20->setText(QCoreApplication::translate("QForm1", "GYROSCOPE", nullptr));
+        label_17->setText(QCoreApplication::translate("QForm1", "ENGINES", nullptr));
         label_4->setText(QCoreApplication::translate("QForm1", "LEFT ENGINE", nullptr));
         label_5->setText(QCoreApplication::translate("QForm1", "RIGHT ENGINE", nullptr));
         powerButton->setText(QCoreApplication::translate("QForm1", "SET ENGINES POWER", nullptr));
+        label_18->setText(QCoreApplication::translate("QForm1", "INFRARRED", nullptr));
         label_8->setText(QCoreApplication::translate("QForm1", "IR 3", nullptr));
         label_14->setText(QCoreApplication::translate("QForm1", "IR 8", nullptr));
         label_13->setText(QCoreApplication::translate("QForm1", "IR 7", nullptr));

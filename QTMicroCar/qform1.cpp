@@ -16,7 +16,7 @@ QForm1::QForm1(QWidget *parent)
     //ui->comboBox_2->addItem("BUTTONS", 0x12);
     ui->comboBox_2->addItem("INFRARED SENSORS", 0xA0);
     //ui->comboBox_2->addItem("ENGINE TEST", 0xA1);
-    //ui->comboBox_2->addItem("SERVO", 0xA2);
+    ui->comboBox_2->addItem("ACCELERATION", 0xA2);
     //ui->comboBox_2->addItem("HC-SR04", 0xA3);
     //ui->comboBox_2->addItem("ENGINES", 0xA4);
 
@@ -69,6 +69,8 @@ bool QForm1::eventFilter(QObject *watched, QEvent *event){
 void QForm1::OnQTimer1(){
     static uint8_t time100ms = 2;
 
+    uint8_t buf[1];
+
     //if(SCAN == true)
     //    Scanning();
 
@@ -89,6 +91,12 @@ void QForm1::OnQTimer1(){
     } else {
         time100ms--;
     }
+
+    buf[0] = ACCELERATION;
+    SendCMD(buf, 1);
+
+    //buf[0] = IRSENSOR;
+    //SendCMD(buf, 1);
     /*
         buf[0] = IRSENSOR;
         SendCMD(buf, 1);
@@ -166,7 +174,7 @@ void QForm1::onRxUDP(){
             strHex = strHex + QString("%1").arg(buf[a], 2, 16, QChar('0')).toUpper();
         }
 
-        ui->plainTextEdit->appendPlainText(strHex);
+        //ui->plainTextEdit->appendPlainText(strHex);
     }
 
     DecodeHeader(buf, count);
@@ -191,7 +199,7 @@ void QForm1::OnRxChar(){
         strHex = strHex + QString("%1").arg(buf[a], 2, 16, QChar('0')).toUpper();
     }
 
-    ui->plainTextEdit->appendPlainText(strHex);
+    //ui->plainTextEdit->appendPlainText(strHex);
 
     DecodeHeader(buf, count);
     delete [] buf;
@@ -304,20 +312,64 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
     case UNKNOWNCOMMAND:
         ui->plainTextEdit->appendPlainText("NO CMD");
         break;
-    case SERVO:
-        if(rxBuf[1] == ACKNOWLEDGE)
-            ui->plainTextEdit->appendPlainText("SERVO MOVED");
+    case ACCELERATION:
+        w.i32 = 0;
+
+        w.u8[0] = rxBuf[1];
+        w.u8[1] = rxBuf[2];
+        w.f = ((int16_t)w.i32)/16384.0;
+        ui->lcdAccX->display(QString("%1").arg(w.f, 1, 'f', 3));
+        ui->plainTextEdit->appendPlainText("X: " + QString("%1").arg(w.f, 0, 'f', 3));
+
+        w.f = 0;
+        w.u8[0] = rxBuf[3];
+        w.u8[1] = rxBuf[4];
+        w.f = ((int16_t)w.i32)/16384.0;
+        ui->lcdAccY->display(QString("%1").arg(w.f, 1, 'f', 3));
+        ui->plainTextEdit->appendPlainText("Y: " + QString("%1").arg(w.f, 0, 'f', 3));
+        //ui->lcdAccY->display(QString("%1").arg((int16_t)w.i32, 1, 10, QChar('0')));
+        //ui->plainTextEdit->appendPlainText("Y: " + QString("%1").arg((int16_t)w.i32, 1, 10, QChar('0')));
+
+        w.f = 0;
+        w.u8[0] = rxBuf[5];
+        w.u8[1] = rxBuf[6];
+        w.f = ((int16_t)w.i32)/16384.0;
+        ui->lcdAccZ->display(QString("%1").arg(w.f, 1, 'f', 3));
+        ui->plainTextEdit->appendPlainText("Z: " + QString("%1").arg(w.f, 0, 'f', 3));
+        //ui->lcdAccZ->display(QString("%1").arg((int16_t)w.i32, 1, 10, QChar('0')));
+        //ui->plainTextEdit->appendPlainText("Z: " + QString("%1").arg((int16_t)w.i32, 1, 10, QChar('0')));
+
+        w.f = 0;
+        w.u8[0] = rxBuf[7];
+        w.u8[1] = rxBuf[8];
+        w.f = ((int16_t)w.i32)/131.0;
+        ui->lcdGyroX->display(QString("%1").arg(w.f, 1, 'f', 3));
+        ui->plainTextEdit->appendPlainText("GyroX: " + QString("%1").arg(w.f, 0, 'f', 3));
+
+        w.f = 0;
+        w.u8[0] = rxBuf[9];
+        w.u8[1] = rxBuf[10];
+        w.f = ((int16_t)w.i32)/131.0;
+        ui->lcdGyroY->display(QString("%1").arg(w.f, 1, 'f', 3));
+        ui->plainTextEdit->appendPlainText("GyroY: " + QString("%1").arg(w.f, 0, 'f', 3));
+
+        w.f = 0;
+        w.u8[0] = rxBuf[11];
+        w.u8[1] = rxBuf[12];
+        w.f = ((int16_t)w.i32)/131.0;
+        ui->lcdGyroZ->display(QString("%1").arg(w.f, 1, 'f', 3));
+        ui->plainTextEdit->appendPlainText("GyroZ: " + QString("%1").arg(w.f, 0, 'f', 3));
         break;
     case DISTANCIA:
         for(uint8_t i=1; i<5; i++)
             w.i8[i-1] = rxBuf[i+2];
         distance = w.i32/58;
-        ui->lcdDistance->display(QString("%1").arg(distance, 2, 10, QChar('0')));
+        ui->lcdAccX->display(QString("%1").arg(distance, 2, 10, QChar('0')));
         //        ui->plainTextEdit->appendPlainText("Distance: " + QString("%1 cm").arg(distance, 4, 10, QChar('0')));
         break;
     case IRSENSOR:
         //uint16_t irValues[8];
-        w.i32 = 0;
+        w.u32 = 0;
 
         /*
         for(uint8_t i=0; i<16; i++){

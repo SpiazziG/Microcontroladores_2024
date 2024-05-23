@@ -25,6 +25,7 @@
 #include "usbd_cdc_if.h"
 #include "ESP01.h"
 #include "UNERBUS.h"
+#include "MPU6050.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -127,6 +128,8 @@ _sESP01Handle esp01;
 _sUNERBUSHandle unerbusPC;
 _sUNERBUSHandle unerbusESP01;
 
+_sMPUData mpuValues;
+
 char localIP[16];
 uint8_t bufRXPC[SIZEBUFRXPC], bufTXPC[SIZEBUFTXPC];
 uint8_t bufRXESP01[SIZEBUFRXESP01], bufTXESP01[SIZEBUFTXESP01], dataRXESP01;
@@ -134,7 +137,7 @@ uint8_t bufRXESP01[SIZEBUFRXESP01], bufTXESP01[SIZEBUFTXESP01], dataRXESP01;
 //uint32_t heartbeat, heartbeatmask;
 uint16_t mask;
 uint16_t moveMask;
-uint32_t heartbeat;
+//uint32_t heartbeat;
 //uint8_t time10ms, time100ms, timeOutAliveUDP;
 
 uint8_t rxUSBData, newData;
@@ -164,6 +167,7 @@ void DecodeCMD(struct UNERBUSHandle *aBus, uint8_t iStartData);
 void Do10ms();
 void Do100ms();
 void Heartbeat();
+void ReadMPU();
 
 void USBReceive(uint8_t *buf, uint16_t len);
 /* USER CODE END PFP */
@@ -213,6 +217,7 @@ void ESP01WriteByteToBufRX(uint8_t value){
 }
 
 void ESP01ChangeState(_eESP01STATUS esp01State){
+	/*
 	switch((uint32_t)esp01State){
 	case ESP01_WIFI_CONNECTED:
 		heartbeat = HEARTBEAT_WIFI_READY;
@@ -227,6 +232,7 @@ void ESP01ChangeState(_eESP01STATUS esp01State){
 		heartbeat = HEARTBEAT_IDLE;
 		break;
 	}
+	*/
 }
 
 void DecodeCMD(struct UNERBUSHandle *aBus, uint8_t iStartData){
@@ -250,6 +256,27 @@ void DecodeCMD(struct UNERBUSHandle *aBus, uint8_t iStartData){
 		length = 17;
 		break;
 	case ACCELERATION:
+		uint8_t buf[12];
+
+		//buf[0] bit menos significativo
+
+		buf[0] = mpuValues.accelX[0];
+		buf[1] = mpuValues.accelX[1];
+		buf[2] = mpuValues.accelY[0];
+		buf[3] = mpuValues.accelY[1];
+		buf[4] = mpuValues.accelZ[0];
+		buf[5] = mpuValues.accelZ[1];
+
+		buf[6] = mpuValues.gyroX[0];
+		buf[7] = mpuValues.gyroX[1];
+		buf[8] = mpuValues.gyroY[0];
+		buf[9] = mpuValues.gyroY[1];
+		buf[10] = mpuValues.gyroZ[0];
+		buf[11] = mpuValues.gyroZ[1];
+
+		UNERBUS_Write(aBus, buf, 12);
+
+		length = 13;
 		break;
 	}
 
@@ -280,6 +307,7 @@ void Do100ms(){
 
 	Heartbeat();
 
+	MPU6050_Read_Data(&hi2c2, &mpuValues);
 	/*
 	aux8 = iwBufADC - 1;
 	aux8 &= (SIZEBUFADC - 1);
@@ -311,6 +339,7 @@ void Heartbeat(){
 	moveMask ^= (moveMask & 16);
 	HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, write);
 }
+
 /* USER CODE END 0 */
 
 /**
@@ -350,7 +379,6 @@ int main(void)
 	unerbusPC.rx.maxIndexRingBuf = (SIZEBUFRXPC - 1);
 	unerbusPC.tx.buf = bufTXPC;
 	unerbusPC.tx.maxIndexRingBuf = (SIZEBUFTXPC - 1);
-
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -399,6 +427,7 @@ int main(void)
 
   HAL_UART_Receive_IT(&huart1, &dataRXESP01, 1);
 
+  MPU6050_Init(&hi2c2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -872,6 +901,7 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
+	  mask = 0x5555;
   }
   /* USER CODE END Error_Handler_Debug */
 }
