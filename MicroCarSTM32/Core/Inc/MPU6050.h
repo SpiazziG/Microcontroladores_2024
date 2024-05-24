@@ -29,6 +29,8 @@ typedef struct {
 	uint8_t accelY[2];
 	uint8_t accelZ[2];
 
+	//uint8_t temperature[2];
+
 	uint8_t gyroX[2];
 	uint8_t gyroY[2];
 	uint8_t gyroZ[2];
@@ -36,6 +38,7 @@ typedef struct {
 
 // Prototypes
 void MPU6050_Init(I2C_HandleTypeDef *hi2c);
-void MPU6050_Read_Data(I2C_HandleTypeDef *hi2c, _sMPUData *accelData);
+void MPU6050_Read_Data_DMA(I2C_HandleTypeDef *hi2c);
+//void MPU6050_Read_Data(I2C_HandleTypeDef *hi2c, _sMPUData *accelData);
 
 #endif /* INC_MPU6050_H_ */

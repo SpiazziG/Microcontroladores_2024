@@ -112,6 +112,7 @@ ADC_HandleTypeDef hadc1;
 DMA_HandleTypeDef hdma_adc1;
 
 I2C_HandleTypeDef hi2c2;
+DMA_HandleTypeDef hdma_i2c2_rx;
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim4;
@@ -307,7 +308,7 @@ void Do100ms(){
 
 	Heartbeat();
 
-	MPU6050_Read_Data(&hi2c2, &mpuValues);
+	MPU6050_Read_Data_DMA(&hi2c2);
 	/*
 	aux8 = iwBufADC - 1;
 	aux8 &= (SIZEBUFADC - 1);
@@ -836,6 +837,9 @@ static void MX_DMA_Init(void)
   /* DMA1_Channel1_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+  /* DMA1_Channel5_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
 
 }
 

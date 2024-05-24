@@ -424,6 +424,9 @@ background-color: rgb(0, 0, 0);</string>
                 <property name="frameShadow">
                  <enum>QFrame::Sunken</enum>
                 </property>
+                <property name="smallDecimalPoint">
+                 <bool>false</bool>
+                </property>
                 <property name="digitCount">
                  <number>8</number>
                 </property>
@@ -441,6 +444,9 @@ background-color: rgb(0, 0, 0);</string>
                 <property name="frameShadow">
                  <enum>QFrame::Sunken</enum>
                 </property>
+                <property name="smallDecimalPoint">
+                 <bool>false</bool>
+                </property>
                 <property name="digitCount">
                  <number>8</number>
                 </property>
@@ -457,6 +463,9 @@ background-color: rgb(0, 0, 0);</string>
                 </property>
                 <property name="frameShadow">
                  <enum>QFrame::Sunken</enum>
+                </property>
+                <property name="smallDecimalPoint">
+                 <bool>false</bool>
                 </property>
                 <property name="digitCount">
                  <number>8</number>

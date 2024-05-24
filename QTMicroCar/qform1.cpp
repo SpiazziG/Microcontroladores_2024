@@ -38,6 +38,12 @@ QForm1::QForm1(QWidget *parent)
     QTimer1->start(50);
 
     DrawBackground();
+    ui->lcdAccX->display(QString("0.000"));
+    ui->lcdAccY->display(QString("0.000"));
+    ui->lcdAccZ->display(QString("0.000"));
+    ui->lcdGyroX->display(QString("0.000"));
+    ui->lcdGyroY->display(QString("0.000"));
+    ui->lcdGyroZ->display(QString("0.000"));
 }
 
 QForm1::~QForm1(){

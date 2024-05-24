@@ -70,6 +70,8 @@ private slots:
 
     void DecodeHeader(uint8_t *buf, int count);
 
+    void Heartbeat();
+
     //void on_LeftEngineSlide_sliderMoved(int position);
 
     //void Scanning();
@@ -84,8 +86,6 @@ private slots:
 
 private:
     Ui::QForm1 *ui;
-
-    void Heartbeat();
 
     QTimer *QTimer1;
     QSerialPort *QSerialPort1;
@@ -107,18 +107,18 @@ private:
     Dialog *dialog;
 
     typedef enum{
-        ALIVE=0xF0,
-        FIRMWARE=0xF1,
-        LEDS=0x10,
-        BUTTONS=0x12,
-        IRSENSOR=0xA0,
-        TEST_ENGINE=0xA1,
-        ACCELERATION=0xA2,
-        DISTANCIA=0xA3,
-        SPEED=0xA4,
-        SERVO_CONFIG=0xA5,
-        ACKNOWLEDGE=0x0D,
-        UNKNOWNCOMMAND=0xFF
+        ALIVE           =0xF0,
+        FIRMWARE        =0xF1,
+        LEDS            =0x10,
+        BUTTONS         =0x12,
+        IRSENSOR        =0xA0,
+        TEST_ENGINE     =0xA1,
+        ACCELERATION    =0xA2,
+        DISTANCIA       =0xA3,
+        SPEED           =0xA4,
+        SERVO_CONFIG    =0xA5,
+        ACKNOWLEDGE     =0x0D,
+        UNKNOWNCOMMAND  =0xFF
     }_eIDCommand;
 
     typedef struct{

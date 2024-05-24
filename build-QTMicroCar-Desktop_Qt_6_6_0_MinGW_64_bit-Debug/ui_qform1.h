@@ -408,6 +408,7 @@ public:
         lcdAccX->setStyleSheet(QString::fromUtf8("color: rgb(0, 232, 0);\n"
 "background-color: rgb(0, 0, 0);"));
         lcdAccX->setFrameShadow(QFrame::Sunken);
+        lcdAccX->setSmallDecimalPoint(false);
         lcdAccX->setDigitCount(8);
         lcdAccX->setSegmentStyle(QLCDNumber::Flat);
 
@@ -418,6 +419,7 @@ public:
         lcdAccY->setStyleSheet(QString::fromUtf8("color: rgb(0, 232, 0);\n"
 "background-color: rgb(0, 0, 0);"));
         lcdAccY->setFrameShadow(QFrame::Sunken);
+        lcdAccY->setSmallDecimalPoint(false);
         lcdAccY->setDigitCount(8);
         lcdAccY->setSegmentStyle(QLCDNumber::Flat);
 
@@ -428,6 +430,7 @@ public:
         lcdAccZ->setStyleSheet(QString::fromUtf8("color: rgb(0, 232, 0);\n"
 "background-color: rgb(0, 0, 0);"));
         lcdAccZ->setFrameShadow(QFrame::Sunken);
+        lcdAccZ->setSmallDecimalPoint(false);
         lcdAccZ->setDigitCount(8);
         lcdAccZ->setSegmentStyle(QLCDNumber::Flat);
 
