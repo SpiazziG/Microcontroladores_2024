@@ -30,11 +30,9 @@ void MPU6050_Init(I2C_HandleTypeDef *hi2c) {
     }
 }
 
-
 void MPU6050_Read_Data_DMA(I2C_HandleTypeDef *hi2c){
 	HAL_I2C_Mem_Read_DMA(hi2c, MPU6050_ADDR, ACCEL_XOUT_REG, 1, bufData, 14);
 }
-
 
 void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c){
 	extern _sMPUData mpuValues;
@@ -61,8 +59,57 @@ void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c){
 	callbackData.gyroZ[0] = bufData[13];
 	callbackData.gyroZ[1] = bufData[12];
 
+	uint16_t aux;
+	aux = (uint16_t)((callbackData.gyroX[1] << 8) | callbackData.gyroX[0]) + (uint16_t)((callbackData.gyroXoffset[1] << 8) | callbackData.gyroXoffset[0]);
+	callbackData.gyroX[1] = (uint8_t)(aux >> 8);
+	callbackData.gyroX[0] = (uint8_t)(aux & 0xFF);
+
 	mpuValues = callbackData;
 }
+
+/*
+void MPU6050_Calibrate(I2C_HandleTypeDef *hi2c, _sMPUData *accelData){
+	const int numSamples = 100;
+	//int16_t accelX = 0, accelY = 0, accelZ = 0;
+	uint8_t auxBuf[6];
+	int16_t GYRO_X = 0, GYRO_Y = 0, GYRO_Z = 0;
+
+	for (int i = 0; i < numSamples; i++){
+		HAL_I2C_Mem_Read(hi2c, MPU6050_ADDR, GYRO_XOUT_REG, 6, bufData, 6, 10);
+		HAL_Delay(10);
+
+		GYRO_X += (int16_t)((bufData[0] << 8) | bufData[1]);
+		GYRO_Y += (int16_t)((bufData[2] << 8) | bufData[3]);
+		GYRO_Z += (int16_t)((bufData[4] << 8) | bufData[5]);
+	}
+
+	//accelOffset.Accel_X = accelX / numSamples;
+	//accelOffset.Accel_Y = accelY / numSamples;
+	//accelOffset.Accel_Z = (accelZ / numSamples) - 16384; // Ajustar para que el valor Z del acelerómetro sea aproximadamente 1g
+
+	GYRO_X = GYRO_X / numSamples;
+	GYRO_Y = GYRO_Y / numSamples;
+	GYRO_Z = GYRO_Z / numSamples;
+
+    auxBuf[1] = (uint8_t)(GYRO_X >> 8);  // Obtener los 8 bits más significativos
+    auxBuf[0] = (uint8_t)(GYRO_X & 0xFF); // Obtener los 8 bits menos significativos
+
+    auxBuf[3] = (uint8_t)(GYRO_Y >> 8);  // Obtener los 8 bits más significativos
+    auxBuf[2] = (uint8_t)(GYRO_Y & 0xFF); // Obtener los 8 bits menos significativos
+
+    auxBuf[5] = (uint8_t)(GYRO_Z >> 8);  // Obtener los 8 bits más significativos
+    auxBuf[4] = (uint8_t)(GYRO_Z & 0xFF); // Obtener los 8 bits menos significativos
+
+	accelData->gyroXoffset[0] = auxBuf[0];
+	accelData->gyroXoffset[1] = auxBuf[1];
+
+	accelData->gyroYoffset[0] = auxBuf[2];
+	accelData->gyroXoffset[1] = auxBuf[3];
+
+	accelData->gyroZoffset[0] = auxBuf[4];
+	accelData->gyroXoffset[1] = auxBuf[5];
+}
+*/
 /*
 void MPU6050_Read_Data(I2C_HandleTypeDef *hi2c, _sMPUData *accelData) {
     // Read 14 bytes from acceleration registers

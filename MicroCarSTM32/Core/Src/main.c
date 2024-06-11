@@ -23,18 +23,22 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "usbd_cdc_if.h"
+#include <string.h>
 #include "ESP01.h"
 #include "UNERBUS.h"
+#include "stm32f1xx_hal_flash.h"
+#include "stm32f1xx_hal_flash_ex.h"
 #include "MPU6050.h"
+#include "OLED.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 typedef union{
 	struct{
-		uint8_t	ON10MS:	1;
-		uint8_t	b1:	1;
-		uint8_t	b2:	1;
+		uint8_t	ON10MS:			1;
+		uint8_t	UPDATESCREEN:	1;
+		uint8_t	UPDATEPOSITION:	1;
 		uint8_t	b3:	1;
 		uint8_t	b4:	1;
 		uint8_t	b5:	1;
@@ -74,6 +78,14 @@ typedef struct{
 	uint8_t tOutAliveUDP;
 } _sTime;
 
+/*
+ * HAL_FLASH_Unlock();
+ * CONFIGURAR ESTRUCTURA ERASE
+ * EJECUTAR HAL_FLASHEx_Erase
+ * Pasar toda la información a la Flash con HAL_FLASH_Program
+ * HAL_FLASH_Lock();
+ */
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -90,11 +102,15 @@ typedef struct{
 
 #define WIFI_SSID				"InternetPlus_86aa10"//"FCAL"
 #define WIFI_PASSWORD			"wlan7955ef"//"fcalconcordia.06-2019"
-#define WIFI_UDP_REMOTE_IP		"192.168.1.7"//"192.168.1.18"		//La IP de la PC 172.23.229.43
+#define WIFI_UDP_REMOTE_IP		"192.168.1.3"//"192.168.1.18"		//La IP de la PC 172.23.229.43
 #define WIFI_UDP_REMOTE_PORT	30010				//El puerto UDP en la PC
 #define WIFI_UDP_LOCAL_PORT		30000
 
 #define on10MS					flag1.bit.ON10MS
+#define UPDATESCREEN			flag1.bit.UPDATESCREEN
+#define UPDATEPOSITION			flag1.bit.UPDATEPOSITION
+
+
 #define t10MS					timeCounter.t10ms
 #define t100MS					timeCounter.t100ms
 #define t500MS					timeCounter.t500ms
@@ -113,6 +129,7 @@ DMA_HandleTypeDef hdma_adc1;
 
 I2C_HandleTypeDef hi2c2;
 DMA_HandleTypeDef hdma_i2c2_rx;
+DMA_HandleTypeDef hdma_i2c2_tx;
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim4;
@@ -130,6 +147,8 @@ _sUNERBUSHandle unerbusPC;
 _sUNERBUSHandle unerbusESP01;
 
 _sMPUData mpuValues;
+//_sSSD1306Data displayData;
+uint16_t currentI2CDeviceAddress;
 
 char localIP[16];
 uint8_t bufRXPC[SIZEBUFRXPC], bufTXPC[SIZEBUFTXPC];
@@ -138,6 +157,8 @@ uint8_t bufRXESP01[SIZEBUFRXESP01], bufTXESP01[SIZEBUFTXESP01], dataRXESP01;
 //uint32_t heartbeat, heartbeatmask;
 uint16_t mask;
 uint16_t moveMask;
+
+char strAux[20];
 //uint32_t heartbeat;
 //uint8_t time10ms, time100ms, timeOutAliveUDP;
 
@@ -146,6 +167,9 @@ uint8_t rxUSBData, newData;
 uint16_t bufADC[SIZEBUFADC][8];
 uint8_t iwBufADC, irBufADC;
 uint8_t aux8;
+
+const uint32_t varEeprom __attribute__ ((__section__ (".configeeprom")));
+//__attribute__ ((__section__ (".configeeprom"), used)) uint32_t varEeprom;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -158,6 +182,7 @@ static void MX_TIM1_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
+////////////////////// COMMUNICATION FUNCTIONS PROTOTYPES //////////////////////
 void ESP01DoCHPD(uint8_t value);
 int ESP01WriteUSARTByte(uint8_t value);
 void ESP01WriteByteToBufRX(uint8_t value);
@@ -165,12 +190,15 @@ void ESP01ChangeState(_eESP01STATUS esp01State);
 
 void DecodeCMD(struct UNERBUSHandle *aBus, uint8_t iStartData);
 
+void USBReceive(uint8_t *buf, uint16_t len);
+
+///////////////////////// PROGRAM FUNCTIONS PROTOTYPES /////////////////////////
 void Do10ms();
 void Do100ms();
-void Heartbeat();
-void ReadMPU();
+void Do1s();
 
-void USBReceive(uint8_t *buf, uint16_t len);
+void Heartbeat();
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -278,6 +306,7 @@ void DecodeCMD(struct UNERBUSHandle *aBus, uint8_t iStartData){
 		UNERBUS_Write(aBus, buf, 12);
 
 		length = 13;
+
 		break;
 	}
 
@@ -285,7 +314,6 @@ void DecodeCMD(struct UNERBUSHandle *aBus, uint8_t iStartData){
 		UNERBUS_Send(aBus, id, length);
 	}
 }
-
 
 void USBReceive(uint8_t *buf, uint16_t len){
 	UNERBUS_ReceiveBuf(&unerbusPC, buf, len);
@@ -304,12 +332,17 @@ void Do10ms(){
 }
 
 void Do100ms(){
+	UPDATEPOSITION = 1;
+
 	t100MS = 10;
+
+	if(t1S)
+		t1S--;
 
 	Heartbeat();
 
 	MPU6050_Read_Data_DMA(&hi2c2);
-	/*
+
 	aux8 = iwBufADC - 1;
 	aux8 &= (SIZEBUFADC - 1);
 
@@ -318,7 +351,7 @@ void Do100ms(){
 
 	UNERBUS_Write(&unerbusESP01, (uint8_t*)&bufADC[aux8], 16);
 	UNERBUS_Send(&unerbusESP01, 0xA0, 17);
-	*/
+
 	/*
 	if(heartbeatmask & heartbeat)
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
@@ -331,6 +364,54 @@ void Do100ms(){
 	*/
 	if(tOutAliveUDP)
 		tOutAliveUDP--;
+}
+
+void Do1s(){
+	static uint8_t power = 0;
+
+	t1S = 10;
+
+	w.i8[0] = mpuValues.accelX[0];
+	w.i8[1] = mpuValues.accelX[1];
+	//w.i32 /= 16384;
+	OLED_SetCursor(19, 16);
+	sprintf(strAux, "%hd   ", (int16_t)w.i32);
+	OLED_WriteString(strAux, Font_7x10, White);
+
+	w.i8[0] = mpuValues.accelY[0];
+	w.i8[1] = mpuValues.accelY[1];
+	//w.i32 /= 16384;
+	OLED_SetCursor(19, 27);
+	sprintf(strAux, "%hd   ", (int16_t)w.i32);
+	OLED_WriteString(strAux, Font_7x10, White);
+
+	w.i8[0] = mpuValues.accelZ[0];
+	w.i8[1] = mpuValues.accelZ[1];
+	//w.i32 /= 16384;
+	OLED_SetCursor(19, 38);
+	sprintf(strAux, "%hd   ", (int16_t)w.i32);
+	OLED_WriteString(strAux, Font_7x10, White);
+	//sprintf(strAux, "%hd", aux++);
+	//OLED_SetCursor(3, 3);
+	//OLED_WriteString(strAux, Font_7x10, White);
+
+	OLED_SetCursor(82, 21);
+	sprintf(strAux, "L:%3hd%c", power, '%');
+	OLED_WriteString(strAux, Font_7x10, White);
+
+	OLED_SetCursor(82, 33);
+	sprintf(strAux, "R:%3hd%c", power, '%');
+	OLED_WriteString(strAux, Font_7x10, White);
+
+	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, power*100);
+	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, 0);
+
+	UPDATESCREEN = 1;
+	if(power == 100){
+		power = 0;
+	} else {
+		power++;
+	}
 }
 
 void Heartbeat(){
@@ -358,7 +439,11 @@ int main(void)
 
 	t10MS = 40;
 	t100MS = 10;
+	t1S = 10;
 	tOutAliveUDP = 50;
+
+	UPDATEPOSITION = 0;
+	UPDATESCREEN = 0;
 
 	iwBufADC = 0;
 	irBufADC = 0;
@@ -412,11 +497,16 @@ int main(void)
 
   HAL_TIM_Base_Start_IT(&htim1);
 
+
+  HAL_TIM_Base_Start(&htim4);
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4);
   __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 0);
   __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, 0);
   __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, 0);
   __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, 0);
-  HAL_TIM_Base_Start(&htim4);
 
   ESP01_Init(&esp01);
   UNERBUS_Init(&unerbusESP01);
@@ -429,6 +519,37 @@ int main(void)
   HAL_UART_Receive_IT(&huart1, &dataRXESP01, 1);
 
   MPU6050_Init(&hi2c2);
+  //MPU6050_Calibrate(&hi2c2, &mpuValues);
+
+  OLED_Init(&hi2c2);
+
+  /* INICIALIZACIÓN DE DISPLAY */
+  OLED_DrawRect(1, 1, 126, 62, White);
+  OLED_DrawHorizontalLine(2, 13, 125, White);
+  //OLED_DrawHorizontalLine(2, 14, 125, White);
+  OLED_DrawHorizontalLine(2, 49, 125, White);
+  //OLED_DrawHorizontalLine(2, 50, 125, White);
+
+  OLED_SetCursor(3, 3);
+  sprintf(strAux, "   Spiazzi 2024");
+  OLED_WriteString(strAux, Font_7x10, White);
+
+  OLED_SetCursor(3, 16);
+  sprintf(strAux, "X:");
+  OLED_WriteString(strAux, Font_7x10, White);
+
+  OLED_SetCursor(3, 27);
+  sprintf(strAux, "Y:");
+  OLED_WriteString(strAux, Font_7x10, White);
+
+  OLED_SetCursor(3, 38);
+  sprintf(strAux, "Z:");
+  OLED_WriteString(strAux, Font_7x10, White);
+
+  OLED_SetCursor(3, 52);
+  sprintf(strAux, "MODE: IDLE");
+  OLED_WriteString(strAux, Font_7x10, White);
+  UPDATESCREEN = 1;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -447,12 +568,14 @@ int main(void)
 		  //UNERBUS_WriteConstString(&unerbusPC, " El ALIVE", 1);
 	  }
 
+	  if(on10MS)
+		  Do10ms();
 
 	  if(!t100MS)
 		  Do100ms();
 
-	  if(on10MS)
-		  Do10ms();
+	  if(!t1S)
+		  Do1s();
 
 	  if(unerbusESP01.tx.iRead != unerbusESP01.tx.iWrite){
 		  w.u8[0] = unerbusESP01.tx.iWrite - unerbusESP01.tx.iRead;
@@ -473,12 +596,22 @@ int main(void)
 		  }
 	  }
 
+	  if ((HAL_I2C_GetState(&hi2c2) == HAL_I2C_STATE_READY) && UPDATESCREEN) {
+		  currentI2CDeviceAddress = OLED_I2C_ADDR;
+		  UPDATESCREEN = OLED_UpdateScreen(&hi2c2);
+	  }
+
+	  if ((HAL_I2C_GetState(&hi2c2) == HAL_I2C_STATE_READY) && UPDATEPOSITION) {
+		  //currentI2CDeviceAddress = I2C_MPU6050_ADDR;
+		  //MPU6050_Read_All(&hi2c2, &MPU6050[iwMPU]);
+		  UPDATEPOSITION = 0;
+	  }
+
 	  ESP01_Task();
 
 	  UNERBUS_Task(&unerbusESP01);
 
 	  UNERBUS_Task(&unerbusPC);
-
   }
   /* USER CODE END 3 */
 }
@@ -742,7 +875,7 @@ static void MX_TIM4_Init(void)
   htim4.Instance = TIM4;
   htim4.Init.Prescaler = 71;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 9999;
+  htim4.Init.Period = 10000;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
@@ -837,6 +970,9 @@ static void MX_DMA_Init(void)
   /* DMA1_Channel1_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+  /* DMA1_Channel4_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
   /* DMA1_Channel5_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);

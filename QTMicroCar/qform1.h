@@ -72,6 +72,8 @@ private slots:
 
     void Heartbeat();
 
+    void Integrate(float *input, float *output, int size, float dt);
+
     //void on_LeftEngineSlide_sliderMoved(int position);
 
     //void Scanning();
@@ -102,7 +104,10 @@ private:
     quint16 remotePort, port;
 
     int8_t measureAngle, indexWifi;
-    int32_t measureTime, distance;
+    //int32_t measureTime, distance;
+    float accValues[10];
+    float velValues[10];
+    float posValues[10];
 
     Dialog *dialog;
 
@@ -114,7 +119,7 @@ private:
         IRSENSOR        =0xA0,
         TEST_ENGINE     =0xA1,
         ACCELERATION    =0xA2,
-        DISTANCIA       =0xA3,
+        ENGINES         =0xA3,
         SPEED           =0xA4,
         SERVO_CONFIG    =0xA5,
         ACKNOWLEDGE     =0x0D,

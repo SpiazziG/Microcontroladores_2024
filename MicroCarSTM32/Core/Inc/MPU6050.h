@@ -34,11 +34,16 @@ typedef struct {
 	uint8_t gyroX[2];
 	uint8_t gyroY[2];
 	uint8_t gyroZ[2];
+
+	uint8_t gyroXoffset[2];
+	uint8_t gyroYoffset[2];
+	uint8_t gyroZoffset[2];
 }_sMPUData;
 
 // Prototypes
 void MPU6050_Init(I2C_HandleTypeDef *hi2c);
 void MPU6050_Read_Data_DMA(I2C_HandleTypeDef *hi2c);
+//void MPU6050_Calibrate(I2C_HandleTypeDef *hi2c, _sMPUData *accelData);
 //void MPU6050_Read_Data(I2C_HandleTypeDef *hi2c, _sMPUData *accelData);
 
 #endif /* INC_MPU6050_H_ */

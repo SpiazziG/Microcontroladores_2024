@@ -17,8 +17,7 @@ QForm1::QForm1(QWidget *parent)
     ui->comboBox_2->addItem("INFRARED SENSORS", 0xA0);
     //ui->comboBox_2->addItem("ENGINE TEST", 0xA1);
     ui->comboBox_2->addItem("ACCELERATION", 0xA2);
-    //ui->comboBox_2->addItem("HC-SR04", 0xA3);
-    //ui->comboBox_2->addItem("ENGINES", 0xA4);
+    //ui->comboBox_2->addItem("ENGINES", 0xA3);
 
     QUdpSocket1 = new QUdpSocket(this);
     connect(QUdpSocket1,&QUdpSocket::readyRead,this,&QForm1::onRxUDP);
@@ -35,7 +34,7 @@ QForm1::QForm1(QWidget *parent)
     QPaintBox1 = new QPaintBox(ui->widget->width(), ui->widget->height()+10, ui->widget);
     QTimer1 = new QTimer(this);
     connect(QTimer1, &QTimer::timeout, this, &QForm1::OnQTimer1);
-    QTimer1->start(50);
+    QTimer1->start(10);
 
     DrawBackground();
     ui->lcdAccX->display(QString("0.000"));
@@ -44,6 +43,9 @@ QForm1::QForm1(QWidget *parent)
     ui->lcdGyroX->display(QString("0.000"));
     ui->lcdGyroY->display(QString("0.000"));
     ui->lcdGyroZ->display(QString("0.000"));
+
+    for(uint8_t i=0; i<10; i++)
+        accValues[i] = 0;
 }
 
 QForm1::~QForm1(){
@@ -73,12 +75,9 @@ bool QForm1::eventFilter(QObject *watched, QEvent *event){
 }
 
 void QForm1::OnQTimer1(){
-    static uint8_t time100ms = 2;
-
+    static uint8_t time100ms = 10;
+    static uint8_t time50ms = 5;
     uint8_t buf[1];
-
-    //if(SCAN == true)
-    //    Scanning();
 
     if(widgetSize.width != ui->widget->width() || widgetSize.height != ui->widget->height()){
         //QPaintBox1->resize(ui->widget->width(), ui->widget->height());
@@ -90,7 +89,7 @@ void QForm1::OnQTimer1(){
     }
 
     if(time100ms == 0){
-        time100ms = 2;
+        time100ms = 10;
         Heartbeat();
         //buf[0] = IRSENSOR;
         //SendCMD(buf, 1);
@@ -98,15 +97,25 @@ void QForm1::OnQTimer1(){
         time100ms--;
     }
 
+    if(time50ms == 0){
+        time50ms = 5;
+    }
+
     buf[0] = ACCELERATION;
     SendCMD(buf, 1);
 
+    /*
+    if(accValues[9] != 0){
+        Integrate(accValues, velValues, 10, 0.01);
+        Integrate(velValues, posValues, 10, 0.01);
+            //ui->plainTextEdit->appendPlainText("p: " + QString("%1").arg(posValues[i], 0, 'f', 3));
+            //ui->plainTextEdit->appendPlainText("P: " + QString("%1").arg(posValues[i], 1, 'f', 3));
+        //ui->plainTextEdit->appendPlainText("\n");
+    }
+    */
     //buf[0] = IRSENSOR;
     //SendCMD(buf, 1);
-    /*
-        buf[0] = IRSENSOR;
-        SendCMD(buf, 1);
-*/
+
     /*
     buf[0] = SPEED;
     SendCMD(buf, 1);
@@ -144,19 +153,19 @@ void QForm1::onRxUDP(){
         QUdpSocket1->readDatagram((char *)buff, count, &hostAddres, &remotePort);
         ui->lineEdit->setText("IPv4: " + (hostAddres.toString().right(hostAddres.toString().length()-7)) + " - REMOTE IP: " + QString().number(remotePort));
         ui->plainTextEdit->appendPlainText((char*)buff);
-        /*
+
         for(uint8_t i=0; i<(count - 1); i++){
             if ((buff[i] == '2')&&(buff[i+1] == '1')){
                 indexWifi = i;
                 break;
             }
         }
-        */
+
       //  DecodeCmd(buff);
         //DecodeCmd(&buff[indexWifi]);
     //}
 //}
-
+*/
 
 void QForm1::onRxUDP(){
     uint8_t *buf;
@@ -279,7 +288,6 @@ void QForm1::DecodeHeader(uint8_t *buf, int count){
 void QForm1::DecodeCmd(uint8_t *rxBuf){
     QString str;
     _work w;
-    //int32_t speedM1, speedM2;
 
     switch(rxBuf[0]){
     case LEDS:
@@ -319,20 +327,22 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         ui->plainTextEdit->appendPlainText("NO CMD");
         break;
     case ACCELERATION:
+        //static uint8_t accSize = 0;
         w.i32 = 0;
 
         w.u8[0] = rxBuf[1];
         w.u8[1] = rxBuf[2];
         w.f = ((int16_t)w.i32)/16384.0;
         ui->lcdAccX->display(QString("%1").arg(w.f, 1, 'f', 3));
-        ui->plainTextEdit->appendPlainText("X: " + QString("%1").arg(w.f, 0, 'f', 3));
+        //ui->plainTextEdit->appendPlainText("X: " + QString("%1").arg(w.f, 0, 'f', 3));
+        //accValues[accSize] = w.f;
 
         w.f = 0;
         w.u8[0] = rxBuf[3];
         w.u8[1] = rxBuf[4];
         w.f = ((int16_t)w.i32)/16384.0;
         ui->lcdAccY->display(QString("%1").arg(w.f, 1, 'f', 3));
-        ui->plainTextEdit->appendPlainText("Y: " + QString("%1").arg(w.f, 0, 'f', 3));
+        //ui->plainTextEdit->appendPlainText("Y: " + QString("%1").arg(w.f, 0, 'f', 3));
         //ui->lcdAccY->display(QString("%1").arg((int16_t)w.i32, 1, 10, QChar('0')));
         //ui->plainTextEdit->appendPlainText("Y: " + QString("%1").arg((int16_t)w.i32, 1, 10, QChar('0')));
 
@@ -341,7 +351,7 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         w.u8[1] = rxBuf[6];
         w.f = ((int16_t)w.i32)/16384.0;
         ui->lcdAccZ->display(QString("%1").arg(w.f, 1, 'f', 3));
-        ui->plainTextEdit->appendPlainText("Z: " + QString("%1").arg(w.f, 0, 'f', 3));
+        //ui->plainTextEdit->appendPlainText("Z: " + QString("%1").arg(w.f, 0, 'f', 3));
         //ui->lcdAccZ->display(QString("%1").arg((int16_t)w.i32, 1, 10, QChar('0')));
         //ui->plainTextEdit->appendPlainText("Z: " + QString("%1").arg((int16_t)w.i32, 1, 10, QChar('0')));
 
@@ -350,28 +360,21 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         w.u8[1] = rxBuf[8];
         w.f = ((int16_t)w.i32)/131.0;
         ui->lcdGyroX->display(QString("%1").arg(w.f, 1, 'f', 3));
-        ui->plainTextEdit->appendPlainText("GyroX: " + QString("%1").arg(w.f, 0, 'f', 3));
+        //ui->plainTextEdit->appendPlainText("GyroX: " + QString("%1").arg(w.f, 0, 'f', 3));
 
         w.f = 0;
         w.u8[0] = rxBuf[9];
         w.u8[1] = rxBuf[10];
         w.f = ((int16_t)w.i32)/131.0;
         ui->lcdGyroY->display(QString("%1").arg(w.f, 1, 'f', 3));
-        ui->plainTextEdit->appendPlainText("GyroY: " + QString("%1").arg(w.f, 0, 'f', 3));
+        //ui->plainTextEdit->appendPlainText("GyroY: " + QString("%1").arg(w.f, 0, 'f', 3));
 
         w.f = 0;
         w.u8[0] = rxBuf[11];
         w.u8[1] = rxBuf[12];
         w.f = ((int16_t)w.i32)/131.0;
         ui->lcdGyroZ->display(QString("%1").arg(w.f, 1, 'f', 3));
-        ui->plainTextEdit->appendPlainText("GyroZ: " + QString("%1").arg(w.f, 0, 'f', 3));
-        break;
-    case DISTANCIA:
-        for(uint8_t i=1; i<5; i++)
-            w.i8[i-1] = rxBuf[i+2];
-        distance = w.i32/58;
-        ui->lcdAccX->display(QString("%1").arg(distance, 2, 10, QChar('0')));
-        //        ui->plainTextEdit->appendPlainText("Distance: " + QString("%1 cm").arg(distance, 4, 10, QChar('0')));
+        //ui->plainTextEdit->appendPlainText("GyroZ: " + QString("%1").arg(w.f, 0, 'f', 3));
         break;
     case IRSENSOR:
         //uint16_t irValues[8];
@@ -391,67 +394,62 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         w.u8[0] = rxBuf[1];
         w.u8[1] = rxBuf[2];
         ui->lcdIR1->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
-        ui->plainTextEdit->appendPlainText("IR1: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
-
+        //ui->plainTextEdit->appendPlainText("IR1: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
 
         //w.i32 = 0;
         w.u8[0] = rxBuf[3];
         w.u8[1] = rxBuf[4];
         ui->lcdIR2->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
-        ui->plainTextEdit->appendPlainText("IR2: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
+        //ui->plainTextEdit->appendPlainText("IR2: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
 
         //w.i32 = 0;
         w.u8[0] = rxBuf[5];
         w.u8[1] = rxBuf[6];
         ui->lcdIR3->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
-        ui->plainTextEdit->appendPlainText("IR3: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
+        //ui->plainTextEdit->appendPlainText("IR3: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
 
         //w.i32 = 0;
         w.u8[0] = rxBuf[7];
         w.u8[1] = rxBuf[8];
         ui->lcdIR4->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
-        ui->plainTextEdit->appendPlainText("IR4: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
+        //ui->plainTextEdit->appendPlainText("IR4: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
 
         //w.i32 = 0;
         w.u8[0] = rxBuf[9];
         w.u8[1] = rxBuf[10];
         ui->lcdIR5->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
-        ui->plainTextEdit->appendPlainText("IR5: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
+        //ui->plainTextEdit->appendPlainText("IR5: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
 
         //w.i32 = 0;
         w.u8[0] = rxBuf[11];
         w.u8[1] = rxBuf[12];
         ui->lcdIR6->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
-        ui->plainTextEdit->appendPlainText("IR6: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
+        //ui->plainTextEdit->appendPlainText("IR6: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
 
         //w.i32 = 0;
         w.u8[0] = rxBuf[13];
         w.u8[1] = rxBuf[14];
         ui->lcdIR7->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
-        ui->plainTextEdit->appendPlainText("IR7: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
+        //ui->plainTextEdit->appendPlainText("IR7: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
 
         //w.i32 = 0;
         w.u8[0] = rxBuf[15];
         w.u8[1] = rxBuf[16];
         ui->lcdIR8->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
-        ui->plainTextEdit->appendPlainText("IR8: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
-
-        //        ui->plainTextEdit->appendPlainText("IR1: " + QString("%1").arg(rxBuf[1], 1, 10, QChar('0')));
-        //        ui->plainTextEdit->appendPlainText("IR2: " + QString("%1").arg(rxBuf[2], 1, 10, QChar('0')));
-        //        ui->plainTextEdit->appendPlainText("IR3: " + QString("%1").arg(rxBuf[3], 1, 10, QChar('0')));
+        //ui->plainTextEdit->appendPlainText("IR8: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
         break;
     case TEST_ENGINE:
         if(rxBuf[1] == ACKNOWLEDGE)
             ui->plainTextEdit->appendPlainText("ENGINES OK");
         break;
-    case SPEED:
+    case ENGINES:
         w.i32 = 0;
         w.i8[0] = rxBuf[1];
         w.i8[1] = rxBuf[2];
         w.i8[2] = rxBuf[3];
         w.i8[3] = rxBuf[4];
         //speedM1 = w.i32;
-        //ui->lcdLeftEng->display(QString("%1").arg(speedM1, 3, 10, QChar('0')));
+        ui->lcdLeftEngine->display(QString("%1").arg(w.i32, 3, 10, QChar('0')));
         //        ui->plainTextEdit->appendPlainText("LEFT SPEED: " + QString("%1").arg(w.i32, 10, 10, QChar('0')));
 
         w.i32 = 0;
@@ -460,10 +458,11 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         w.i8[2] = rxBuf[7];
         w.i8[3] = rxBuf[8];
         //speedM2 = w.i32;
-        //ui->lcdRightEng->display(QString("%1").arg(speedM2, 3, 10, QChar('0')));
+        ui->lcdRightEngine->display(QString("%1").arg(w.i32, 3, 10, QChar('0')));
         //        ui->plainTextEdit->appendPlainText("RIGHT SPEED: " + QString("%1").arg(w.i32, 10, 10, QChar('0')));
         break;
     case SERVO_CONFIG:
+        /*
         uint16_t min, max;
         w.u8[0] = rxBuf[1+2];
         w.u8[1] = rxBuf[2+2];
@@ -474,6 +473,7 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         max = w.u16[0];
 
         emit maxMinValues(min, max);
+        */
         break;
     }
 }
@@ -592,21 +592,7 @@ void QForm1::on_SendCommandButton_clicked(){
             n = 1;
             ok = true;
             break;
-        case LEDS://LEDS   PC=>MBED 0x10 LEDS_A_MODIFICAR VALOR_LEDS ;  MBED=>PC 0x10 ESTADO_LEDS
-            n = 3;
-            ok = true;
-            break;
         case BUTTONS://PULSADORES   PC=>MBED 0x12 ;  MBED=>PC 0x12 VALOR PULSADORES
-            n = 1;
-            ok = true;
-            break;
-        /*
-        case SERVO://SERVO    PC=>MBED POSICIONAR_SERVO; MBED=>PC ACKNOWLEDGE FIN_MOVIMIENTO_SERVO
-            if(dialog->isHidden())
-                dialog->show();
-            break;
-        */
-        case DISTANCIA://HC-SR04   PC=>MBED LAST_DISTANCE; MBED=>PC ACKWNOWLEDGE;  MBED=>PC DISTANCE_US
             n = 1;
             ok = true;
             break;
@@ -632,6 +618,13 @@ void QForm1::on_SendCommandButton_clicked(){
     }
 }
 
+void QForm1::Integrate(float *input, float *output, int size, float dt){
+    for (int i = 1; i < size; ++i){
+        output[i] = output[i-1] + 0.5f * (input[i] + input[i-1]) * dt;
+    }
+}
+
+
 void QForm1::EngineTest(int32_t Eng1, int32_t Eng2){
     _work w;
     uint8_t buf[9];
@@ -648,6 +641,7 @@ void QForm1::EngineTest(int32_t Eng1, int32_t Eng2){
 
     SendCMD(buf, 9);
 }
+
 
 void QForm1::InitPaintBox(){
     QPen pen;
@@ -687,15 +681,7 @@ void QForm1::DrawBackground(){
     painter.setBrush(brush);
     painter.setPen(pen);
 
-    painter.translate(ui->widget->width()/2, ui->widget->height());
-    //painter.drawEllipse(~widgetSize.width/3, ~widgetSize.height/2, 2*widgetSize.width/3, widgetSize.height);
-    //painter.drawEllipse(~widgetSize.width/5, ~widgetSize.height/4, 2*widgetSize.width/5, widgetSize.height/2);
-    //painter.drawEllipse(~widgetSize.width/7, ~widgetSize.height/6, 2*widgetSize.width/7, widgetSize.height/3);
-
-    //painter.drawEllipse(~widgetSize.width/4, ~widgetSize.height/4, 2*widgetSize.width/4, 2*widgetSize.height/4);
-    //painter.drawEllipse(~widgetSize.width/2, ~widgetSize.height/2, 2*widgetSize.width/2, 2*widgetSize.height/2);
-    //painter.drawEllipse(~widgetSize.width, ~widgetSize.height, 2*widgetSize.width, 2*widgetSize.height);
-
+    painter.translate(ui->widget->width()/2, ui->widget->height()/2);
     painter.drawEllipse(-widgetSize.width/2, -widgetSize.height, widgetSize.width, widgetSize.height*2);
     painter.drawEllipse(-widgetSize.width/4, -widgetSize.height/2, widgetSize.width/2, widgetSize.height);
     painter.drawEllipse(-widgetSize.width/8, -widgetSize.height/4, widgetSize.width/4, widgetSize.height/2);
