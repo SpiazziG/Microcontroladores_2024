@@ -40,12 +40,13 @@ QForm1::QForm1(QWidget *parent)
     ui->lcdAccX->display(QString("0.000"));
     ui->lcdAccY->display(QString("0.000"));
     ui->lcdAccZ->display(QString("0.000"));
-    ui->lcdGyroX->display(QString("0.000"));
-    ui->lcdGyroY->display(QString("0.000"));
-    ui->lcdGyroZ->display(QString("0.000"));
+    ui->lcdSpeedX->display(QString("0.000"));
+    ui->lcdSpeedY->display(QString("0.000"));
+    ui->lcdSpeedZ->display(QString("0.000"));
+    ui->lcdPosX->display(QString("0.000"));
+    ui->lcdPosY->display(QString("0.000"));
+    ui->lcdPosZ->display(QString("0.000"));
 
-    for(uint8_t i=0; i<10; i++)
-        accValues[i] = 0;
 }
 
 QForm1::~QForm1(){
@@ -64,12 +65,10 @@ bool QForm1::eventFilter(QObject *watched, QEvent *event){
                 ui->comboBox->addItem(SerialPortInfo1.availablePorts().at(i).portName());
 
             return QMainWindow::eventFilter(watched, event);
-        }
-        else {
+        } else {
             return false;
         }
-    }
-    else{
+    } else {
          return QMainWindow::eventFilter(watched, event);
     }
 }
@@ -93,17 +92,22 @@ void QForm1::OnQTimer1(){
         Heartbeat();
         //buf[0] = IRSENSOR;
         //SendCMD(buf, 1);
+        buf[0] = ACCELERATION;
+        SendCMD(buf, 1);
     } else {
         time100ms--;
     }
 
     if(time50ms == 0){
         time50ms = 5;
+        float gx = gyroValues[0] * (250.0f / 32768.0f) * M_PI / 180.0f;
+        float gy = gyroValues[1] * (250.0f / 32768.0f) * M_PI / 180.0f;
+        float gz = gyroValues[2] * (250.0f / 32768.0f) * M_PI / 180.0f;
     }
 
-    buf[0] = ACCELERATION;
-    SendCMD(buf, 1);
 
+
+    DrawMovement();
     /*
     if(accValues[9] != 0){
         Integrate(accValues, velValues, 10, 0.01);
@@ -132,9 +136,9 @@ void QForm1::Heartbeat(){
     moveMask++;
     moveMask ^= (moveMask & 16);
 
-    if(write == 0){
-         buf[0] = ALIVE, SendCMD(buf ,1);
-    } else
+    if(write == 0)
+        buf[0] = ALIVE, SendCMD(buf ,1);
+    else
         ui->aliveButton->setStyleSheet("color: white; background-color: rgb(189, 206, 214); font: 9pt MS Sans Serif; font-weight: bold; color: rgb(47, 55, 77);");
 }
 
@@ -335,7 +339,7 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         w.f = ((int16_t)w.i32)/16384.0;
         ui->lcdAccX->display(QString("%1").arg(w.f, 1, 'f', 3));
         //ui->plainTextEdit->appendPlainText("X: " + QString("%1").arg(w.f, 0, 'f', 3));
-        //accValues[accSize] = w.f;
+        accValues[0] = w.f * 981;
 
         w.f = 0;
         w.u8[0] = rxBuf[3];
@@ -345,6 +349,7 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         //ui->plainTextEdit->appendPlainText("Y: " + QString("%1").arg(w.f, 0, 'f', 3));
         //ui->lcdAccY->display(QString("%1").arg((int16_t)w.i32, 1, 10, QChar('0')));
         //ui->plainTextEdit->appendPlainText("Y: " + QString("%1").arg((int16_t)w.i32, 1, 10, QChar('0')));
+        accValues[1] = w.f * 981;
 
         w.f = 0;
         w.u8[0] = rxBuf[5];
@@ -354,31 +359,35 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         //ui->plainTextEdit->appendPlainText("Z: " + QString("%1").arg(w.f, 0, 'f', 3));
         //ui->lcdAccZ->display(QString("%1").arg((int16_t)w.i32, 1, 10, QChar('0')));
         //ui->plainTextEdit->appendPlainText("Z: " + QString("%1").arg((int16_t)w.i32, 1, 10, QChar('0')));
+        accValues[2] = w.f * 981;
 
         w.f = 0;
         w.u8[0] = rxBuf[7];
         w.u8[1] = rxBuf[8];
         w.f = ((int16_t)w.i32)/131.0;
-        ui->lcdGyroX->display(QString("%1").arg(w.f, 1, 'f', 3));
+        //ui->lcdGyroX->display(QString("%1").arg(w.f, 1, 'f', 3));
         //ui->plainTextEdit->appendPlainText("GyroX: " + QString("%1").arg(w.f, 0, 'f', 3));
+        gyroValues[0] = w.f;
 
         w.f = 0;
         w.u8[0] = rxBuf[9];
         w.u8[1] = rxBuf[10];
         w.f = ((int16_t)w.i32)/131.0;
-        ui->lcdGyroY->display(QString("%1").arg(w.f, 1, 'f', 3));
+        //ui->lcdGyroY->display(QString("%1").arg(w.f, 1, 'f', 3));
         //ui->plainTextEdit->appendPlainText("GyroY: " + QString("%1").arg(w.f, 0, 'f', 3));
+        gyroValues[1] = w.f;
 
         w.f = 0;
         w.u8[0] = rxBuf[11];
         w.u8[1] = rxBuf[12];
         w.f = ((int16_t)w.i32)/131.0;
-        ui->lcdGyroZ->display(QString("%1").arg(w.f, 1, 'f', 3));
+        //ui->lcdGyroZ->display(QString("%1").arg(w.f, 1, 'f', 3));
         //ui->plainTextEdit->appendPlainText("GyroZ: " + QString("%1").arg(w.f, 0, 'f', 3));
+        gyroValues[2] = w.f;
         break;
     case IRSENSOR:
-        //uint16_t irValues[8];
-        w.u32 = 0;
+        uint16_t irValues[8];
+        //w.u32 = 0;
 
         /*
         for(uint8_t i=0; i<16; i++){
@@ -387,18 +396,26 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
             w.u8[1] = rxBuf[i+1];
             irValues[0] = w.i32;
         }
+
         for(uint8_t i=0; i<8; i++)
             ui->plainTextEdit->appendPlainText("IR: " + QString("%1").arg(irValues[i], 1, 10, QChar('0')));
         */
 
-        w.u8[0] = rxBuf[1];
-        w.u8[1] = rxBuf[2];
+        for(uint8_t i=0; i<8; i++){
+            irValues[i] = rxBuf[i+1];
+        }
+        //w.u8[0] = rxBuf[1];
+        //w.u8[1] = rxBuf[2];
+        w.i32 = irValues[0];
         ui->lcdIR1->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
         //ui->plainTextEdit->appendPlainText("IR1: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
-
+        w.i32 = irValues[1];
+        ui->lcdIR2->display(QString("%1").arg(w.i32, 1, 10, QChar('0')));
+        /*
         //w.i32 = 0;
         w.u8[0] = rxBuf[3];
         w.u8[1] = rxBuf[4];
+        w.i32 = irValues[0];
         ui->lcdIR2->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
         //ui->plainTextEdit->appendPlainText("IR2: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
 
@@ -437,6 +454,7 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         w.u8[1] = rxBuf[16];
         ui->lcdIR8->display(QString("%1").arg(w.i32, 1, 10, QChar('0'))); //+2
         //ui->plainTextEdit->appendPlainText("IR8: " + QString("%1").arg(w.i32, 1, 10, QChar('0')));
+        */
         break;
     case TEST_ENGINE:
         if(rxBuf[1] == ACKNOWLEDGE)
@@ -618,13 +636,6 @@ void QForm1::on_SendCommandButton_clicked(){
     }
 }
 
-void QForm1::Integrate(float *input, float *output, int size, float dt){
-    for (int i = 1; i < size; ++i){
-        output[i] = output[i-1] + 0.5f * (input[i] + input[i-1]) * dt;
-    }
-}
-
-
 void QForm1::EngineTest(int32_t Eng1, int32_t Eng2){
     _work w;
     uint8_t buf[9];
@@ -641,7 +652,6 @@ void QForm1::EngineTest(int32_t Eng1, int32_t Eng2){
 
     SendCMD(buf, 9);
 }
-
 
 void QForm1::InitPaintBox(){
     QPen pen;
@@ -682,15 +692,43 @@ void QForm1::DrawBackground(){
     painter.setPen(pen);
 
     painter.translate(ui->widget->width()/2, ui->widget->height()/2);
-    painter.drawEllipse(-widgetSize.width/2, -widgetSize.height, widgetSize.width, widgetSize.height*2);
-    painter.drawEllipse(-widgetSize.width/4, -widgetSize.height/2, widgetSize.width/2, widgetSize.height);
-    painter.drawEllipse(-widgetSize.width/8, -widgetSize.height/4, widgetSize.width/4, widgetSize.height/2);
-    painter.drawEllipse(-3*widgetSize.width/8, -3*widgetSize.height/4, 3*widgetSize.width/4, 3*widgetSize.height/2);
+    painter.drawEllipse(-widgetSize.width/2, -widgetSize.height/2, widgetSize.width, widgetSize.height);
+    painter.drawEllipse(-widgetSize.width/4, -widgetSize.height/4, widgetSize.width/2, widgetSize.height/2);
+    painter.drawEllipse(-widgetSize.width/8, -widgetSize.height/8, widgetSize.width/4, widgetSize.height/4);
+    painter.drawEllipse(-3*widgetSize.width/8, -3*widgetSize.height/8, 3*widgetSize.width/4, 3*widgetSize.height/4);
 
-    for(int i=0; i<12; i++){
-        painter.drawLine(0, -ui->widget->width(), 0, ui->widget->height());
-        painter.rotate(30);
+    painter.drawLine(-widgetSize.width/2, 0, widgetSize.width/2, 0);
+    painter.drawLine(0, -widgetSize.height/2, 0, widgetSize.height/2);
+    /*
+    for(int i=0; i<8; i++){
+        //painter.drawLine(x1 y1 x2 y2)
+        painter.drawLine(-widgetSize.width/2, 0, widgetSize.width/2, 0);
+        painter.drawLine(-widgetSize.width/2, -widgetSize.height/2, widgetSize.width/2, widgetSize.height/2);
+        //painter.drawLine(-widgetSize.width, -widgetSize.height, widgetSize.width, widgetSize.height);
+        //painter.drawLine(0, -ui->widget->width(), 0, ui->widget->height());
+        painter.rotate(45);
     }
+    */
+    QPaintBox1->update();
+}
+
+void QForm1::DrawMovement(){
+    QPen pen;
+    QBrush brush;
+    QPainter painter(QPaintBox1->getCanvas());
+
+    pen.setWidth(2);
+    //pen.setColor(QColor(0, 232, 0, 255));
+    //brush.setColor(QColor(0, 232, 0, 255));
+    pen.setColor(QColor(0, 232, 232, 255));
+    brush.setColor(QColor(0, 232, 232, 255));
+    brush.setStyle(Qt::BrushStyle::NoBrush);
+    painter.setBrush(brush);
+    painter.setPen(pen);
+
+    painter.translate(ui->widget->width()/2, ui->widget->height()/2);
+
+    painter.drawPoint(posValues[0], posValues[1]);
 
     QPaintBox1->update();
 }

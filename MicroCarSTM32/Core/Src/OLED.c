@@ -248,7 +248,6 @@ void OLED_DrawHorizontalLine(int16_t x, int16_t y, int16_t length, Display_COLOR
   }
 }
 
-
 void OLED_DrawVerticalLine(int16_t x, int16_t y, int16_t length, Display_COLOR color){
   if(x < 0 || x >= OLED_WIDTH)
 	  return;

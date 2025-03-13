@@ -36,10 +36,10 @@
 /* USER CODE BEGIN PTD */
 typedef union{
 	struct{
-		uint8_t	ON10MS:			1;
+		uint8_t	ON1MS:			1;
 		uint8_t	UPDATESCREEN:	1;
 		uint8_t	UPDATEPOSITION:	1;
-		uint8_t	b3:	1;
+		uint8_t	NEWMPUDATA:		1;
 		uint8_t	b4:	1;
 		uint8_t	b5:	1;
 		uint8_t	b6:	1;
@@ -66,11 +66,24 @@ typedef enum{
     TEST_ENGINE = 0xA1,
 	ACCELERATION = 0xA2,
     SPEED = 0xA4,
-    LEDS = 0x10,
 	UNKNOWNCMD = 0xFF,
 } _eCommand;
 
+typedef enum{
+	INTERP_IDLE,
+	INTERP_FIND_INTERVAL,
+	INTERP_INTERPOLATE,
+} _eInterpolationState;
+
+typedef enum{
+	INITIALIZING,
+	MODE_AND_CONNECTION,
+	MPU_AND_ENGINES,
+	IR_SENSORS,
+} _eDisplayPage;
+
 typedef struct{
+	uint8_t t1ms;
 	uint8_t t10ms;
 	uint8_t t100ms;
 	uint8_t t500ms;
@@ -102,20 +115,25 @@ typedef struct{
 
 #define WIFI_SSID				"InternetPlus_86aa10"//"FCAL"
 #define WIFI_PASSWORD			"wlan7955ef"//"fcalconcordia.06-2019"
-#define WIFI_UDP_REMOTE_IP		"192.168.1.3"//"192.168.1.18"		//La IP de la PC 172.23.229.43
+#define WIFI_UDP_REMOTE_IP		"192.168.1.4"//"192.168.1.18"		//La IP de la PC 172.23.229.43
 #define WIFI_UDP_REMOTE_PORT	30010				//El puerto UDP en la PC
 #define WIFI_UDP_LOCAL_PORT		30000
 
-#define on10MS					flag1.bit.ON10MS
+#define on1MS					flag1.bit.ON1MS
 #define UPDATESCREEN			flag1.bit.UPDATESCREEN
 #define UPDATEPOSITION			flag1.bit.UPDATEPOSITION
+#define NEWMPUDATA				flag1.bit.NEWMPUDATA
 
-
+#define t1MS					timeCounter.t1ms
 #define t10MS					timeCounter.t10ms
 #define t100MS					timeCounter.t100ms
 #define t500MS					timeCounter.t500ms
 #define t1S						timeCounter.t1s
 #define tOutAliveUDP 			timeCounter.tOutAliveUDP
+
+#define REFERENCE_SAMPLES_SIZE	19
+#define FILTER_SIZE				16
+#define TOTAL_ADC_CHANNELS		8
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -137,36 +155,48 @@ TIM_HandleTypeDef htim4;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
+////////////////////////////// TYPEDEF VARIABLES ///////////////////////////////
 _uFlag flag1;
 _uWork w;
 _eCommand cmds;
 _sTime timeCounter;
 
+_sMPUData myMpuValues;
+
+/////////////////////////// COMMUNICATION VARIABLES ////////////////////////////
 _sESP01Handle esp01;
 _sUNERBUSHandle unerbusPC;
 _sUNERBUSHandle unerbusESP01;
 
-_sMPUData mpuValues;
-//_sSSD1306Data displayData;
-uint16_t currentI2CDeviceAddress;
-
 char localIP[16];
+
 uint8_t bufRXPC[SIZEBUFRXPC], bufTXPC[SIZEBUFTXPC];
 uint8_t bufRXESP01[SIZEBUFRXESP01], bufTXESP01[SIZEBUFTXESP01], dataRXESP01;
 
-//uint32_t heartbeat, heartbeatmask;
-uint16_t mask;
-uint16_t moveMask;
-
-char strAux[20];
-//uint32_t heartbeat;
-//uint8_t time10ms, time100ms, timeOutAliveUDP;
-
 uint8_t rxUSBData, newData;
 
-uint16_t bufADC[SIZEBUFADC][8];
+/////////////////////////// INFRARRED ADC VARIABLES ////////////////////////////
+const uint16_t adcReferences[REFERENCE_SAMPLES_SIZE] = {3943, 3929, 3839, 2820, 2047, 1547, 1136, 1026, 758, 683, 554, 542, 476, 403, 363, 325, 260, 230, 205};
+const uint8_t distanceReferences[REFERENCE_SAMPLES_SIZE] = {5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 100}; // en mm
+
+uint16_t bufADC[SIZEBUFADC][TOTAL_ADC_CHANNELS];
 uint8_t iwBufADC, irBufADC;
-uint8_t aux8;
+uint8_t aux8, auxSample;
+
+uint16_t movingAverageADC[TOTAL_ADC_CHANNELS];
+
+uint8_t bufInterpolated[8];
+uint8_t sensorToInterpolate;
+volatile _eInterpolationState interpState = INTERP_IDLE;
+volatile uint16_t valueToInterpolate;
+volatile uint16_t distanceInterpolated;
+volatile uint8_t referenceIndex;
+////////////////////////////// HEARTBEAT VARIABLES /////////////////////////////
+uint16_t mask, moveMask;
+
+//////////////////////////////// OTHER VARIABLES ///////////////////////////////
+uint16_t currentI2CDeviceAddress;
+char strAux[20];
 
 const uint32_t varEeprom __attribute__ ((__section__ (".configeeprom")));
 //__attribute__ ((__section__ (".configeeprom"), used)) uint32_t varEeprom;
@@ -193,12 +223,16 @@ void DecodeCMD(struct UNERBUSHandle *aBus, uint8_t iStartData);
 void USBReceive(uint8_t *buf, uint16_t len);
 
 ///////////////////////// PROGRAM FUNCTIONS PROTOTYPES /////////////////////////
+void Do1ms();
 void Do10ms();
 void Do100ms();
 void Do1s();
 
+void ChangeDisplayPage(_eDisplayPage page);
+
 void Heartbeat();
 
+void Interpolate();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -206,10 +240,10 @@ void Heartbeat();
 ////////////////////////////// CALLBACKS FUNCTIONS //////////////////////////////
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	if(htim->Instance == TIM1){
-		t10MS--;
-		if(!t10MS){
-			on10MS = 1;
-			t10MS = 40;
+		t1MS--;
+		if(!t1MS){
+			on1MS = 1;
+			t1MS = 4;
 		}
 
 		HAL_ADC_Start_DMA(&hadc1, (uint32_t *)&bufADC[iwBufADC], 8);
@@ -217,8 +251,21 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
+	for(uint8_t i= 0; i < TOTAL_ADC_CHANNELS; i++){
+		uint32_t sum = 0;
+		for (uint8_t j = 0; j < FILTER_SIZE; j++) {
+			auxSample = (aux8 - j);
+			auxSample &= (SIZEBUFADC -1 );
+			sum += bufADC[auxSample][i];
+		}
+		movingAverageADC[i] = sum / FILTER_SIZE;
+	}
+
 	iwBufADC++;
 	iwBufADC &= (SIZEBUFADC-1);
+
+	aux8 = iwBufADC - 1;
+	aux8 &= (SIZEBUFADC - 1);
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
@@ -286,27 +333,9 @@ void DecodeCMD(struct UNERBUSHandle *aBus, uint8_t iStartData){
 		break;
 	case ACCELERATION:
 		uint8_t buf[12];
-
-		//buf[0] bit menos significativo
-
-		buf[0] = mpuValues.accelX[0];
-		buf[1] = mpuValues.accelX[1];
-		buf[2] = mpuValues.accelY[0];
-		buf[3] = mpuValues.accelY[1];
-		buf[4] = mpuValues.accelZ[0];
-		buf[5] = mpuValues.accelZ[1];
-
-		buf[6] = mpuValues.gyroX[0];
-		buf[7] = mpuValues.gyroX[1];
-		buf[8] = mpuValues.gyroY[0];
-		buf[9] = mpuValues.gyroY[1];
-		buf[10] = mpuValues.gyroZ[0];
-		buf[11] = mpuValues.gyroZ[1];
-
+		MPU6050_Compose_Number(myMpuValues, buf);
 		UNERBUS_Write(aBus, buf, 12);
-
 		length = 13;
-
 		break;
 	}
 
@@ -320,8 +349,17 @@ void USBReceive(uint8_t *buf, uint16_t len){
 }
 
 /////////////////////////////// PROGRAM FUNCTIONS ///////////////////////////////
+void Do1ms(){
+	on1MS = 0;
+
+	if(t10MS)
+		t10MS--;
+}
+
 void Do10ms(){
-	on10MS = 0;
+	MPU6050_Read_Data_DMA(&hi2c2);
+
+	t10MS = 10;
 
 	if(t100MS)
 		t100MS--;
@@ -341,16 +379,18 @@ void Do100ms(){
 
 	Heartbeat();
 
-	MPU6050_Read_Data_DMA(&hi2c2);
 
-	aux8 = iwBufADC - 1;
-	aux8 &= (SIZEBUFADC - 1);
+	//UNERBUS_Write(&unerbusPC, (uint8_t*)&bufADC[aux8], 16);
+	//UNERBUS_Send(&unerbusPC, 0xA0, 17);
 
-	UNERBUS_Write(&unerbusPC, (uint8_t*)&bufADC[aux8], 16);
-	UNERBUS_Send(&unerbusPC, 0xA0, 17);
+	UNERBUS_Write(&unerbusESP01, bufInterpolated, 8);
+	UNERBUS_Send(&unerbusESP01, 0xA0, 9);
 
-	UNERBUS_Write(&unerbusESP01, (uint8_t*)&bufADC[aux8], 16);
-	UNERBUS_Send(&unerbusESP01, 0xA0, 17);
+	UNERBUS_Write(&unerbusPC, bufInterpolated, 8);
+	UNERBUS_Send(&unerbusPC, 0xA0, 9);
+
+	//UNERBUS_Write(&unerbusESP01, (uint8_t*)&bufADC[aux8], 16);
+	//UNERBUS_Send(&unerbusESP01, 0xA0, 17);
 
 	/*
 	if(heartbeatmask & heartbeat)
@@ -371,26 +411,24 @@ void Do1s(){
 
 	t1S = 10;
 
-	w.i8[0] = mpuValues.accelX[0];
-	w.i8[1] = mpuValues.accelX[1];
-	//w.i32 /= 16384;
+	w.i16[0] = myMpuValues.accelX;
+	//w.i16[0] /= 131;// 16384;
 	OLED_SetCursor(19, 16);
-	sprintf(strAux, "%hd   ", (int16_t)w.i32);
+	sprintf(strAux, "%hd   ", w.i16[0]);
 	OLED_WriteString(strAux, Font_7x10, White);
 
-	w.i8[0] = mpuValues.accelY[0];
-	w.i8[1] = mpuValues.accelY[1];
-	//w.i32 /= 16384;
+	w.i16[0] = myMpuValues.accelY;
+	//w.i16[0] /= 131;//w.i32 /= 16384;
 	OLED_SetCursor(19, 27);
-	sprintf(strAux, "%hd   ", (int16_t)w.i32);
+	sprintf(strAux, "%hd   ", w.i16[0]);
 	OLED_WriteString(strAux, Font_7x10, White);
 
-	w.i8[0] = mpuValues.accelZ[0];
-	w.i8[1] = mpuValues.accelZ[1];
-	//w.i32 /= 16384;
+	w.i16[0] = myMpuValues.accelZ;
+	//w.i16[0] /= 16384;
 	OLED_SetCursor(19, 38);
-	sprintf(strAux, "%hd   ", (int16_t)w.i32);
+	sprintf(strAux, "%hd   ", w.i16[0]);
 	OLED_WriteString(strAux, Font_7x10, White);
+
 	//sprintf(strAux, "%hd", aux++);
 	//OLED_SetCursor(3, 3);
 	//OLED_WriteString(strAux, Font_7x10, White);
@@ -406,12 +444,59 @@ void Do1s(){
 	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, power*100);
 	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, 0);
 
+
+	OLED_SetCursor(3, 52);
+	sprintf(strAux, "%hd    ", movingAverageADC[0]);
+	OLED_WriteString(strAux, Font_7x10, White);
+
 	UPDATESCREEN = 1;
-	if(power == 100){
-		power = 0;
-	} else {
+
+	if(power < 99){
 		power++;
+	} else {
+		power = 0;
 	}
+}
+
+void ChangeDisplayPage(_eDisplayPage page){
+	switch(page){
+		case INITIALIZING:
+			  OLED_DrawRect(1, 1, 126, 62, White);
+			  OLED_DrawHorizontalLine(2, 13, 125, White);
+			  //OLED_DrawHorizontalLine(2, 14, 125, White);
+			  OLED_DrawHorizontalLine(2, 49, 125, White);
+			  //OLED_DrawHorizontalLine(2, 50, 125, White);
+
+			  OLED_SetCursor(3, 3);
+			  sprintf(strAux, "   Spiazzi 2024");
+			  OLED_WriteString(strAux, Font_7x10, White);
+
+			  OLED_SetCursor(3, 16);
+			  sprintf(strAux, "X:");
+			  OLED_WriteString(strAux, Font_7x10, White);
+
+			  OLED_SetCursor(3, 27);
+			  sprintf(strAux, "Y:");
+			  OLED_WriteString(strAux, Font_7x10, White);
+
+			  OLED_SetCursor(3, 38);
+			  sprintf(strAux, "Z:");
+			  OLED_WriteString(strAux, Font_7x10, White);
+
+			  /*
+			  OLED_SetCursor(3, 52);
+			  sprintf(strAux, "MODE: IDLE");
+			  OLED_WriteString(strAux, Font_7x10, White);
+			  */
+			break;
+		case MODE_AND_CONNECTION:
+			break;
+		case MPU_AND_ENGINES:
+			break;
+		case IR_SENSORS:
+			break;
+	}
+	UPDATESCREEN = 1;
 }
 
 void Heartbeat(){
@@ -420,6 +505,44 @@ void Heartbeat(){
 	moveMask++;
 	moveMask ^= (moveMask & 16);
 	HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, write);
+}
+
+void Interpolate(){
+	switch (interpState) {
+		case INTERP_IDLE:
+			if(sensorToInterpolate == 0)
+				sensorToInterpolate = 7;
+			else
+				sensorToInterpolate--;
+
+			valueToInterpolate = movingAverageADC[sensorToInterpolate];
+			referenceIndex = 0;
+			interpState = INTERP_FIND_INTERVAL;
+			break;
+		case INTERP_FIND_INTERVAL:
+			if(valueToInterpolate <= adcReferences[referenceIndex]){
+				referenceIndex++;
+				if (referenceIndex >= REFERENCE_SAMPLES_SIZE)
+					bufInterpolated[sensorToInterpolate] = adcReferences[REFERENCE_SAMPLES_SIZE-1];
+					//interpState = INTERP_IDLE;  // Error
+			} else {
+				if(referenceIndex != 0)
+					interpState = INTERP_INTERPOLATE;
+				else
+					bufInterpolated[sensorToInterpolate] = adcReferences[0];
+			}
+			break;
+		case INTERP_INTERPOLATE:
+			uint16_t adc_high	= adcReferences[referenceIndex -1];
+			uint16_t adc_low	= adcReferences[referenceIndex];
+			uint16_t dist_high	= distanceReferences[referenceIndex -1];
+			uint16_t dist_low	= distanceReferences[referenceIndex];
+
+			distanceInterpolated = dist_low + ((valueToInterpolate - adc_low) * (dist_high - dist_low)) / (adc_high - adc_low);
+			bufInterpolated[sensorToInterpolate] = distanceInterpolated;
+			interpState = INTERP_IDLE;
+			break;
+	}
 }
 
 /* USER CODE END 0 */
@@ -437,7 +560,8 @@ int main(void)
 	//heartbeat = HEARTBEAT_IDLE;
 	//heartbeatmask = 0x80000000;
 
-	t10MS = 40;
+	t1MS = 4;
+	t10MS = 10;
 	t100MS = 10;
 	t1S = 10;
 	tOutAliveUDP = 50;
@@ -493,6 +617,11 @@ int main(void)
   MX_TIM4_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  HAL_Delay(1000);
+
+  MPU6050_Init(&hi2c2);
+  MPU6050_Calibrate(&hi2c2);
+
   CDC_AttachRxData(USBReceive);
 
   HAL_TIM_Base_Start_IT(&htim1);
@@ -518,38 +647,8 @@ int main(void)
 
   HAL_UART_Receive_IT(&huart1, &dataRXESP01, 1);
 
-  MPU6050_Init(&hi2c2);
-  //MPU6050_Calibrate(&hi2c2, &mpuValues);
-
   OLED_Init(&hi2c2);
-
-  /* INICIALIZACIÓN DE DISPLAY */
-  OLED_DrawRect(1, 1, 126, 62, White);
-  OLED_DrawHorizontalLine(2, 13, 125, White);
-  //OLED_DrawHorizontalLine(2, 14, 125, White);
-  OLED_DrawHorizontalLine(2, 49, 125, White);
-  //OLED_DrawHorizontalLine(2, 50, 125, White);
-
-  OLED_SetCursor(3, 3);
-  sprintf(strAux, "   Spiazzi 2024");
-  OLED_WriteString(strAux, Font_7x10, White);
-
-  OLED_SetCursor(3, 16);
-  sprintf(strAux, "X:");
-  OLED_WriteString(strAux, Font_7x10, White);
-
-  OLED_SetCursor(3, 27);
-  sprintf(strAux, "Y:");
-  OLED_WriteString(strAux, Font_7x10, White);
-
-  OLED_SetCursor(3, 38);
-  sprintf(strAux, "Z:");
-  OLED_WriteString(strAux, Font_7x10, White);
-
-  OLED_SetCursor(3, 52);
-  sprintf(strAux, "MODE: IDLE");
-  OLED_WriteString(strAux, Font_7x10, White);
-  UPDATESCREEN = 1;
+  ChangeDisplayPage(INITIALIZING);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -568,7 +667,10 @@ int main(void)
 		  //UNERBUS_WriteConstString(&unerbusPC, " El ALIVE", 1);
 	  }
 
-	  if(on10MS)
+	  if(on1MS)
+		  Do1ms();
+
+	  if(!t10MS)
 		  Do10ms();
 
 	  if(!t100MS)
@@ -606,6 +708,8 @@ int main(void)
 		  //MPU6050_Read_All(&hi2c2, &MPU6050[iwMPU]);
 		  UPDATEPOSITION = 0;
 	  }
+
+	  Interpolate();
 
 	  ESP01_Task();
 

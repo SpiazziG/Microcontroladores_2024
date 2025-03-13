@@ -72,7 +72,7 @@ private slots:
 
     void Heartbeat();
 
-    void Integrate(float *input, float *output, int size, float dt);
+    void DrawMovement();
 
     //void on_LeftEngineSlide_sliderMoved(int position);
 
@@ -100,14 +100,19 @@ private:
 
     uint8_t     rxBuf[256], header, nBytes, cks, index, tmoRX;
 
-
     quint16 remotePort, port;
 
     int8_t measureAngle, indexWifi;
     //int32_t measureTime, distance;
-    float accValues[10];
-    float velValues[10];
-    float posValues[10];
+
+    float lastAcc[3];
+    float accValues[3];
+    float velValues[3];
+    float posValues[3];
+    float gyroValues[3];
+
+    #define DELTA_TIME 0.01
+    #define THRESHOLD 6.5
 
     Dialog *dialog;
 

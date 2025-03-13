@@ -25,7 +25,6 @@ void Dialog::on_pushButton_clicked()
     emit takeDeg(Deg);
 }
 
-
 void Dialog::on_pushButton_2_clicked()
 {
     PowEng1 = ui->spinBox_2->value();
@@ -39,7 +38,6 @@ void Dialog::on_pushButton_maxMS_clicked()
     max = ui->spinBox_maxMS->value();
     emit configMaxMin(min, max);
 }
-
 
 void Dialog::on_pushButton_read_clicked()
 {

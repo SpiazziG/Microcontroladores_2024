@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>850</width>
-    <height>640</height>
+    <width>859</width>
+    <height>750</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,200 +24,15 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <layout class="QVBoxLayout" name="verticalLayout_7">
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="styleSheet">
-           <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-color: rgb(172, 173, 183);</string>
-          </property>
-          <property name="text">
-           <string>COMMUNICATION</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_7">
-          <item>
-           <widget class="QComboBox" name="comboBox">
-            <property name="styleSheet">
-             <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-background-color: rgb(0, 0 ,0);
-color: rgb(0, 232, 0);</string>
-            </property>
-            <property name="placeholderText">
-             <string>USB/UART</string>
-            </property>
-            <property name="frame">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="OpenPortButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-background-color: rgb(189, 206, 214);
-color: rgb(47, 55, 77);</string>
-            </property>
-            <property name="text">
-             <string>OPEN</string>
-            </property>
-            <property name="flat">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
-          <item>
-           <widget class="QLineEdit" name="WifiLineEdit">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-color: rgb(0, 232, 0);
-background-color: rgb(0, 0, 0);</string>
-            </property>
-            <property name="inputMask">
-             <string/>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="maxLength">
-             <number>32767</number>
-            </property>
-            <property name="placeholderText">
-             <string>Wifi Port</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="OpenWifiButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="font">
-             <font>
-              <family>MS Sans Serif</family>
-              <pointsize>9</pointsize>
-              <italic>false</italic>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">font: 9pt &quot;MS Sans Serif&quot;;
-font-weight: bold;
-background-color: rgb(189, 206, 214);
-color: rgb(47, 55, 77);</string>
-            </property>
-            <property name="text">
-             <string>OPEN</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QVBoxLayout" name="verticalLayout_6">
-        <item>
-         <widget class="QLabel" name="label_2">
-          <property name="styleSheet">
-           <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-color: rgb(172, 173, 183);</string>
-          </property>
-          <property name="text">
-           <string>COMMAND</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_8">
-          <item>
-           <widget class="QComboBox" name="comboBox_2">
-            <property name="styleSheet">
-             <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-background-color: rgb(0, 0 ,0);
-color: rgb(0, 232, 0);</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="SendCommandButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-background-color: rgb(189, 206, 214);
-color: rgb(47, 55, 77);</string>
-            </property>
-            <property name="text">
-             <string>SEND</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_9">
-          <item>
-           <widget class="QPushButton" name="aliveButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="focusPolicy">
-             <enum>Qt::StrongFocus</enum>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">font: 9pt &quot;MS Sans Serif&quot;;
-font-weight: bold;
-background-color: rgb(189, 206, 214);
-color: rgb(47, 55, 77);</string>
-            </property>
-            <property name="text">
-             <string>ALIVE</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
-     </layout>
+    <item row="2" column="0">
+     <widget class="Line" name="line_3">
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(135, 119, 76);</string>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
     </item>
     <item row="0" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_10">
@@ -271,16 +86,6 @@ color: rgb(255, 255, 255);</string>
        </widget>
       </item>
      </layout>
-    </item>
-    <item row="2" column="0">
-     <widget class="Line" name="line_3">
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(135, 119, 76);</string>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
     </item>
     <item row="3" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout">
@@ -480,6 +285,90 @@ background-color: rgb(0, 0, 0);</string>
            </layout>
           </item>
           <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_19">
+            <item>
+             <widget class="Line" name="line_15">
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(135, 119, 76);</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_22">
+              <property name="styleSheet">
+               <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+color: rgb(172, 173, 183);</string>
+              </property>
+              <property name="text">
+               <string>GYROSCOPE</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="line_14">
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(135, 119, 76);</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_20">
+            <item>
+             <widget class="QLCDNumber" name="lcdGyroX">
+              <property name="styleSheet">
+               <string notr="true">color: rgb(0, 232, 0);
+background-color: rgb(0, 0, 0);</string>
+              </property>
+              <property name="digitCount">
+               <number>8</number>
+              </property>
+              <property name="segmentStyle">
+               <enum>QLCDNumber::Flat</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLCDNumber" name="lcdGyroY">
+              <property name="styleSheet">
+               <string notr="true">color: rgb(0, 232, 0);
+background-color: rgb(0, 0, 0);</string>
+              </property>
+              <property name="digitCount">
+               <number>8</number>
+              </property>
+              <property name="segmentStyle">
+               <enum>QLCDNumber::Flat</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLCDNumber" name="lcdGyroZ">
+              <property name="styleSheet">
+               <string notr="true">color: rgb(0, 232, 0);
+background-color: rgb(0, 0, 0);</string>
+              </property>
+              <property name="digitCount">
+               <number>8</number>
+              </property>
+              <property name="segmentStyle">
+               <enum>QLCDNumber::Flat</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_15">
             <item>
              <widget class="Line" name="line_10">
@@ -498,7 +387,7 @@ background-color: rgb(0, 0, 0);</string>
 color: rgb(172, 173, 183);</string>
               </property>
               <property name="text">
-               <string>GYROSCOPE</string>
+               <string>SPEED</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignCenter</set>
@@ -522,7 +411,7 @@ color: rgb(172, 173, 183);</string>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_16">
               <item>
-               <widget class="QLCDNumber" name="lcdGyroX">
+               <widget class="QLCDNumber" name="lcdSpeedX">
                 <property name="styleSheet">
                  <string notr="true">color: rgb(0, 232, 0);
 background-color: rgb(0, 0, 0);</string>
@@ -539,7 +428,7 @@ background-color: rgb(0, 0, 0);</string>
                </widget>
               </item>
               <item>
-               <widget class="QLCDNumber" name="lcdGyroY">
+               <widget class="QLCDNumber" name="lcdSpeedY">
                 <property name="styleSheet">
                  <string notr="true">color: rgb(0, 232, 0);
 background-color: rgb(0, 0, 0);</string>
@@ -556,7 +445,7 @@ background-color: rgb(0, 0, 0);</string>
                </widget>
               </item>
               <item>
-               <widget class="QLCDNumber" name="lcdGyroZ">
+               <widget class="QLCDNumber" name="lcdSpeedZ">
                 <property name="styleSheet">
                  <string notr="true">color: rgb(0, 232, 0);
 background-color: rgb(0, 0, 0);</string>
@@ -573,6 +462,99 @@ background-color: rgb(0, 0, 0);</string>
                </widget>
               </item>
              </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_17">
+            <item>
+             <widget class="Line" name="line_13">
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(135, 119, 76);</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_21">
+              <property name="styleSheet">
+               <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+color: rgb(172, 173, 183);</string>
+              </property>
+              <property name="text">
+               <string>POSITION</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="line_12">
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(135, 119, 76);</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_18">
+            <item>
+             <widget class="QLCDNumber" name="lcdPosX">
+              <property name="styleSheet">
+               <string notr="true">color: rgb(0, 232, 0);
+background-color: rgb(0, 0, 0);</string>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <property name="digitCount">
+               <number>8</number>
+              </property>
+              <property name="segmentStyle">
+               <enum>QLCDNumber::Flat</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLCDNumber" name="lcdPosY">
+              <property name="styleSheet">
+               <string notr="true">color: rgb(0, 232, 0);
+background-color: rgb(0, 0, 0);</string>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <property name="digitCount">
+               <number>8</number>
+              </property>
+              <property name="segmentStyle">
+               <enum>QLCDNumber::Flat</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLCDNumber" name="lcdPosZ">
+              <property name="styleSheet">
+               <string notr="true">color: rgb(0, 232, 0);
+background-color: rgb(0, 0, 0);</string>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <property name="digitCount">
+               <number>8</number>
+              </property>
+              <property name="segmentStyle">
+               <enum>QLCDNumber::Flat</enum>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -1288,6 +1270,201 @@ color: rgb(47, 55, 77);</string>
       </item>
      </layout>
     </item>
+    <item row="1" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_7">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="styleSheet">
+           <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+color: rgb(172, 173, 183);</string>
+          </property>
+          <property name="text">
+           <string>COMMUNICATION</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_7">
+          <item>
+           <widget class="QComboBox" name="comboBox">
+            <property name="styleSheet">
+             <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+background-color: rgb(0, 0 ,0);
+color: rgb(0, 232, 0);</string>
+            </property>
+            <property name="placeholderText">
+             <string>USB/UART</string>
+            </property>
+            <property name="frame">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="OpenPortButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+background-color: rgb(189, 206, 214);
+color: rgb(47, 55, 77);</string>
+            </property>
+            <property name="text">
+             <string>OPEN</string>
+            </property>
+            <property name="flat">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <item>
+           <widget class="QLineEdit" name="WifiLineEdit">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+color: rgb(0, 232, 0);
+background-color: rgb(0, 0, 0);</string>
+            </property>
+            <property name="inputMask">
+             <string/>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="maxLength">
+             <number>32767</number>
+            </property>
+            <property name="placeholderText">
+             <string>Wifi Port</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="OpenWifiButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>MS Sans Serif</family>
+              <pointsize>9</pointsize>
+              <italic>false</italic>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">font: 9pt &quot;MS Sans Serif&quot;;
+font-weight: bold;
+background-color: rgb(189, 206, 214);
+color: rgb(47, 55, 77);</string>
+            </property>
+            <property name="text">
+             <string>OPEN</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="styleSheet">
+           <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+color: rgb(172, 173, 183);</string>
+          </property>
+          <property name="text">
+           <string>COMMAND</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <item>
+           <widget class="QComboBox" name="comboBox_2">
+            <property name="styleSheet">
+             <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+background-color: rgb(0, 0 ,0);
+color: rgb(0, 232, 0);</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="SendCommandButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
+background-color: rgb(189, 206, 214);
+color: rgb(47, 55, 77);</string>
+            </property>
+            <property name="text">
+             <string>SEND</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_9">
+          <item>
+           <widget class="QPushButton" name="aliveButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::StrongFocus</enum>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">font: 9pt &quot;MS Sans Serif&quot;;
+font-weight: bold;
+background-color: rgb(189, 206, 214);
+color: rgb(47, 55, 77);</string>
+            </property>
+            <property name="text">
+             <string>ALIVE</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -1296,7 +1473,7 @@ color: rgb(47, 55, 77);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>850</width>
+     <width>859</width>
      <height>21</height>
     </rect>
    </property>
