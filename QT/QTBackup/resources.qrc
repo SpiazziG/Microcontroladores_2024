@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>RadialDial.qml</file>
+    </qresource>
+</RCC>

@@ -6,11 +6,16 @@
 #include <QSerialPortInfo>
 #include <QMessageBox>
 #include <QTimer>
+#include <QTime>
 #include <dialog.h>
 #include <qpaintbox.h>
 #include <QPainter>
 #include <QtNetwork/QUdpSocket>
 #include <QtNetwork/QHostAddress>
+#include <QQuickWidget>
+#include <QQmlContext>
+#include <QVBoxLayout>
+#include <QQuickItem>
 
 typedef union{
     uint8_t     u8[4];
@@ -34,6 +39,9 @@ public:
     QForm1(QWidget *parent = nullptr);
     ~QForm1();
 
+public slots:
+    void updateMotorLabel(qreal value);
+
 signals:
     void maxMinValues(uint16_t min, uint16_t max);
 
@@ -48,7 +56,7 @@ private slots:
 
     void on_OpenPortButton_clicked();
 
-    void on_ClearButton_clicked();
+    void on_buttonClear_clicked();
 
     void on_SendCommandButton_clicked();
 
@@ -62,7 +70,7 @@ private slots:
 
     void DecodeCmd(uint8_t *rxBuf);
 
-    void EngineTest(int32_t Eng1, int32_t Eng2);
+    void EngineTest(uint8_t Eng1, uint8_t Eng2);
 
     void on_aliveButton_clicked();
 
@@ -84,6 +92,32 @@ private slots:
 
     void on_powerButton_clicked();
 
+    void on_debugTabButton_clicked();
+
+    void on_telemetryTabButton_clicked();
+
+    void on_homeTabButton_clicked();
+
+    void on_PIDTabButton_clicked();
+
+    void on_setTurnPIDButton_clicked();
+
+    void on_setWallPIDButton_clicked();
+
+    void on_pwmConfigButton_clicked();
+
+    void on_pwmPrescalerConfig_textChanged(const QString &arg1);
+
+    void on_pwmPeriodConfig_textChanged(const QString &arg1);
+
+    void updateResultingFrequency();
+
+    QString formatFrequency(double frequencyHz);
+
+    void on_readTurnPIDButton_clicked();
+
+    void on_readWallPIDButton_clicked();
+
 private:
     Ui::QForm1 *ui;
 
@@ -101,12 +135,13 @@ private:
     quint16 remotePort, port;
 
     int8_t measureAngle, indexWifi;
+    uint8_t telemetryState = 0;
     //int32_t measureTime, distance;
 
     float accValues[3];
     float velValues[3];
     float posValues[3] = {0, 0, 0};
-    float gyroValues[3];
+    int16_t gyroValues[3];
 
     float globalAcc[3];
     float gyroAngle[3];
@@ -119,16 +154,12 @@ private:
     float acceleration[450];
     int samples = 0;
 
-    float yaw = 0, pitch = 0, roll = 0;
+    int32_t yaw = 0, pitch = 0, roll = 0;
 
     float deltaGyro = 0, deltaAcc = 0;
-    //float drift;//, lastValue=0, samples=0;
 
-    #define DELTA_TIME 0.1
-    #define _TAU 0.98
-    #define THRESHOLD 0.001
-
-    #define ALPHA 0.76
+    #define ALPHA_GYRO 0.99
+    #define ALPHA_ACC 0.95
 
     #define X_AXIS 0
     #define Y_AXIS 1
@@ -136,20 +167,44 @@ private:
 
     Dialog *dialog;
 
-    typedef enum{
-        ALIVE           =0xF0,
-        FIRMWARE        =0xF1,
-        LEDS            =0x10,
-        BUTTONS         =0x12,
-        IRSENSOR        =0xA0,
-        TEST_ENGINE     =0xA1,
-        ACCELERATION    =0xA2,
-        ENGINES         =0xA3,
-        SPEED           =0xA4,
-        SERVO_CONFIG    =0xA5,
-        ACKNOWLEDGE     =0x0D,
-        UNKNOWNCOMMAND  =0xFF
-    }_eIDCommand;
+    typedef enum {
+        // Communication commands
+        ACKNOWLEDGE         = 0x0D,
+        GET_LOCAL_IP        = 0xE0,
+        ALIVE               = 0xF0,
+        GET_FIRMWARE_INFO   = 0xF1, //FIRMWARE
+        UNKNOWNCMD          = 0xFF, //UNKNOWNCOMMAND
+
+        // 0xA_ : Sensors & Actuators (Read data)
+        GET_IR_SENSORS      = 0xA0,
+        GET_MPU_DATA        = 0xA2, //ACCELERATION
+        GET_BUTTON_STATE    = 0xA4, //BUTTONS
+        GET_MOTOR_SPEED     = 0xA6,
+
+        // 0xB_ : Sensors (Configuration and calibration)
+        SET_IR_CALIBRATION  = 0xB0, //CALIBRATION
+
+        // 0xC_ : Actuators and software configuration
+        SET_MOTOR_TEST      = 0xC0, //TEST_ENGINE
+        SET_PWM_CONFIG      = 0xC2,
+
+        // 0xD_ : PID Configuration
+        // Turn PID
+        SET_PID_TURN_GAINS  = 0xD0, //SET_PID
+        GET_PID_TURN_GAINS  = 0xD1,
+
+        // Wall PID
+        SET_PID_WALL_GAINS  = 0xD2,
+        GET_PID_WALL_GAINS  = 0xD3,
+
+        // Movement parameters
+        SET_TURN_SPEED      = 0xD8,
+        SET_WALL_SPEED      = 0xDA,
+
+        // Maze State
+        GET_CURRENT_ACTION      = 0xEA,
+        GET_INTERSECTION_TYPE   = 0xEE,
+    } Command_e;
 
     typedef struct{
         int32_t width;

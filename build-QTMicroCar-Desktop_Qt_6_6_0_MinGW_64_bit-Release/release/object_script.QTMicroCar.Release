@@ -1,0 +1,10 @@
+release/dialog.o
+release/main.o
+release/qform1.o
+release/qpaintbox.o
+release/RadialDial_qml.o
+release/qmlcache_loader.o
+release/qrc_resources_qmlcache.o
+release/moc_dialog.o
+release/moc_qform1.o
+release/moc_qpaintbox.o

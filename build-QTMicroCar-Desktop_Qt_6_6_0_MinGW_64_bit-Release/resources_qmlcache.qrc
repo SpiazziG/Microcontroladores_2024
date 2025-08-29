@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<RCC>
+    <qresource prefix="/">
+        <file alias="RadialDial.qml">../QT/QTBackup/RadialDial.qml</file>
+    </qresource>
+</RCC>

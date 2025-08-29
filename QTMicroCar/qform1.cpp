@@ -870,3 +870,20 @@ void QForm1::Scanning(){
     QPaintBox1->update();
 }
 */
+
+void QForm1::on_pushButton_3_clicked()
+{
+    ui->stackedWidget->setCurrentIndex(0);
+}
+
+
+void QForm1::on_pushButton_2_clicked()
+{
+    ui->stackedWidget->setCurrentIndex(1);
+}
+
+void QForm1::on_pushButton_clicked()
+{
+    ui->stackedWidget->setCurrentIndex(2);
+}
+

@@ -1,4 +1,4 @@
-QT       += core gui serialport network
+QT       += core gui serialport network quick quickwidgets qml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -27,3 +27,9 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    RadialDial.qml
+
+RESOURCES += \
+    resources.qrc
