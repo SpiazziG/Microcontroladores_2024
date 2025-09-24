@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="144.8031mm"
+   height="41.705463mm"
+   viewBox="0 0 144.80311 41.705464"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="rightRoad.svg"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="0.44809905"
+     inkscape:cx="-284.53531"
+     inkscape:cy="282.30366"
+     inkscape:window-width="1366"
+     inkscape:window-height="705"
+     inkscape:window-x="1352"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     inkscape:clip-to-page="true" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Capa 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-153.07484,-52.304142)">
+    <path
+       style="display:none;fill:#393f44;fill-opacity:1;stroke:#393f44;stroke-width:1.32292;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 210.91714,209.929 176.97745,52.951727 h -46.3625 L 96.675265,209.929"
+       id="path2"
+       sodipodi:nodetypes="cccc"
+       inkscape:label="road" />
+    <path
+       style="display:none;fill:#393f44;fill-opacity:1;stroke:#393f44;stroke-width:1.79709;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 156.624,53.188812 H 0.89854581 V 92.469306 H 140.56977 Z"
+       id="path4"
+       inkscape:label="leftRoad" />
+    <path
+       style="display:inline;fill:#393f44;fill-opacity:1;stroke:#393f44;stroke-width:1.75587;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 153.95277,53.182077 H 297 V 93.131673 H 169.528 L 153.95277,53.182077"
+       id="path5"
+       inkscape:label="rightRoad" />
+    <path
+       style="display:none;fill:#393f44;fill-opacity:1;stroke:#393f44;stroke-width:1.3066;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 176.9856,52.369431 H 130.6068 L 142.07739,0.65329924 h 23.43763 z"
+       id="path9"
+       inkscape:label="frontRoad" />
+  </g>
+</svg>

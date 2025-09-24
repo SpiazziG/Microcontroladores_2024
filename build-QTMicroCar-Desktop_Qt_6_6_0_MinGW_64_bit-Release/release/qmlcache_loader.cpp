@@ -5,7 +5,21 @@
 #include <QtCore/qstring.h>
 
 namespace QmlCacheGeneratedCode {
-namespace _0x5f__RadialDial_qml { 
+namespace _img_Screen01_ui_0x2e_qml { 
+    extern const unsigned char qmlData[];
+    extern const QQmlPrivate::AOTCompiledFunction aotBuiltFunctions[];
+    const QQmlPrivate::CachedQmlUnit unit = {
+        reinterpret_cast<const QV4::CompiledData::Unit*>(&qmlData), &aotBuiltFunctions[0], nullptr
+    };
+}
+namespace _3d_Screen01_ui_0x2e_qml { 
+    extern const unsigned char qmlData[];
+    extern const QQmlPrivate::AOTCompiledFunction aotBuiltFunctions[];
+    const QQmlPrivate::CachedQmlUnit unit = {
+        reinterpret_cast<const QV4::CompiledData::Unit*>(&qmlData), &aotBuiltFunctions[0], nullptr
+    };
+}
+namespace _3d_Car_Car_qml { 
     extern const unsigned char qmlData[];
     extern const QQmlPrivate::AOTCompiledFunction aotBuiltFunctions[];
     const QQmlPrivate::CachedQmlUnit unit = {
@@ -26,7 +40,9 @@ Q_GLOBAL_STATIC(Registry, unitRegistry)
 
 
 Registry::Registry() {
-    resourcePathToCachedUnit.insert(QStringLiteral("/RadialDial.qml"), &QmlCacheGeneratedCode::_0x5f__RadialDial_qml::unit);
+    resourcePathToCachedUnit.insert(QStringLiteral("/img/Screen01.ui.qml"), &QmlCacheGeneratedCode::_img_Screen01_ui_0x2e_qml::unit);
+    resourcePathToCachedUnit.insert(QStringLiteral("/3d/Screen01.ui.qml"), &QmlCacheGeneratedCode::_3d_Screen01_ui_0x2e_qml::unit);
+    resourcePathToCachedUnit.insert(QStringLiteral("/3d/Car/Car.qml"), &QmlCacheGeneratedCode::_3d_Car_Car_qml::unit);
     QQmlPrivate::RegisterQmlUnitCacheHook registration;
     registration.structVersion = 0;
     registration.lookupCachedQmlUnit = &lookupCachedUnit;

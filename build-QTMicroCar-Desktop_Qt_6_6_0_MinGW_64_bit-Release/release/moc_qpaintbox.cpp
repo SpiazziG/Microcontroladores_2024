@@ -6,7 +6,7 @@
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../../../../../Desktop/QTBackup/QTBackup/qpaintbox.h"
+#include "../../QT/QTBackup/qpaintbox.h"
 #include <QtCore/qmetatype.h>
 
 #if __has_include(<QtCore/qtmochelpers.h>)

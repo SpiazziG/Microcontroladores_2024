@@ -53,7 +53,9 @@ OBJECTS_DIR   = release
 SOURCES       = ..\QT\QTBackup\dialog.cpp \
 		..\QT\QTBackup\main.cpp \
 		..\QT\QTBackup\qform1.cpp \
-		..\QT\QTBackup\qpaintbox.cpp release\RadialDial_qml.cpp \
+		..\QT\QTBackup\qpaintbox.cpp release\3d_Screen01.ui_qml.cpp \
+		release\3d_Car_Car_qml.cpp \
+		release\img_Screen01.ui_qml.cpp \
 		release\qmlcache_loader.cpp \
 		release\qrc_resources_qmlcache.cpp \
 		release\moc_dialog.cpp \
@@ -63,14 +65,16 @@ OBJECTS       = release/dialog.o \
 		release/main.o \
 		release/qform1.o \
 		release/qpaintbox.o \
-		release/RadialDial_qml.o \
+		release/3d_Screen01.ui_qml.o \
+		release/3d_Car_Car_qml.o \
+		release/img_Screen01.ui_qml.o \
 		release/qmlcache_loader.o \
 		release/qrc_resources_qmlcache.o \
 		release/moc_dialog.o \
 		release/moc_qform1.o \
 		release/moc_qpaintbox.o
 
-DIST          = RadialDial.qml ..\QT\QTBackup\dialog.h \
+DIST          = RadialGauge.qml ..\QT\QTBackup\dialog.h \
 		..\QT\QTBackup\qform1.h \
 		..\QT\QTBackup\qpaintbox.h ..\QT\QTBackup\dialog.cpp \
 		..\QT\QTBackup\main.cpp \
@@ -95,10 +99,10 @@ qmake: FORCE
 qmake_all: FORCE
 
 dist:
-	$(ZIP) QTMicroCar.zip $(SOURCES) $(DIST) ..\QT\QT\QTBackup\QTMicroCar.pro C:\Qt\6.6.0\mingw_64\mkspecs\features\spec_pre.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\device_config.prf C:\Qt\6.6.0\mingw_64\mkspecs\common\sanitize.conf C:\Qt\6.6.0\mingw_64\mkspecs\common\gcc-base.conf C:\Qt\6.6.0\mingw_64\mkspecs\common\g++-base.conf C:\Qt\6.6.0\mingw_64\mkspecs\features\win32\windows_vulkan_sdk.prf C:\Qt\6.6.0\mingw_64\mkspecs\common\windows-vulkan.conf C:\Qt\6.6.0\mingw_64\mkspecs\common\g++-win32.conf C:\Qt\6.6.0\mingw_64\mkspecs\common\windows-desktop.conf C:\Qt\6.6.0\mingw_64\mkspecs\qconfig.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_ext_freetype.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_ext_libjpeg.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_ext_libpng.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3danimation.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3danimation_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dcore.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dcore_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dextras.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dextras_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dinput.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dinput_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dlogic.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dlogic_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquick.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquick_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickanimation.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickanimation_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickextras.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickextras_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickinput.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickinput_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickrender.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickrender_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickscene2d.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickscene2d_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3drender.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3drender_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_activeqt.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_activeqt_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_axbase_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_axcontainer.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_axcontainer_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_axserver.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_axserver_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_bluetooth.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_bluetooth_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_bodymovin_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_charts.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_charts_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_chartsqml.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_chartsqml_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_concurrent.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_concurrent_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_core.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_core5compat.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_core5compat_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_core_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_datavisualization.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_datavisualization_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_datavisualizationqml.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_datavisualizationqml_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_dbus.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_dbus_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_designer.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_designer_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_designercomponents_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_devicediscovery_support_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_entrypoint_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_example_icons_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_fb_support_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_freetype_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_graphs.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_graphs_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_grpc.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_grpc_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_gui.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_gui_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_harfbuzz_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_help.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_help_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_httpserver.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_httpserver_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_insighttracker.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_insighttracker_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_insighttrackerqml.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_insighttrackerqml_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_jpeg_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_jsonrpc_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labsanimation.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labsanimation_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labsfolderlistmodel.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labsfolderlistmodel_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labsqmlmodels.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labsqmlmodels_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labssettings.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labssettings_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labssharedimage.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labssharedimage_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labswavefrontmesh.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labswavefrontmesh_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_languageserver_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_linguist.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_linguist_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_location.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_location_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_multimedia.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_multimedia_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_multimediaquick_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_multimediawidgets.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_multimediawidgets_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_network.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_network_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_networkauth.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_networkauth_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_nfc.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_nfc_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_opengl.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_opengl_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_openglwidgets.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_openglwidgets_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_packetprotocol_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_pdf.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_pdf_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_pdfquick.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_pdfquick_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_pdfwidgets.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_pdfwidgets_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_png_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_positioning.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_positioning_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_positioningquick.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_positioningquick_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_printsupport.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_printsupport_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_protobuf.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_protobuf_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_protobufqtcoretypes.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_protobufqtcoretypes_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_protobufqtguitypes.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_protobufqtguitypes_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_protobufwellknowntypes.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_protobufwellknowntypes_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qdoccatch_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qdoccatchconversionsprivate.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qdoccatchconversionsprivate_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qdoccatchgeneratorsprivate.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qdoccatchgeneratorsprivate_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qml.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qml_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlcompiler.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlcompiler_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlcore.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlcore_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmldebug_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmldom_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlintegration.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlintegration_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmllocalstorage.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmllocalstorage_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlls_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlmodels.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlmodels_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmltest.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmltest_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmltoolingsettings_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmltyperegistrar_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlworkerscript.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlworkerscript_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlxmllistmodel.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlxmllistmodel_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3d.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3d_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dassetimport.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dassetimport_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dassetutils.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dassetutils_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3deffects.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3deffects_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dglslparser_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dhelpers.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dhelpers_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dhelpersimpl.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dhelpersimpl_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3diblbaker.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3diblbaker_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dparticleeffects.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dparticleeffects_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dparticles.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dparticles_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dphysics.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dphysics_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dphysicshelpers.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dphysicshelpers_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3druntimerender.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3druntimerender_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dspatialaudio_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dutils.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dutils_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickcontrols2.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickcontrols2_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickcontrols2impl.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickcontrols2impl_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickcontrolstestutilsprivate_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickdialogs2.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickdialogs2_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickdialogs2quickimpl.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickdialogs2quickimpl_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickdialogs2utils.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickdialogs2utils_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickeffects_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quicklayouts.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quicklayouts_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickparticles_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickshapes_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quicktemplates2.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quicktemplates2_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quicktestutilsprivate_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quicktimeline.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quicktimeline_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickwidgets.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickwidgets_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_remoteobjects.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_remoteobjects_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_remoteobjectsqml.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_remoteobjectsqml_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_repparser.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_repparser_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_scxml.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_scxml_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_scxmlqml.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_scxmlqml_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_sensors.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_sensors_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_sensorsquick.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_sensorsquick_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_serialbus.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_serialbus_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_serialport.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_serialport_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_shadertools.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_shadertools_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_spatialaudio.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_spatialaudio_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_sql.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_sql_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_statemachine.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_statemachine_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_statemachineqml.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_statemachineqml_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_svg.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_svg_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_svgwidgets.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_svgwidgets_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_testlib.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_testlib_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_texttospeech.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_texttospeech_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_tools_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_uiplugin.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_uitools.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_uitools_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_virtualkeyboard.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_virtualkeyboard_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_webchannel.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_webchannel_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_webchannelquick.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_webchannelquick_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_websockets.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_websockets_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_webview.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_webview_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_webviewquick.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_webviewquick_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_widgets.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_widgets_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_xml.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_xml_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_zlib_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\features\qt_functions.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\qt_config.prf C:\Qt\6.6.0\mingw_64\mkspecs\win32-g++\qmake.conf C:\Qt\6.6.0\mingw_64\mkspecs\features\spec_post.prf .qmake.stash C:\Qt\6.6.0\mingw_64\mkspecs\features\exclusive_builds.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\toolchain.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\default_pre.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\win32\default_pre.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\resolve_config.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\exclusive_builds_post.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\default_post.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\build_pass.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\resources_functions.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\qtquickcompiler.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\entrypoint.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\precompile_header.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\warn_on.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\permissions.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\qt.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\resources.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\moc.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\win32\opengl.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\uic.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\qmake_use.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\file_copies.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\win32\windows.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\testcase_targets.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\exceptions.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\yacc.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\lex.prf ..\QT\QTBackup\QTMicroCar.pro resources_qmlcache.qrc C:\Qt\6.6.0\mingw_64\lib\Qt6QuickWidgets.prl C:\Qt\6.6.0\mingw_64\lib\Qt6Quick.prl C:\Qt\6.6.0\mingw_64\lib\Qt6OpenGL.prl C:\Qt\6.6.0\mingw_64\lib\Qt6Widgets.prl C:\Qt\6.6.0\mingw_64\lib\Qt6Gui.prl C:\Qt\6.6.0\mingw_64\lib\Qt6SerialPort.prl C:\Qt\6.6.0\mingw_64\lib\Qt6QmlModels.prl C:\Qt\6.6.0\mingw_64\lib\Qt6Qml.prl C:\Qt\6.6.0\mingw_64\lib\Qt6Network.prl C:\Qt\6.6.0\mingw_64\lib\Qt6Core.prl C:\Qt\6.6.0\mingw_64\lib\Qt6EntryPoint.prl  ..\QT\QTBackup\RadialDial.qml ..\QT\QTBackup\resources.qrc  resources_qmlcache.qrc C:\Qt\6.6.0\mingw_64\mkspecs\features\data\dummy.cpp ..\QT\QTBackup\dialog.h ..\QT\QTBackup\qform1.h ..\QT\QTBackup\qpaintbox.h  ..\QT\QTBackup\dialog.cpp ..\QT\QTBackup\main.cpp ..\QT\QTBackup\qform1.cpp ..\QT\QTBackup\qpaintbox.cpp ..\QT\QTBackup\dialog.ui ..\QT\QTBackup\qform1.ui    
+	$(ZIP) QTMicroCar.zip $(SOURCES) $(DIST) ..\QT\QTBackup\QTMicroCar.pro C:\Qt\6.6.0\mingw_64\mkspecs\features\spec_pre.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\device_config.prf C:\Qt\6.6.0\mingw_64\mkspecs\common\sanitize.conf C:\Qt\6.6.0\mingw_64\mkspecs\common\gcc-base.conf C:\Qt\6.6.0\mingw_64\mkspecs\common\g++-base.conf C:\Qt\6.6.0\mingw_64\mkspecs\features\win32\windows_vulkan_sdk.prf C:\Qt\6.6.0\mingw_64\mkspecs\common\windows-vulkan.conf C:\Qt\6.6.0\mingw_64\mkspecs\common\g++-win32.conf C:\Qt\6.6.0\mingw_64\mkspecs\common\windows-desktop.conf C:\Qt\6.6.0\mingw_64\mkspecs\qconfig.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_ext_freetype.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_ext_libjpeg.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_ext_libpng.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3danimation.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3danimation_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dcore.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dcore_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dextras.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dextras_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dinput.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dinput_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dlogic.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dlogic_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquick.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquick_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickanimation.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickanimation_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickextras.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickextras_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickinput.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickinput_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickrender.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickrender_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickscene2d.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3dquickscene2d_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3drender.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_3drender_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_activeqt.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_activeqt_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_axbase_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_axcontainer.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_axcontainer_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_axserver.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_axserver_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_bluetooth.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_bluetooth_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_bodymovin_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_charts.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_charts_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_chartsqml.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_chartsqml_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_concurrent.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_concurrent_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_core.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_core5compat.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_core5compat_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_core_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_datavisualization.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_datavisualization_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_datavisualizationqml.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_datavisualizationqml_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_dbus.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_dbus_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_designer.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_designer_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_designercomponents_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_devicediscovery_support_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_entrypoint_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_example_icons_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_fb_support_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_freetype_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_graphs.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_graphs_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_grpc.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_grpc_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_gui.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_gui_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_harfbuzz_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_help.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_help_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_httpserver.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_httpserver_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_insighttracker.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_insighttracker_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_insighttrackerqml.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_insighttrackerqml_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_jpeg_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_jsonrpc_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labsanimation.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labsanimation_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labsfolderlistmodel.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labsfolderlistmodel_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labsqmlmodels.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labsqmlmodels_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labssettings.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labssettings_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labssharedimage.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labssharedimage_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labswavefrontmesh.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_labswavefrontmesh_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_languageserver_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_linguist.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_linguist_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_location.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_location_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_multimedia.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_multimedia_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_multimediaquick_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_multimediawidgets.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_multimediawidgets_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_network.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_network_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_networkauth.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_networkauth_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_nfc.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_nfc_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_opengl.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_opengl_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_openglwidgets.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_openglwidgets_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_packetprotocol_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_pdf.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_pdf_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_pdfquick.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_pdfquick_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_pdfwidgets.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_pdfwidgets_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_png_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_positioning.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_positioning_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_positioningquick.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_positioningquick_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_printsupport.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_printsupport_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_protobuf.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_protobuf_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_protobufqtcoretypes.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_protobufqtcoretypes_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_protobufqtguitypes.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_protobufqtguitypes_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_protobufwellknowntypes.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_protobufwellknowntypes_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qdoccatch_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qdoccatchconversionsprivate.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qdoccatchconversionsprivate_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qdoccatchgeneratorsprivate.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qdoccatchgeneratorsprivate_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qml.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qml_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlcompiler.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlcompiler_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlcore.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlcore_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmldebug_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmldom_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlintegration.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlintegration_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmllocalstorage.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmllocalstorage_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlls_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlmodels.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlmodels_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmltest.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmltest_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmltoolingsettings_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmltyperegistrar_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlworkerscript.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlworkerscript_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlxmllistmodel.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_qmlxmllistmodel_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3d.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3d_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dassetimport.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dassetimport_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dassetutils.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dassetutils_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3deffects.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3deffects_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dglslparser_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dhelpers.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dhelpers_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dhelpersimpl.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dhelpersimpl_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3diblbaker.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3diblbaker_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dparticleeffects.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dparticleeffects_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dparticles.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dparticles_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dphysics.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dphysics_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dphysicshelpers.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dphysicshelpers_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3druntimerender.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3druntimerender_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dspatialaudio_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dutils.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick3dutils_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quick_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickcontrols2.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickcontrols2_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickcontrols2impl.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickcontrols2impl_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickcontrolstestutilsprivate_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickdialogs2.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickdialogs2_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickdialogs2quickimpl.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickdialogs2quickimpl_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickdialogs2utils.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickdialogs2utils_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickeffects_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quicklayouts.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quicklayouts_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickparticles_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickshapes_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quicktemplates2.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quicktemplates2_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quicktestutilsprivate_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quicktimeline.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quicktimeline_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickwidgets.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_quickwidgets_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_remoteobjects.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_remoteobjects_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_remoteobjectsqml.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_remoteobjectsqml_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_repparser.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_repparser_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_scxml.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_scxml_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_scxmlqml.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_scxmlqml_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_sensors.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_sensors_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_sensorsquick.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_sensorsquick_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_serialbus.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_serialbus_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_serialport.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_serialport_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_shadertools.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_shadertools_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_spatialaudio.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_spatialaudio_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_sql.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_sql_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_statemachine.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_statemachine_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_statemachineqml.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_statemachineqml_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_svg.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_svg_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_svgwidgets.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_svgwidgets_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_testlib.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_testlib_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_texttospeech.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_texttospeech_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_tools_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_uiplugin.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_uitools.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_uitools_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_virtualkeyboard.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_virtualkeyboard_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_webchannel.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_webchannel_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_webchannelquick.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_webchannelquick_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_websockets.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_websockets_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_webview.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_webview_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_webviewquick.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_webviewquick_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_widgets.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_widgets_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_xml.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_xml_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\modules\qt_lib_zlib_private.pri C:\Qt\6.6.0\mingw_64\mkspecs\features\qt_functions.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\qt_config.prf C:\Qt\6.6.0\mingw_64\mkspecs\win32-g++\qmake.conf C:\Qt\6.6.0\mingw_64\mkspecs\features\spec_post.prf .qmake.stash C:\Qt\6.6.0\mingw_64\mkspecs\features\exclusive_builds.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\toolchain.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\default_pre.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\win32\default_pre.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\resolve_config.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\exclusive_builds_post.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\default_post.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\build_pass.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\resources_functions.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\qtquickcompiler.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\entrypoint.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\precompile_header.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\warn_on.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\permissions.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\qt.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\resources.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\moc.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\win32\opengl.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\uic.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\qmake_use.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\file_copies.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\win32\windows.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\testcase_targets.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\exceptions.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\yacc.prf C:\Qt\6.6.0\mingw_64\mkspecs\features\lex.prf ..\QT\QTBackup\QTMicroCar.pro resources_qmlcache.qrc C:\Qt\6.6.0\mingw_64\lib\Qt6QuickWidgets.prl C:\Qt\6.6.0\mingw_64\lib\Qt6Quick.prl C:\Qt\6.6.0\mingw_64\lib\Qt6OpenGL.prl C:\Qt\6.6.0\mingw_64\lib\Qt6Widgets.prl C:\Qt\6.6.0\mingw_64\lib\Qt6Gui.prl C:\Qt\6.6.0\mingw_64\lib\Qt6SerialPort.prl C:\Qt\6.6.0\mingw_64\lib\Qt6QmlModels.prl C:\Qt\6.6.0\mingw_64\lib\Qt6Qml.prl C:\Qt\6.6.0\mingw_64\lib\Qt6Network.prl C:\Qt\6.6.0\mingw_64\lib\Qt6Core.prl C:\Qt\6.6.0\mingw_64\lib\Qt6EntryPoint.prl  ..\QT\QTBackup\3d\Screen01.ui.qml ..\QT\QTBackup\3d\Car\Car.qml ..\QT\QTBackup\img\Screen01.ui.qml ..\QT\QTBackup\resources.qrc  resources_qmlcache.qrc C:\Qt\6.6.0\mingw_64\mkspecs\features\data\dummy.cpp ..\QT\QTBackup\dialog.h ..\QT\QTBackup\qform1.h ..\QT\QTBackup\qpaintbox.h  ..\QT\QTBackup\dialog.cpp ..\QT\QTBackup\main.cpp ..\QT\QTBackup\qform1.cpp ..\QT\QTBackup\qpaintbox.cpp ..\QT\QTBackup\dialog.ui ..\QT\QTBackup\qform1.ui    
 
 clean: compiler_clean 
-	-$(DEL_FILE) release\dialog.o release\main.o release\qform1.o release\qpaintbox.o release\RadialDial_qml.o release\qmlcache_loader.o release\qrc_resources_qmlcache.o release\moc_dialog.o release\moc_qform1.o release\moc_qpaintbox.o
+	-$(DEL_FILE) release\dialog.o release\main.o release\qform1.o release\qpaintbox.o release\3d_Screen01.ui_qml.o release\3d_Car_Car_qml.o release\img_Screen01.ui_qml.o release\qmlcache_loader.o release\qrc_resources_qmlcache.o release\moc_dialog.o release\moc_qform1.o release\moc_qpaintbox.o
 
 distclean: clean 
 	-$(DEL_FILE) .qmake.stash
@@ -113,11 +117,17 @@ check: first
 
 benchmark: first
 
-compiler_qmlcache_make_all: release/RadialDial_qml.cpp
+compiler_qmlcache_make_all: release/3d_Screen01.ui_qml.cpp release/3d_Car_Car_qml.cpp release/img_Screen01.ui_qml.cpp
 compiler_qmlcache_clean:
-	-$(DEL_FILE) release\RadialDial_qml.cpp
-release/RadialDial_qml.cpp: ../QT/QTBackup/RadialDial.qml
-	C:\Qt\6.6.0\mingw_64\bin\qmlcachegen.exe --resource=C:/Users/Gustavo/STM32CubeIDE/workspace_1.14.1/Microcontroladores_2024/QT/QTBackup/resources.qrc -o release\RadialDial_qml.cpp ..\QT\QTBackup\RadialDial.qml
+	-$(DEL_FILE) release\3d_Screen01.ui_qml.cpp release\3d_Car_Car_qml.cpp release\img_Screen01.ui_qml.cpp
+release/3d_Screen01.ui_qml.cpp: ../QT/QTBackup/3d/Screen01.ui.qml
+	C:\Qt\6.6.0\mingw_64\bin\qmlcachegen.exe --resource=C:/Users/Gustavo/STM32CubeIDE/workspace_1.14.1/Microcontroladores_2024/QT/QTBackup/resources.qrc -o release\3d_Screen01.ui_qml.cpp ..\QT\QTBackup\3d\Screen01.ui.qml
+
+release/3d_Car_Car_qml.cpp: ../QT/QTBackup/3d/Car/Car.qml
+	C:\Qt\6.6.0\mingw_64\bin\qmlcachegen.exe --resource=C:/Users/Gustavo/STM32CubeIDE/workspace_1.14.1/Microcontroladores_2024/QT/QTBackup/resources.qrc -o release\3d_Car_Car_qml.cpp ..\QT\QTBackup\3d\Car\Car.qml
+
+release/img_Screen01.ui_qml.cpp: ../QT/QTBackup/img/Screen01.ui.qml
+	C:\Qt\6.6.0\mingw_64\bin\qmlcachegen.exe --resource=C:/Users/Gustavo/STM32CubeIDE/workspace_1.14.1/Microcontroladores_2024/QT/QTBackup/resources.qrc -o release\img_Screen01.ui_qml.cpp ..\QT\QTBackup\img\Screen01.ui.qml
 
 compiler_qmlcache_loader_make_all: release/qmlcache_loader.cpp
 compiler_qmlcache_loader_clean:
@@ -132,7 +142,893 @@ compiler_rcc_clean:
 	-$(DEL_FILE) release\qrc_resources_qmlcache.cpp
 release/qrc_resources_qmlcache.cpp: resources_qmlcache.qrc \
 		C:/Qt/6.6.0/mingw_64/bin/rcc.exe \
-		../QT/QTBackup/RadialDial.qml
+		../QT/QTBackup/3d/Screen01.ui.qml \
+		../QT/QTBackup/3d/Car/Car.qml \
+		../QT/QTBackup/3d/Car/qmldir \
+		../QT/QTBackup/3d/Car/meshes/s_lido3_013_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido2_007_mesh1524.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido6_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido6_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido106_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido147_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido56_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido3_009_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido4_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido8_003_mesh1884.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido95_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido275_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido2_013_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido56_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido68_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido251_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido6_012_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido300_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido37_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido29_002_mesh1857.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido92_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido4_010_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido7_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido94_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido90_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido26_006_mesh1091.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido170_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido210_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido69_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido51_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido25_002_mesh1849.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido11_009_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido13_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido122_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido20_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido217_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido86_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido239_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido138_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido28_006_mesh1135.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido215_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido16_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido5_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido171_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido263_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido285_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido39_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido56_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido13_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido47_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido185_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido15_006_mesh845.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido27_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido11_003_mesh1818.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido25_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido278_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido48_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido92_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido63_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido6_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido30_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido11_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido51_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido61_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido249_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido288_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido47_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido17_002_mesh1830.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido17_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido13_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido39_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido110_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido71_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido49_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido193_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido6_011_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido62_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_019_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido36_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido85_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido173_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido129_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido242_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido297_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido4_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido65_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido52_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido62_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido7_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido29_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido29_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido137_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido25_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido289_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido303_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido4_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido19_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido298_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido18_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido43_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido19_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido22_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido57_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido12_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido7_009_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido18_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido101_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_016_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido28_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido157_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido15_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido60_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido25_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido107_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido191_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido65_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido166_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido28_002_mesh1855.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido43_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido159_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido183_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido2_009_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido36_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido307_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido205_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido43_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido128_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido162_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido2_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido178_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido8_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido14_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido152_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido6_009_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido5_012_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido62_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido66_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido70_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido93_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido9_003_mesh1886.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido26_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido266_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido14_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido301_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido9_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido102_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido267_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido46_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido295_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido309_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido29_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido52_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido40_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido68_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido23_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido23_002_mesh1845.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido14_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido31_006_mesh1204.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido84_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/solid1_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido94_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido270_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido49_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido96_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido21_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido58_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido32_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido64_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido176_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_015_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido67_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido16_002_mesh1828.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido105_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido31_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido149_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido310_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido134_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido56_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido24_006_mesh1047.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido265_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido89_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido83_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido123_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido7_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido87_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido75_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido32_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido139_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido202_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido33_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido36_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido84_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido27_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido294_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido18_005_mesh1908.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido11_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido13_002_mesh1822.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido33_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido10_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido8_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido52_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido53_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido11_007_mesh757.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido27_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido51_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido71_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido222_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido24_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido316_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido36_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido7_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido130_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido273_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido172_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido10_007_mesh732.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido8_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido40_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido2_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido68_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido68_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido75_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido5_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido36_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido38_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido2_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido24_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido88_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido111_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido95_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido174_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido23_006_mesh1024.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido102_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido48_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido153_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido15_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido107_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/solid1_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido38_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido26_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido22_002_mesh1843.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido27_006_mesh1113.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido70_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido229_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido2_011_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido40_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido45_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido223_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido8_007_mesh1326.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido227_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido40_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido67_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido10_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido181_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido197_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido11_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido52_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido17_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido104_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido12_006_mesh779.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido59_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido70_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido19_005_mesh1910.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido3_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido43_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido4_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido77_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido96_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido126_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido35_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido3_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido240_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido283_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido92_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido6_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido5_010_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido212_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido58_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido17_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido5_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido69_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido53_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido41_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido286_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido63_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido33_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido46_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido32_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido8_009_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido292_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido32_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido8_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido206_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido21_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido39_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido64_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido200_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido11_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido104_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/solid1_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido7_003_mesh1882.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido106_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido61_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido180_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido20_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido7_010_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido112_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido82_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido225_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido304_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido4_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_009_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido67_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido75_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido163_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido20_002_mesh1838.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido35_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido56_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido32_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido236_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido60_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido30_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido49_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido89_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido9_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido11_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido18_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido16_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido60_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido71_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido16_006_mesh867.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido72_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido3_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido66_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido69_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/solid1_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido13_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido30_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido44_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido100_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido77_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido42_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido29_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido42_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido120_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido124_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido179_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido28_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido48_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido27_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido87_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido55_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido148_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido10_003_mesh1816.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido2_003_mesh1836.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido21_002_mesh1841.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido55_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_017_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido8_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido57_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido100_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido91_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido34_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido51_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido63_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido63_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido19_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido13_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/solid1_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido26_002_mesh1851.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido45_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido45_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido7_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido44_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido15_002_mesh1826.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido220_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido3_003_mesh1859.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_021_mesh1890.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido279_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido13_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido16_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido17_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido21_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido10_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido7_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido81_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido296_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido5_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido5_003_mesh1878.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido5_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido16_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_011_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido18_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido74_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido118_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido142_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido5_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido15_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido55_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido2_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido53_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido207_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido87_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido46_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido6_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido37_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido57_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido28_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido211_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido5_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido86_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido311_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido30_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido27_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido35_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido2_012_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido32_006_mesh1222.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido24_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido160_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido6_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido94_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido55_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido3_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido53_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido47_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido140_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido9_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido35_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido169_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido143_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido76_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido184_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido29_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido199_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido201_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido209_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido26_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_022_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido17_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido41_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido196_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido79_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido32_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido51_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido74_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido25_006_mesh1069.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido43_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido24_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido38_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido9_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido12_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido16_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido4_009_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido262_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido19_002_mesh1834.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido254_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido73_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido192_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido52_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido204_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido99_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido34_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido4_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido47_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido144_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido50_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido119_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido243_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido244_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido302_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido28_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido18_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido41_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido314_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido15_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido224_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido238_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido88_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido135_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido46_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido214_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido268_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_018_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido136_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido31_002_mesh1863.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido58_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido38_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido44_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido90_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido317_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido21_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido27_002_mesh1853.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido22_006_mesh1002.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido23_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido11_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido48_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido30_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido71_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido50_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido3_006_mesh1934.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido168_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido91_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido9_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido108_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido29_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido42_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido15_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido31_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido93_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido42_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido82_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/solid1_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido77_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido165_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/solid1_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido52_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido4_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido7_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido246_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido14_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido34_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido23_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido116_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido15_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido81_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido103_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_035_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido76_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido13_006_mesh801.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido62_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido19_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido221_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido50_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido59_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/solid1_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido33_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido11_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido57_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido190_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido248_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido47_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido22_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido62_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido32_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido2_010_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido31_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido39_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido14_002_mesh1824.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido79_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido90_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido182_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido30_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido228_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido117_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido18_002_mesh1832.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido14_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido54_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido20_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido17_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido21_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido20_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido78_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido99_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido100_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido24_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_021_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido299_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido4_011_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido58_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido49_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido219_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido38_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido281_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido65_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido313_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido146_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido34_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido230_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido22_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido6_006_mesh2000.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido8_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido4_003_mesh1876.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido49_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido61_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido156_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido271_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido233_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido24_002_mesh1847.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_012_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido96_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido131_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido132_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido103_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido10_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido20_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido47_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido216_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido264_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido253_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido312_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido308_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido50_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido12_003_mesh1546.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido66_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido76_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido30_002_mesh1861.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido40_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido237_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido293_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido6_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido46_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido44_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido59_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido72_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido14_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido103_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido259_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido34_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido23_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido66_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido37_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido83_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido54_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido64_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido109_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido7_011_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido284_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido51_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido80_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido9_009_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido66_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido78_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido98_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido45_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido58_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido10_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido213_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido245_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido114_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido29_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido45_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido187_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido208_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido41_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido44_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido36_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido102_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido195_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido256_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido29_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido16_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido2_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido31_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido17_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido167_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido277_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido70_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido50_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido25_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido72_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido125_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido85_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido65_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido232_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido53_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido133_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido88_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido50_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido113_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido73_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido74_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido175_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_010_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_023_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido6_003_mesh1880.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido73_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido67_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido68_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido19_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido28_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido33_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido72_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido98_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido7_007_mesh1304.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido145_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido305_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido5_011_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido14_006_mesh823.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido18_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido2_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido19_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido158_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido218_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido59_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido71_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido60_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido64_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido81_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido12_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido23_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido37_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido91_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido241_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido276_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido82_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido291_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido194_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido35_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido80_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido14_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido49_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido55_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido22_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido9_007_mesh1348.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido93_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido274_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido287_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/solid1_009_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido13_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido54_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido9_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido108_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido97_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido70_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido255_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido15_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido83_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido3_010_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido127_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido44_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido203_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido60_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido14_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido63_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido35_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido48_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido30_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido252_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido280_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido41_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido16_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido161_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido231_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/solid1_010_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido57_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido40_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido74_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido3_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido26_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido31_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido42_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido9_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido22_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido80_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido104_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido260_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido226_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido84_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido26_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido36_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido48_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido2_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido177_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido115_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_010_mesh1702.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido154_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido258_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido99_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido25_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido21_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido10_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido54_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido67_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido85_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido151_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido4_006_mesh1956.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido19_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido35_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido3_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido25_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido28_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido37_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido121_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido250_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido150_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido261_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido12_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido5_009_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido54_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido26_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido3_011_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido12_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido23_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido17_006_mesh889.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido12_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido101_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido198_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido235_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido9_010_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido272_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido61_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido20_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido39_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido34_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido69_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido282_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido6_010_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido10_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido59_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido38_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido315_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido95_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido234_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido4_012_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido89_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido42_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido8_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido269_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido32_002_mesh1865.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido46_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido65_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido73_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido69_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido101_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido164_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido31_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido20_006_mesh958.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_009_mesh1812.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido247_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido41_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido79_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido12_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido105_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido3_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido86_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido10_009_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido11_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido141_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido8_010_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/solid1_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido97_001_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido1_014_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido61_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido98_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido33_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido290_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido21_006_mesh980.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido34_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido20_008_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido33_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido24_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido97_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido45_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido21_007_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido186_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido22_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido189_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido37_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido39_002_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido5_006_mesh1978.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido257_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido78_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido306_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido188_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido27_003_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido64_004_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido3_012_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido43_005_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido18_006_mesh.mesh \
+		../QT/QTBackup/3d/Car/meshes/s_lido155_mesh.mesh \
+		../QT/QTBackup/img/rightRoad.svg \
+		../QT/QTBackup/img/carShape.svg \
+		../QT/QTBackup/img/Screen01.ui.qml \
+		../QT/QTBackup/img/leftRoad.svg \
+		../QT/QTBackup/img/road.svg \
+		../QT/QTBackup/img/frontRoad.svg \
+		../QT/QTBackup/loadingScreen/loadingScreen.png \
+		../QT/QTBackup/cursor/mouse-pointer.png
 	C:\Qt\6.6.0\mingw_64\bin\rcc.exe -name resources_qmlcache --no-zstd resources_qmlcache.qrc -o release\qrc_resources_qmlcache.cpp
 
 compiler_moc_predefs_make_all: release/moc_predefs.h
@@ -549,13 +1445,38 @@ release/moc_qform1.cpp: ../QT/QTBackup/qform1.h \
 		C:/Qt/6.6.0/mingw_64/include/QtQml/qqmlerror.h \
 		C:/Qt/6.6.0/mingw_64/include/QtQuickWidgets/qtquickwidgetsglobal.h \
 		C:/Qt/6.6.0/mingw_64/include/QtQuickWidgets/qtquickwidgetsexports.h \
-		C:/Qt/6.6.0/mingw_64/include/QtQml/QQmlContext \
-		C:/Qt/6.6.0/mingw_64/include/QtQml/qqmlcontext.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/QUrl \
 		C:/Qt/6.6.0/mingw_64/include/QtWidgets/QVBoxLayout \
 		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qlayout.h \
 		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qlayoutitem.h \
 		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qgridlayout.h \
+		C:/Qt/6.6.0/mingw_64/include/QtQuick/QQuickItem \
+		C:/Qt/6.6.0/mingw_64/include/QtQuick/qquickitem.h \
+		C:/Qt/6.6.0/mingw_64/include/QtQml/qqmlcomponent.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qproperty.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qpropertyprivate.h \
+		C:/Qt/6.6.0/mingw_64/include/QtGui/qaccessible.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qcoreapplication.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qeventloop.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qcoreapplication_platform.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qfuture.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qfutureinterface.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qmutex.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qdeadlinetimer.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qelapsedtimer.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qtsan_impl.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qresultstore.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qfuture_impl.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qthreadpool.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qthread.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qrunnable.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qexception.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qpromise.h \
+		C:/Qt/6.6.0/mingw_64/include/QtGui/qaccessible_base.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/QDebug \
+		C:/Qt/6.6.0/mingw_64/include/QtGui/QPixmap \
+		C:/Qt/6.6.0/mingw_64/include/QtGui/QCursor \
 		release/moc_predefs.h \
 		C:/Qt/6.6.0/mingw_64/bin/moc.exe
 	C:\Qt\6.6.0\mingw_64\bin\moc.exe $(DEFINES) --include C:/Users/Gustavo/STM32CubeIDE/workspace_1.14.1/Microcontroladores_2024/build-QTMicroCar-Desktop_Qt_6_6_0_MinGW_64_bit-Release/release/moc_predefs.h -IC:/Qt/6.6.0/mingw_64/mkspecs/win32-g++ -IC:/Users/Gustavo/STM32CubeIDE/workspace_1.14.1/Microcontroladores_2024/QT/QTBackup -IC:/Qt/6.6.0/mingw_64/include -IC:/Qt/6.6.0/mingw_64/include/QtQuickWidgets -IC:/Qt/6.6.0/mingw_64/include/QtQuick -IC:/Qt/6.6.0/mingw_64/include/QtOpenGL -IC:/Qt/6.6.0/mingw_64/include/QtWidgets -IC:/Qt/6.6.0/mingw_64/include/QtGui -IC:/Qt/6.6.0/mingw_64/include/QtSerialPort -IC:/Qt/6.6.0/mingw_64/include/QtQmlModels -IC:/Qt/6.6.0/mingw_64/include/QtQml -IC:/Qt/6.6.0/mingw_64/include/QtNetwork -IC:/Qt/6.6.0/mingw_64/include/QtQmlIntegration -IC:/Qt/6.6.0/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++ -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed -IC:/Qt/Tools/mingw1120_64/x86_64-w64-mingw32/include ..\QT\QTBackup\qform1.h -o release\moc_qform1.cpp
@@ -1209,15 +2130,18 @@ release/main.o: ../QT/QTBackup/main.cpp ../QT/QTBackup/qform1.h \
 		C:/Qt/6.6.0/mingw_64/include/QtQml/qqmlerror.h \
 		C:/Qt/6.6.0/mingw_64/include/QtQuickWidgets/qtquickwidgetsglobal.h \
 		C:/Qt/6.6.0/mingw_64/include/QtQuickWidgets/qtquickwidgetsexports.h \
-		C:/Qt/6.6.0/mingw_64/include/QtQml/QQmlContext \
-		C:/Qt/6.6.0/mingw_64/include/QtQml/qqmlcontext.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/QUrl \
 		C:/Qt/6.6.0/mingw_64/include/QtWidgets/QVBoxLayout \
 		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qlayout.h \
 		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qlayoutitem.h \
 		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qgridlayout.h \
-		C:/Qt/6.6.0/mingw_64/include/QtWidgets/QApplication \
-		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qapplication.h \
+		C:/Qt/6.6.0/mingw_64/include/QtQuick/QQuickItem \
+		C:/Qt/6.6.0/mingw_64/include/QtQuick/qquickitem.h \
+		C:/Qt/6.6.0/mingw_64/include/QtQml/qqmlcomponent.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qproperty.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qpropertyprivate.h \
+		C:/Qt/6.6.0/mingw_64/include/QtGui/qaccessible.h \
 		C:/Qt/6.6.0/mingw_64/include/QtCore/qcoreapplication.h \
 		C:/Qt/6.6.0/mingw_64/include/QtCore/qeventloop.h \
 		C:/Qt/6.6.0/mingw_64/include/QtCore/qcoreapplication_platform.h \
@@ -1234,11 +2158,19 @@ release/main.o: ../QT/QTBackup/main.cpp ../QT/QTBackup/qform1.h \
 		C:/Qt/6.6.0/mingw_64/include/QtCore/qrunnable.h \
 		C:/Qt/6.6.0/mingw_64/include/QtCore/qexception.h \
 		C:/Qt/6.6.0/mingw_64/include/QtCore/qpromise.h \
+		C:/Qt/6.6.0/mingw_64/include/QtGui/qaccessible_base.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/QDebug \
+		C:/Qt/6.6.0/mingw_64/include/QtGui/QPixmap \
+		C:/Qt/6.6.0/mingw_64/include/QtGui/QCursor \
+		C:/Qt/6.6.0/mingw_64/include/QtWidgets/QApplication \
+		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qapplication.h \
 		C:/Qt/6.6.0/mingw_64/include/QtGui/qguiapplication.h \
 		C:/Qt/6.6.0/mingw_64/include/QtGui/qinputmethod.h \
 		C:/Qt/6.6.0/mingw_64/include/QtGui/qguiapplication_platform.h \
 		C:/Qt/6.6.0/mingw_64/include/QtWidgets/QStyleFactory \
-		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qstylefactory.h
+		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qstylefactory.h \
+		C:/Qt/6.6.0/mingw_64/include/QtWidgets/QSplashScreen \
+		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qsplashscreen.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\main.o ..\QT\QTBackup\main.cpp
 
 release/qform1.o: ../QT/QTBackup/qform1.cpp ../QT/QTBackup/qform1.h \
@@ -1478,17 +2410,18 @@ release/qform1.o: ../QT/QTBackup/qform1.cpp ../QT/QTBackup/qform1.h \
 		C:/Qt/6.6.0/mingw_64/include/QtQml/qqmlerror.h \
 		C:/Qt/6.6.0/mingw_64/include/QtQuickWidgets/qtquickwidgetsglobal.h \
 		C:/Qt/6.6.0/mingw_64/include/QtQuickWidgets/qtquickwidgetsexports.h \
-		C:/Qt/6.6.0/mingw_64/include/QtQml/QQmlContext \
-		C:/Qt/6.6.0/mingw_64/include/QtQml/qqmlcontext.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/QUrl \
 		C:/Qt/6.6.0/mingw_64/include/QtWidgets/QVBoxLayout \
 		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qboxlayout.h \
 		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qlayout.h \
 		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qlayoutitem.h \
 		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qgridlayout.h \
-		ui_qform1.h \
-		C:/Qt/6.6.0/mingw_64/include/QtCore/QVariant \
-		C:/Qt/6.6.0/mingw_64/include/QtWidgets/QApplication \
-		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qapplication.h \
+		C:/Qt/6.6.0/mingw_64/include/QtQuick/QQuickItem \
+		C:/Qt/6.6.0/mingw_64/include/QtQuick/qquickitem.h \
+		C:/Qt/6.6.0/mingw_64/include/QtQml/qqmlcomponent.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qproperty.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/qpropertyprivate.h \
+		C:/Qt/6.6.0/mingw_64/include/QtGui/qaccessible.h \
 		C:/Qt/6.6.0/mingw_64/include/QtCore/qcoreapplication.h \
 		C:/Qt/6.6.0/mingw_64/include/QtCore/qeventloop.h \
 		C:/Qt/6.6.0/mingw_64/include/QtCore/qcoreapplication_platform.h \
@@ -1505,6 +2438,14 @@ release/qform1.o: ../QT/QTBackup/qform1.cpp ../QT/QTBackup/qform1.h \
 		C:/Qt/6.6.0/mingw_64/include/QtCore/qrunnable.h \
 		C:/Qt/6.6.0/mingw_64/include/QtCore/qexception.h \
 		C:/Qt/6.6.0/mingw_64/include/QtCore/qpromise.h \
+		C:/Qt/6.6.0/mingw_64/include/QtGui/qaccessible_base.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/QDebug \
+		C:/Qt/6.6.0/mingw_64/include/QtGui/QPixmap \
+		C:/Qt/6.6.0/mingw_64/include/QtGui/QCursor \
+		ui_qform1.h \
+		C:/Qt/6.6.0/mingw_64/include/QtCore/QVariant \
+		C:/Qt/6.6.0/mingw_64/include/QtWidgets/QApplication \
+		C:/Qt/6.6.0/mingw_64/include/QtWidgets/qapplication.h \
 		C:/Qt/6.6.0/mingw_64/include/QtGui/qguiapplication.h \
 		C:/Qt/6.6.0/mingw_64/include/QtGui/qinputmethod.h \
 		C:/Qt/6.6.0/mingw_64/include/QtGui/qguiapplication_platform.h \
@@ -1726,8 +2667,14 @@ release/qpaintbox.o: ../QT/QTBackup/qpaintbox.cpp ../QT/QTBackup/qpaintbox.h \
 		C:/Qt/6.6.0/mingw_64/include/QtGui/QMouseEvent
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\qpaintbox.o ..\QT\QTBackup\qpaintbox.cpp
 
-release/RadialDial_qml.o: release/RadialDial_qml.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\RadialDial_qml.o release\RadialDial_qml.cpp
+release/3d_Screen01.ui_qml.o: release/3d_Screen01.ui_qml.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\3d_Screen01.ui_qml.o release\3d_Screen01.ui_qml.cpp
+
+release/3d_Car_Car_qml.o: release/3d_Car_Car_qml.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\3d_Car_Car_qml.o release\3d_Car_Car_qml.cpp
+
+release/img_Screen01.ui_qml.o: release/img_Screen01.ui_qml.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\img_Screen01.ui_qml.o release\img_Screen01.ui_qml.cpp
 
 release/qmlcache_loader.o: release/qmlcache_loader.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\qmlcache_loader.o release\qmlcache_loader.cpp

@@ -10,49 +10,57 @@ QForm1::QForm1(QWidget *parent)
     dialog = new Dialog(this);
     ui->comboBoxCommunication->installEventFilter(this);
 
-    /*
-    QQuickWidget *qmlWidget = ui->quickWidget;
-    connect(qmlWidget, &QQuickWidget::statusChanged,
-            [=](QQuickWidget::Status status) {
+    {
+        // Nombramos el widget como "qmlDisplayWidget" en el paso 3
+        QQuickWidget* qmlWidget = ui->qmlDisplayWidget;
 
-                // Solo procedemos si el QML se ha cargado correctamente.
-                if (status == QQuickWidget::Ready) {
-                    // AHORA es seguro acceder al árbol de objetos QML.
-                    QQuickItem *qmlItem = qmlWidget->rootObject();
-                    if (qmlItem) {
-                        QObject *dial = qmlItem->findChild<QObject*>("circularSlider");
-                        if (dial) {
-                            qDebug() << "¡Dial encontrado! Conectando la señal...";
-                            // Conectar la señal del dial al slot.
-                            QObject::connect(dial, SIGNAL(valueChanged(qreal)),
-                                             this, SLOT(updateMotorLabel(qreal)));
+        // Cargamos el QML desde los recursos
+        qmlWidget->setSource(QUrl("qrc:/img/Screen01.ui.qml"));
 
-                            // Establecer el valor inicial del label.
-                            updateMotorLabel(dial->property("value").toDouble());
-                        } else {
-                            // Este mensaje ya no debería aparecer.
-                            qWarning() << "Error: No se pudo encontrar el objeto QML con objectName: 'circularSlider'";
-                        }
-                    }
-                }
-            });
+        // Guardamos una referencia al objeto raíz del QML para poder manipularlo
+        m_qmlRootObject = qmlWidget->rootObject();
 
-    qmlWidget->setSource(QUrl(QStringLiteral("qrc:/RadialDial.qml")));
+        if (!m_qmlRootObject) {
+            qWarning() << "Error: no se pudo cargar el objeto raíz de QML.";
+        }
+    }
 
-    qmlWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
-    qmlWidget->setClearColor(Qt::transparent);
-    qmlWidget->setAttribute(Qt::WA_AlwaysStackOnTop);
-    //qmlWidget->setAttribute(Qt::WA_TranslucentBackground);
-    //qmlWidget->setStyleSheet("background: transparent;");
-    */
+    {
+        QQuickWidget* widget3D = ui->viewer3D; // Obtenemos el puntero al NUEVO widget
 
-    ui->comboBoxSendCommand->addItem("ALIVE", 0xF0);
-    ui->comboBoxSendCommand->addItem("FIRMWARE INFO", 0xF1);
-    //ui->comboBox_2->addItem("BUTTONS", 0x12);
-    ui->comboBoxSendCommand->addItem("IR SENSORS", 0xA0);
-    //ui->comboBox_2->addItem("ENGINE TEST", 0xA1);
-    ui->comboBoxSendCommand->addItem("GET_MPU_DATA", 0xA2);
-    //ui->comboBox_2->addItem("ENGINES", 0xA3);
+        // 2. Cargamos el archivo QML para la escena 3D desde su nueva ruta en los recursos
+        widget3D->setSource(QUrl("qrc:/3d/Screen01.ui.qml")); // ¡OJO A LA RUTA!
+
+        // 3. (Opcional) Guardar una referencia a su objeto raíz
+        // Si no necesitas interactuar con el modelo 3D desde C++ (y parece que no,
+        // ya que la animación es autónoma), no necesitas hacer esto. Pero si quisieras
+        // en el futuro (ej: cambiar el color del coche desde un botón C++), lo harías así:
+        QQuickItem* rootObject3D = widget3D->rootObject();
+        if (!rootObject3D) {
+            qWarning() << "Error: no se pudo cargar el objeto raíz de QML para quickWidget3D.";
+        }
+    }
+
+    // 1. Cargar la imagen del cursor desde los recursos
+    QPixmap cursorPixmap(":/cursor/mouse-pointer.png");
+
+    if (cursorPixmap.isNull()) {
+        qWarning() << "Error: No se pudo cargar la imagen del cursor desde los recursos.";
+    } else {
+        // 3. Crear y aplicar el cursor solo si la imagen es válida
+        QCursor myCustomCursor(cursorPixmap, 2, 0); // El hot spot (5, 0) debe estar dentro de las dimensiones de la imagen
+        this->setCursor(myCustomCursor);
+    }
+
+    {
+        ui->comboBoxSendCommand->addItem("ALIVE", 0xF0);
+        ui->comboBoxSendCommand->addItem("FIRMWARE INFO", 0xF1);
+        //ui->comboBox_2->addItem("BUTTONS", 0x12);
+        ui->comboBoxSendCommand->addItem("IR SENSORS", 0xA0);
+        //ui->comboBox_2->addItem("ENGINE TEST", 0xA1);
+        ui->comboBoxSendCommand->addItem("GET_MPU_DATA", 0xA2);
+        //ui->comboBox_2->addItem("ENGINES", 0xA3);
+    }
 
     QUdpSocket1 = new QUdpSocket(this);
     connect(QUdpSocket1,&QUdpSocket::readyRead,this,&QForm1::onRxUDP);
@@ -69,6 +77,8 @@ QForm1::QForm1(QWidget *parent)
 
     ui->labelHour->setText(QTime::currentTime().toString("hh:mm:ss"));
     ui->stackedWidget->setCurrentIndex(0);
+    updateMotorPower(0, 0);
+    updateCarPosition(0.5);
 
     DrawBackground();
     Initialize();
@@ -118,6 +128,10 @@ void QForm1::OnQTimer1(){
     static uint8_t time100ms = 10;
     static uint8_t time20ms = 2;
     static uint8_t time500ms = 50;
+
+    static double carPos = 0.0;
+    static double power = 0.0;
+
     uint8_t buf[3];
 
     if(widgetSize.width != ui->widgetRadar->width() || widgetSize.height != ui->widgetRadar->height()){
@@ -165,7 +179,19 @@ void QForm1::OnQTimer1(){
 
     if(time500ms == 0){
         //EngineTest(40, 40);
-        time500ms = 50;
+        time500ms = 40;
+        // if (carPos < 1.0)
+        //     carPos += 0.004;
+        // else
+        //     carPos = 0.0;
+        // updateCarPosition(carPos);
+
+        if (power < 1.0)
+            power += 0.001;
+        else
+            power = 0;
+
+        updateMotorPower(power, power);
     } else {
         time500ms--;
     }
@@ -178,25 +204,35 @@ void QForm1::OnQTimer1(){
         ui->telemetryTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
         ui->debugTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
         ui->PIDTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
+                ui->viewTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
         break;
     case 1:
         ui->telemetryTabButton->setStyleSheet("color: rgb(79, 216, 218); background-color: rgb(33, 37, 40); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
         ui->homeTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
         ui->debugTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
         ui->PIDTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
+                ui->viewTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
         break;
     case 2:
         ui->PIDTabButton->setStyleSheet("color: rgb(79, 216, 218); background-color: rgb(33, 37, 40); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
         ui->telemetryTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
         ui->homeTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
         ui->debugTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
+                ui->viewTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
         break;
     case 3:
         ui->debugTabButton->setStyleSheet("color: rgb(79, 216, 218); background-color: rgb(33, 37, 40); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
         ui->telemetryTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
         ui->homeTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
         ui->PIDTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
+        ui->viewTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
         break;
+    case 4:
+        ui->viewTabButton->setStyleSheet("color: rgb(79, 216, 218); background-color: rgb(33, 37, 40); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
+        ui->debugTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
+        ui->homeTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
+        ui->PIDTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
+        ui->telemetryTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
     default:
         break;
     }
@@ -392,6 +428,14 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
     case GET_IR_SENSORS:
         w.u32 = 0;
         uint8_t baseIndex;
+        int16_t leftIR, rightIR;
+        int16_t centerDifference;
+        double normalizedMovement;
+        double newCarPos;
+
+        rightIR = (rxBuf[2] << 8) | rxBuf[1];
+        leftIR = (rxBuf[14] << 8) | rxBuf[13];
+
         // For 12 bits measures
         for (int i = 0; i < 8; ++i){
             baseIndex = 1 + (i * 2);
@@ -403,6 +447,22 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
             if(label)
                 label->setText(QString("%1").arg(w.i32, 4, 10, QChar(' ')));
         }
+
+        centerDifference = leftIR - rightIR;
+
+        if (abs(centerDifference) < CENTER_CAR_DEADZONE)
+            centerDifference = 0;
+
+        normalizedMovement = (centerDifference) / 4095.0;
+        newCarPos = 0.5 - (normalizedMovement * 0.5);
+
+        if (newCarPos > 0.75)
+            newCarPos = 0.75;
+        else if (newCarPos < 0.25)
+            newCarPos = 0.25;
+
+        updateCarPosition(newCarPos);
+
         // For millimeter measures
         // for (int i = 0; i < 8; ++i){
         //     w.u8[0] = rxBuf[1 + i];
@@ -471,7 +531,9 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         //ui->labelGyroX->setText(QString("%1").arg(aux));
         //ui->labelGyroY->setText(QString("%1").arg(deltaGyro));
         //ui->labelGyroZ->setText(QString("%1").arg(yaw/(131*1000)));
-        ui->labelGyroZ->setText(QString("%1").arg(yaw));
+        ui->labelRoll->setText(QString("%1").arg(roll));
+        ui->labelPitch->setText(QString("%1").arg(pitch));
+        ui->labelYaw->setText(QString("%1").arg(yaw));
         //ui->rightEnginePowerLabel->setText(QString("%1").arg(gyroValues[Z_AXIS]));
         //ui->leftEnginePowerLabel->setText(QString("%1").arg(yaw));
         //Integrate();
@@ -488,6 +550,7 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
 
         ui->labelGyroX->setText(QString("%1").arg(gyroValues[X_AXIS]));
         ui->labelGyroY->setText(QString("%1").arg(gyroValues[Y_AXIS]));
+        ui->labelGyroZ->setText(QString("%1").arg(gyroValues[Z_AXIS]));
         //ui->labelValueIR1->setText(QString("%1").arg(globalAcc[X_AXIS]/1000.0, 1, 'f', 3));
         //ui->labelValueIR2->setText(QString("%1").arg(globalAcc[Y_AXIS]/1000.0, 1, 'f', 3));
         break;
@@ -558,28 +621,45 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         uint8_t intersectionIndex = rxBuf[1];
 
         if (intersectionIndex & (1 << 0)) {
-            ui->labelRightIntersectionState->setText("|");
-            ui->labelRightIntersectionState->setStyleSheet("color: rgb(255, 136, 0); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
+            updateRightSensor(false);
         } else {
-            ui->labelRightIntersectionState->setText("→");
-            ui->labelRightIntersectionState->setStyleSheet("color: rgb(50, 205, 50); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
+            updateRightSensor(true);
         }
 
         if (intersectionIndex & (1 << 1)) {
-            ui->labelFrontIntersectionState->setText("-");
-            ui->labelFrontIntersectionState->setStyleSheet("color: rgb(255, 136, 0); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
+            updateFrontSensor(true);
         } else {
-            ui->labelFrontIntersectionState->setText("↑");
-            ui->labelFrontIntersectionState->setStyleSheet("color: rgb(50, 205, 50); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
+            updateFrontSensor(false);
         }
 
         if (intersectionIndex & (1 << 2)) {
-            ui->labelLeftIntersectionState->setText("|");
-            ui->labelLeftIntersectionState->setStyleSheet("color: rgb(255, 136, 0); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
+            updateLeftSensor(false);
         } else {
-            ui->labelLeftIntersectionState->setText("←");
-            ui->labelLeftIntersectionState->setStyleSheet("color: rgb(50, 205, 50); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
+            updateLeftSensor(true);
         }
+        // if (intersectionIndex & (1 << 0)) {
+        //     ui->labelRightIntersectionState->setText("|");
+        //     ui->labelRightIntersectionState->setStyleSheet("color: rgb(255, 136, 0); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
+        // } else {
+        //     ui->labelRightIntersectionState->setText("→");
+        //     ui->labelRightIntersectionState->setStyleSheet("color: rgb(50, 205, 50); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
+        // }
+
+        // if (intersectionIndex & (1 << 1)) {
+        //     ui->labelFrontIntersectionState->setText("-");
+        //     ui->labelFrontIntersectionState->setStyleSheet("color: rgb(255, 136, 0); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
+        // } else {
+        //     ui->labelFrontIntersectionState->setText("↑");
+        //     ui->labelFrontIntersectionState->setStyleSheet("color: rgb(50, 205, 50); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
+        // }
+
+        // if (intersectionIndex & (1 << 2)) {
+        //     ui->labelLeftIntersectionState->setText("|");
+        //     ui->labelLeftIntersectionState->setStyleSheet("color: rgb(255, 136, 0); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
+        // } else {
+        //     ui->labelLeftIntersectionState->setText("←");
+        //     ui->labelLeftIntersectionState->setStyleSheet("color: rgb(50, 205, 50); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
+        // }
 
         break;
     //case SERVO_CONFIG:
@@ -781,20 +861,23 @@ void QForm1::DrawBackground(){
     QPainter painter(QPaintBox1->getCanvas());
 
     pen.setWidth(2);
-    pen.setColor(QColor(55, 55, 64, 255));
-    brush.setColor(QColor(55, 55, 64, 255));
+    //pen.setColor(QColor(55, 55, 64, 255));
+    pen.setColor(QColor(33, 37, 40, 255));
+    //brush.setColor(QColor(55, 55, 64, 255));
+    brush.setColor(QColor(33, 37, 40, 255));
     brush.setStyle(Qt::BrushStyle::SolidPattern);
     painter.setPen(pen);
     painter.setBrush(brush);
     painter.drawRect(0, 0, widgetSize.width, widgetSize.height);
 
     pen.setWidth(2);
-    pen.setColor(QColor(96, 100, 103, 255));
-    brush.setColor(QColor(96, 100, 103, 255));
+    // pen.setColor(QColor(96, 100, 103, 255));
+    // brush.setColor(QColor(96, 100, 103, 255));
+    pen.setColor(QColor(57, 63, 68, 255));
+    brush.setColor(QColor(57, 63, 68, 255));
     brush.setStyle(Qt::BrushStyle::NoBrush);
     painter.setBrush(brush);
     painter.setPen(pen);
-
     painter.translate(ui->widgetRadar->width()/2, ui->widgetRadar->height()/2);
     painter.drawEllipse(-widgetSize.width/2, -widgetSize.height/2, widgetSize.width, widgetSize.height);
     painter.drawEllipse(-widgetSize.width/4, -widgetSize.height/4, widgetSize.width/2, widgetSize.height/2);
@@ -826,14 +909,13 @@ void QForm1::DrawMovement(){
     pen.setWidth(3);
     //pen.setColor(QColor(0, 232, 0, 255));
     //brush.setColor(QColor(0, 232, 0, 255));
-    //pen.setColor(QColor(0, 232, 232, 255));
-    //brush.setColor(QColor(0, 232, 232, 255));
-    pen.setColor(QColor(222, 223, 225, 255));
-    brush.setColor(QColor(222, 223, 225, 255));
+    //pen.setColor(QColor(222, 223, 225, 255));
+    //brush.setColor(QColor(222, 223, 225, 255));
+    pen.setColor(QColor(0, 250, 154, 255));
+    brush.setColor(QColor(0, 250, 154, 255));
     brush.setStyle(Qt::BrushStyle::NoBrush);
     painter.setBrush(brush);
     painter.setPen(pen);
-
     //painter.translate(0, ui->widget->height()/2);
 
     //painter.drawPoint(samples, -(int)acceleration[samples]*25);
@@ -843,8 +925,8 @@ void QForm1::DrawMovement(){
     painter.drawLine(0, 0, (ui->widgetRadar->width()/2)*cos(yaw * M_PI/180 + M_PI/2), (ui->widgetRadar->height()/2)*-sin(yaw * M_PI/180 + M_PI/2));
 
     pen.setWidth(3);
-    pen.setColor(QColor(255, 255, 0, 255));
-    brush.setColor(QColor(255, 255, 0, 255));
+    pen.setColor(QColor(222, 223, 225, 255));
+    brush.setColor(QColor(222, 223, 225, 255));
     //pen.setColor(QColor(255, 0, 255, 255));rgb(138, 43, 226)
     //brush.setColor(QColor(255, 0, 255, 255));
     brush.setStyle(Qt::BrushStyle::SolidPattern);
@@ -941,11 +1023,53 @@ void QForm1::on_PIDTabButton_clicked(){
     ui->stackedWidget->setCurrentIndex(2);
 }
 
-void QForm1::updateMotorLabel(qreal value)
-{
-    // Formatea el valor y lo pone en el label
-    ui->leftEnginePowerLabel->setText(QString::number(value, 'f', 1));
+void QForm1::on_viewTabButton_clicked(){
+    ui->stackedWidget->setCurrentIndex(4);
 }
+
+void QForm1::updateMotorPower(double left, double right)
+{
+    if (m_qmlRootObject) {
+        m_qmlRootObject->setProperty("leftMotorPower", left);
+        m_qmlRootObject->setProperty("rightMotorPower", right);
+    }
+}
+
+void QForm1::updateCarPosition(double position)
+{
+    if (m_qmlRootObject) {
+        // La lógica de los sensores y el cálculo de la posición (0.0 a 1.0) la haces en C++
+        // y aquí solo pasas el resultado final.
+        m_qmlRootObject->setProperty("carPosition", position);
+    }
+}
+
+void QForm1::updateFrontSensor(bool visible){
+    if (m_qmlRootObject) {
+        // "setProperty" cambia el valor de una 'property' en QML
+        m_qmlRootObject->setProperty("sensorFrontal", visible);
+    }
+}
+
+void QForm1::updateLeftSensor(bool visible){
+    if (m_qmlRootObject) {
+        // "setProperty" cambia el valor de una 'property' en QML
+        m_qmlRootObject->setProperty("sensorIzquierdo", visible);
+    }
+}
+
+void QForm1::updateRightSensor(bool visible){
+    if (m_qmlRootObject) {
+        // "setProperty" cambia el valor de una 'property' en QML
+        m_qmlRootObject->setProperty("sensorDerecho", visible);
+    }
+}
+
+// void QForm1::updateMotorLabel(qreal value)
+// {
+//     // Formatea el valor y lo pone en el label
+//     ui->leftEnginePowerLabel->setText(QString::number(value, 'f', 1));
+// }
 
 /*
     //Si los motores están apagados, la velocidad disminuye

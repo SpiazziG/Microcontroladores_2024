@@ -29,7 +29,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
-    RadialDial.qml
+    RadialGauge.qml
 
 RESOURCES += \
     resources.qrc
+
+QML_IMPORT_PATH += $${PWD}/3d

@@ -13,9 +13,12 @@
 #include <QtNetwork/QUdpSocket>
 #include <QtNetwork/QHostAddress>
 #include <QQuickWidget>
-#include <QQmlContext>
+#include <QUrl>
 #include <QVBoxLayout>
 #include <QQuickItem>
+#include <QDebug>
+#include <QPixmap>
+#include <QCursor>
 
 typedef union{
     uint8_t     u8[4];
@@ -40,7 +43,11 @@ public:
     ~QForm1();
 
 public slots:
-    void updateMotorLabel(qreal value);
+    void updateFrontSensor(bool visible);
+    void updateLeftSensor(bool visible);
+    void updateRightSensor(bool visible);
+    void updateMotorPower(double left, double right); // Valores de 0.0 a 1.0
+    void updateCarPosition(double position); // Valor de 0.0 a 1.0
 
 signals:
     void maxMinValues(uint16_t min, uint16_t max);
@@ -118,6 +125,8 @@ private slots:
 
     void on_readWallPIDButton_clicked();
 
+    void on_viewTabButton_clicked();
+
 private:
     Ui::QForm1 *ui;
 
@@ -126,6 +135,8 @@ private:
     QUdpSocket *QUdpSocket1;
     QHostAddress hostAddres;
     QPaintBox *QPaintBox1;
+
+    QQuickItem *m_qmlRootObject = nullptr;
 
     uint16_t    mask = 0xAAF;
     uint16_t 	moveMask = 0;
@@ -164,6 +175,8 @@ private:
     #define X_AXIS 0
     #define Y_AXIS 1
     #define Z_AXIS 2
+
+    #define CENTER_CAR_DEADZONE 75
 
     Dialog *dialog;
 

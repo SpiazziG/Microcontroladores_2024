@@ -2,7 +2,9 @@ debug/dialog.o
 debug/main.o
 debug/qform1.o
 debug/qpaintbox.o
-debug/RadialDial_qml.o
+debug/3d_Screen01.ui_qml.o
+debug/3d_Car_Car_qml.o
+debug/img_Screen01.ui_qml.o
 debug/qmlcache_loader.o
 debug/qrc_resources_qmlcache.o
 debug/moc_dialog.o
