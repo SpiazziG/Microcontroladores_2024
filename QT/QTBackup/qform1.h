@@ -48,6 +48,10 @@ public slots:
     void updateRightSensor(bool visible);
     void updateMotorPower(double left, double right); // Valores de 0.0 a 1.0
     void updateCarPosition(double position); // Valor de 0.0 a 1.0
+    void onAnimationDone();
+    void triggerForward();
+    void triggerLeft();
+    void triggerRight();
 
 signals:
     void maxMinValues(uint16_t min, uint16_t max);
@@ -127,6 +131,10 @@ private slots:
 
     void on_viewTabButton_clicked();
 
+    void on_pushButton_clicked();
+
+    void on_setBatteryVoltageButton_clicked();
+
 private:
     Ui::QForm1 *ui;
 
@@ -200,6 +208,7 @@ private:
         // 0xC_ : Actuators and software configuration
         SET_MOTOR_TEST      = 0xC0, //TEST_ENGINE
         SET_PWM_CONFIG      = 0xC2,
+        SET_BATTERY_VOLTAGE = 0xC4,
 
         // 0xD_ : PID Configuration
         // Turn PID
@@ -217,7 +226,32 @@ private:
         // Maze State
         GET_CURRENT_ACTION      = 0xEA,
         GET_INTERSECTION_TYPE   = 0xEE,
+        GET_MAP_INFO            = 0xEF,
     } Command_e;
+
+    typedef enum {
+        NORTH = 0,
+        EAST = 1,
+        SOUTH = 2,
+        WEST = 3,
+    } Map_Direction_e;
+
+    typedef struct {
+        uint8_t walls;
+        uint8_t visited;
+        uint8_t cost;
+    } CellData_s;
+
+    typedef struct {
+        CellData_s maze[16][16];
+        uint8_t currentDirection;
+        uint8_t currentX;
+        uint8_t currentY;
+    } Map_Position_s;
+
+    Map_Position_s mapData;
+    int rotationAngle;
+    bool isMirrored;
 
     typedef struct{
         int32_t width;

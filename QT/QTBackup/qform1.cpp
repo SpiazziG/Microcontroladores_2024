@@ -14,15 +14,37 @@ QForm1::QForm1(QWidget *parent)
         // Nombramos el widget como "qmlDisplayWidget" en el paso 3
         QQuickWidget* qmlWidget = ui->qmlDisplayWidget;
 
+        connect(qmlWidget, &QQuickWidget::statusChanged, this, [this, qmlWidget](QQuickWidget::Status status) {
+            if (status == QQuickWidget::Ready) {
+                // El QML ha terminado de cargar. ¡AHORA es seguro acceder a los objetos!
+                m_qmlRootObject = qmlWidget->rootObject();
+                if (!m_qmlRootObject) {
+                    qWarning() << "Error: QML cargado pero el objeto raíz es nulo.";
+                    return;
+                }
+
+                connect(m_qmlRootObject, SIGNAL(animationFinished()), this, SLOT(onAnimationDone()));
+
+                // Opcional: puedes hacer una prueba inicial aquí
+                qInfo() << "QML cargado con éxito. Intentando una actualización inicial...";
+                this->updateFrontSensor(true); // Prueba para ver si funciona
+                this->updateCarPosition(0.5);
+            } else if (status == QQuickWidget::Error) {
+                // Si hubo un error cargando el QML, lo mostramos.
+                qWarning() << "Error al cargar QML:" << qmlWidget->errors();
+            }
+        });
+
         // Cargamos el QML desde los recursos
-        qmlWidget->setSource(QUrl("qrc:/img/Screen01.ui.qml"));
+        // qmlWidget->setSource(QUrl("qrc:/img/Screen01.ui.qml"));
+        qmlWidget->setSource(QUrl("qrc:/3d/road3D.qml"));
 
-        // Guardamos una referencia al objeto raíz del QML para poder manipularlo
-        m_qmlRootObject = qmlWidget->rootObject();
+        // // Guardamos una referencia al objeto raíz del QML para poder manipularlo
+        // m_qmlRootObject = qmlWidget->rootObject();
 
-        if (!m_qmlRootObject) {
-            qWarning() << "Error: no se pudo cargar el objeto raíz de QML.";
-        }
+        // if (!m_qmlRootObject) {
+        //     qWarning() << "Error: no se pudo cargar el objeto raíz de QML.";
+        // }
     }
 
     {
@@ -104,6 +126,13 @@ void QForm1::Initialize(){
         gyroAngle[i] = 0;
         accAngle[i] = 0;
     }
+    std::memset(mapData.maze, 0, sizeof(mapData.maze));
+    mapData.currentDirection = 0;
+    mapData.currentX = 0;
+    mapData.currentY = 0;
+
+    mapData.maze[0][0].visited = 1;
+    mapData.maze[0][0].walls = 0x0E;
 }
 
 bool QForm1::eventFilter(QObject *watched, QEvent *event){
@@ -200,39 +229,39 @@ void QForm1::OnQTimer1(){
 
     switch(ui->stackedWidget->currentIndex()){
     case 0:
-        ui->homeTabButton->setStyleSheet("color: rgb(79, 216, 218); background-color: rgb(33, 37, 40); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-        ui->telemetryTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-        ui->debugTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-        ui->PIDTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-                ui->viewTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
+        ui->homeTabButton->setStyleSheet("color: rgb(79, 216, 218); background-color: rgb(33, 37, 40); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+        ui->telemetryTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+        ui->debugTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+        ui->PIDTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+                ui->viewTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
         break;
     case 1:
-        ui->telemetryTabButton->setStyleSheet("color: rgb(79, 216, 218); background-color: rgb(33, 37, 40); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-        ui->homeTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-        ui->debugTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-        ui->PIDTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-                ui->viewTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
+        ui->telemetryTabButton->setStyleSheet("color: rgb(79, 216, 218); background-color: rgb(33, 37, 40); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+        ui->homeTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+        ui->debugTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+        ui->PIDTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+                ui->viewTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
         break;
     case 2:
-        ui->PIDTabButton->setStyleSheet("color: rgb(79, 216, 218); background-color: rgb(33, 37, 40); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-        ui->telemetryTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-        ui->homeTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-        ui->debugTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-                ui->viewTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
+        ui->PIDTabButton->setStyleSheet("color: rgb(79, 216, 218); background-color: rgb(33, 37, 40); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+        ui->telemetryTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+        ui->homeTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+        ui->debugTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+                ui->viewTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
         break;
     case 3:
-        ui->debugTabButton->setStyleSheet("color: rgb(79, 216, 218); background-color: rgb(33, 37, 40); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-        ui->telemetryTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-        ui->homeTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-        ui->PIDTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-        ui->viewTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
+        ui->debugTabButton->setStyleSheet("color: rgb(79, 216, 218); background-color: rgb(33, 37, 40); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+        ui->telemetryTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+        ui->homeTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+        ui->PIDTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+        ui->viewTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
         break;
     case 4:
-        ui->viewTabButton->setStyleSheet("color: rgb(79, 216, 218); background-color: rgb(33, 37, 40); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-        ui->debugTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-        ui->homeTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-        ui->PIDTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
-        ui->telemetryTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Siemens Sans; font-weight: bold; border: 0px;");
+        ui->viewTabButton->setStyleSheet("color: rgb(79, 216, 218); background-color: rgb(33, 37, 40); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+        ui->debugTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+        ui->homeTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+        ui->PIDTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
+        ui->telemetryTabButton->setStyleSheet("color: rgb(222, 223, 225); background-color: rgb(46, 49, 55); font: 13pt Century Gothic; font-weight: bold; border: 0px;");
     default:
         break;
     }
@@ -448,7 +477,7 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
                 label->setText(QString("%1").arg(w.i32, 4, 10, QChar(' ')));
         }
 
-        centerDifference = leftIR - rightIR;
+        centerDifference = rightIR - leftIR;
 
         if (abs(centerDifference) < CENTER_CAR_DEADZONE)
             centerDifference = 0;
@@ -456,10 +485,10 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         normalizedMovement = (centerDifference) / 4095.0;
         newCarPos = 0.5 - (normalizedMovement * 0.5);
 
-        if (newCarPos > 0.75)
-            newCarPos = 0.75;
-        else if (newCarPos < 0.25)
-            newCarPos = 0.25;
+        if (newCarPos > 0.65)
+            newCarPos = 0.65;
+        else if (newCarPos < 0.35)
+            newCarPos = 0.35;
 
         updateCarPosition(newCarPos);
 
@@ -618,6 +647,7 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         ui->lineEditWallBase->setText(QString::number(w.i8[0], 'd', 2));
         break;
     case GET_INTERSECTION_TYPE:
+    {
         uint8_t intersectionIndex = rxBuf[1];
 
         if (intersectionIndex & (1 << 0)) {
@@ -660,7 +690,14 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         //     ui->labelLeftIntersectionState->setText("←");
         //     ui->labelLeftIntersectionState->setStyleSheet("color: rgb(50, 205, 50); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
         // }
-
+    }
+        break;
+    case GET_MAP_INFO:
+        mapData.currentX = rxBuf[1];
+        mapData.currentY = rxBuf[2];
+        mapData.maze[mapData.currentX][mapData.currentY].walls = rxBuf[3];
+        mapData.currentDirection = rxBuf[4];
+        mapData.maze[mapData.currentX][mapData.currentY].visited = 1;
         break;
     //case SERVO_CONFIG:
         /*
@@ -769,6 +806,8 @@ void QForm1::on_OpenPortButton_clicked(){
 void QForm1::on_buttonClear_clicked(){
     ui->plainTextEdit->clear();
     DrawBackground();
+
+    isMirrored = !isMirrored;
 }
 
 void QForm1::on_SendCommandButton_clicked(){
@@ -857,10 +896,13 @@ void QForm1::InitPaintBox(){
 
 void QForm1::DrawBackground(){
     QPen pen;
+    QPen tapePen;
     QBrush brush;
     QPainter painter(QPaintBox1->getCanvas());
 
-    pen.setWidth(2);
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    pen.setWidth(3);
     //pen.setColor(QColor(55, 55, 64, 255));
     pen.setColor(QColor(33, 37, 40, 255));
     //brush.setColor(QColor(55, 55, 64, 255));
@@ -870,7 +912,7 @@ void QForm1::DrawBackground(){
     painter.setBrush(brush);
     painter.drawRect(0, 0, widgetSize.width, widgetSize.height);
 
-    pen.setWidth(2);
+    pen.setWidth(3);
     // pen.setColor(QColor(96, 100, 103, 255));
     // brush.setColor(QColor(96, 100, 103, 255));
     pen.setColor(QColor(57, 63, 68, 255));
@@ -878,14 +920,179 @@ void QForm1::DrawBackground(){
     brush.setStyle(Qt::BrushStyle::NoBrush);
     painter.setBrush(brush);
     painter.setPen(pen);
-    painter.translate(ui->widgetRadar->width()/2, ui->widgetRadar->height()/2);
-    painter.drawEllipse(-widgetSize.width/2, -widgetSize.height/2, widgetSize.width, widgetSize.height);
-    painter.drawEllipse(-widgetSize.width/4, -widgetSize.height/4, widgetSize.width/2, widgetSize.height/2);
-    painter.drawEllipse(-widgetSize.width/8, -widgetSize.height/8, widgetSize.width/4, widgetSize.height/4);
-    painter.drawEllipse(-3*widgetSize.width/8, -3*widgetSize.height/8, 3*widgetSize.width/4, 3*widgetSize.height/4);
 
-    painter.drawLine(-widgetSize.width/2, 0, widgetSize.width/2, 0);
-    painter.drawLine(0, -widgetSize.height/2, 0, widgetSize.height/2);
+    // Laberinto
+    int minX = 10, maxX = 0;
+    int minY = 10, maxY = 0;
+
+    // Recorrer todo el array para encontrar los extremos visitados
+    for (int x = 0; x < 16; x++) {
+        for (int y = 0; y < 16; y++) {
+            if (mapData.maze[x][y].visited) {
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+            }
+        }
+    }
+
+    // Asegurar un tamaño mínimo (ej. 1x1) para no dividir por cero
+    if (minX > maxX) { minX = 0; maxX = 0; minY = 0; maxY = 0; }
+
+    // Dimensiones del área explorada
+    int mapWidth = maxX - minX + 1;
+    int mapHeight = maxY - minY + 1;
+
+    // 3. Calcular CellSize dinámico
+    // IMPORTANTE: Si estamos rotados 90 o 270, invertimos ancho/alto para el cálculo
+    int effectiveWidgetW = ui->widgetRadar->width();
+    int effectiveWidgetH = ui->widgetRadar->height();
+
+    // Si la rotación es 90 o 270, comparamos ancho del widget con ALTO del mapa
+    if (rotationAngle == 90 || rotationAngle == 270) {
+        std::swap(effectiveWidgetW, effectiveWidgetH);
+    }
+
+    // Margen para que no toque los bordes (ej. 20px)
+    int margin = 20;
+
+    // Calcular el tamaño de celda (el menor de los dos para mantener proporción cuadrada)
+    // Usamos qMin para asegurar que quepan tanto en ancho como en alto
+    int cellSize = qMin((effectiveWidgetW - margin) / mapWidth,
+                        (effectiveWidgetH - margin) / mapHeight);
+
+    int totalDrawW = mapWidth * cellSize;
+    int totalDrawH = mapHeight * cellSize;
+
+    // Centrar el dibujo en el widget
+    // int offsetX = (w - (mapWidth * cellSize)) / 2;
+    // int offsetY = (h - (mapHeight * cellSize)) / 2;
+    // Invertir Y si quieres que (0,0) esté abajo a la izquierda (típico en laberintos)
+    // int startY = h - offsetY - cellSize;
+
+    // 4. APLICAR TRANSFORMACIONES (LA MAGIA)
+    // =========================================================
+    painter.save(); // Guardar estado inicial
+
+    // A. Mover el origen (0,0) al CENTRO del widget
+    painter.translate(ui->widgetRadar->width() / 2, ui->widgetRadar->height() / 2);
+
+    // B. Rotar
+    painter.rotate(rotationAngle);
+
+    // C. ESPEJAR (MIRROR)
+    // Si escalamos X por -1, todo lo que se dibuje a la derecha aparecerá a la izquierda.
+    if (isMirrored) {
+        painter.scale(-1, 1);
+    }
+
+    // D. Mover hacia atrás la mitad del tamaño del mapa.
+    // Esto hace que el mapa quede centrado en el punto de rotación.
+    painter.translate(-totalDrawW / 2, -totalDrawH / 2);
+
+
+    //painter.setPen(QPen(QColor(222, 223, 225, 255), 3)); // Paredes blancas gruesas
+    pen.setColor(QColor(222, 223, 225, 255));
+    tapePen.setColor(QColor(60, 60, 60));
+    tapePen.setWidth(3);
+
+    for (int x = minX; x <= maxX; x++) {
+        for (int y = minY; y <= maxY; y++) {
+            if (!mapData.maze[x][y].visited) continue;
+
+            // Coordenadas relativas locales (dentro del sistema transformado)
+            int px = (x - minX) * cellSize;
+            // Invertimos Y localmente para dibujar de abajo hacia arriba
+            int py = totalDrawH - ((y - minY + 1) * cellSize);
+
+            // 2. Dibujar paredes
+
+            uint8_t walls = mapData.maze[x][y].walls;
+
+            // --- NORTE ---
+            if (walls & (1 << 0)) {
+                painter.setPen(pen);
+                painter.drawLine(px, py, px + cellSize, py);
+            } else {
+                // Si no hay pared -> Dibujar Cinta de suelo
+                painter.setPen(tapePen);
+                painter.drawLine(px, py, px + cellSize, py);
+            }
+
+            // --- ESTE ---
+            if (walls & (1 << 1)) {
+                painter.setPen(pen);
+                painter.drawLine(px + cellSize, py, px + cellSize, py + cellSize);
+            } else {
+                painter.setPen(tapePen);
+                painter.drawLine(px + cellSize, py, px + cellSize, py + cellSize);
+            }
+
+            // --- SUR ---
+            if (walls & (1 << 2)) {
+                painter.setPen(pen);
+                painter.drawLine(px, py + cellSize, px + cellSize, py + cellSize);
+            } else {
+                painter.setPen(tapePen);
+                painter.drawLine(px, py + cellSize, px + cellSize, py + cellSize);
+            }
+
+            // --- OESTE ---
+            if (walls & (1 << 3)) {
+                painter.setPen(pen);
+                painter.drawLine(px, py, px, py + cellSize);
+            } else {
+                painter.setPen(tapePen);
+                painter.drawLine(px, py, px, py + cellSize);
+            }
+
+            // --- ROBOT ---
+            if (x == mapData.currentX && y == mapData.currentY) {
+                painter.save(); // Guardar estado (para no afectar a las siguientes celdas)
+
+                // 1. Mover el origen al CENTRO de la celda actual
+                int cx = px + cellSize / 2;
+                int cy = py + cellSize / 2;
+                painter.translate(cx, cy);
+
+                // 2. Rotar según la dirección del robot
+                // Asumiendo: 0=Norte, 1=Este, 2=Sur, 3=Oeste
+                // Multiplicamos por 90 grados.
+                painter.rotate(mapData.currentDirection * 90);
+
+                // 3. Crear el triángulo (Apuntando hacia "Arriba" localmente)
+                // Como ya rotamos el papel, siempre dibujamos un triángulo mirando al Norte (Arriba)
+                // y la rotación se encarga del resto.
+                int r = cellSize / 3; // Radio/Tamaño del robot
+
+                QPolygon triangle;
+                triangle << QPoint(0, -r);       // Punta (Arriba / Norte visual)
+                triangle << QPoint(-r + 2, r);   // Base Izquierda (con un pequeño offset estético)
+                triangle << QPoint(r - 2, r);    // Base Derecha
+
+                // 4. Dibujar
+                painter.setBrush(QColor(0, 250, 154, 255));       // Color de relleno
+                painter.setPen(Qt::NoPen);       // Sin borde
+                // Opcional: Borde oscuro para que resalte
+                // painter.setPen(QPen(Qt::black, 1));
+
+                painter.drawPolygon(triangle);
+
+                painter.restore(); // Restaurar estado (volver al sistema de coordenadas del mapa)
+            }
+        }
+    }
+
+    // RADAR
+    // painter.translate(ui->widgetRadar->width()/2, ui->widgetRadar->height()/2);
+    // painter.drawEllipse(-widgetSize.width/2, -widgetSize.height/2, widgetSize.width, widgetSize.height);
+    // painter.drawEllipse(-widgetSize.width/4, -widgetSize.height/4, widgetSize.width/2, widgetSize.height/2);
+    // painter.drawEllipse(-widgetSize.width/8, -widgetSize.height/8, widgetSize.width/4, widgetSize.height/4);
+    // painter.drawEllipse(-3*widgetSize.width/8, -3*widgetSize.height/8, 3*widgetSize.width/4, 3*widgetSize.height/4);
+
+    // painter.drawLine(-widgetSize.width/2, 0, widgetSize.width/2, 0);
+    // painter.drawLine(0, -widgetSize.height/2, 0, widgetSize.height/2);
     /*
     for(int i=0; i<8; i++){
         //painter.drawLine(x1 y1 x2 y2)
@@ -920,9 +1127,10 @@ void QForm1::DrawMovement(){
 
     //painter.drawPoint(samples, -(int)acceleration[samples]*25);
 
-    painter.translate(ui->widgetRadar->width()/2, ui->widgetRadar->height()/2);
+    // MOVIMIENTO
+    // painter.translate(ui->widgetRadar->width()/2, ui->widgetRadar->height()/2);
 
-    painter.drawLine(0, 0, (ui->widgetRadar->width()/2)*cos(yaw * M_PI/180 + M_PI/2), (ui->widgetRadar->height()/2)*-sin(yaw * M_PI/180 + M_PI/2));
+    // painter.drawLine(0, 0, (ui->widgetRadar->width()/2)*cos(yaw * M_PI/180 + M_PI/2), (ui->widgetRadar->height()/2)*-sin(yaw * M_PI/180 + M_PI/2));
 
     pen.setWidth(3);
     pen.setColor(QColor(222, 223, 225, 255));
@@ -934,7 +1142,8 @@ void QForm1::DrawMovement(){
     painter.setPen(pen);
     //painter.translate(ui->widget->width()/2, ui->widget->height()/2);
 
-    painter.drawEllipse(QPointF(posValues[0]*4, posValues[1]*4), 10, 10);
+    // MOVIMIENTO
+    // painter.drawEllipse(QPointF(posValues[0]*4, posValues[1]*4), 10, 10);
 
     QPaintBox1->update();
 }
@@ -1029,40 +1238,77 @@ void QForm1::on_viewTabButton_clicked(){
 
 void QForm1::updateMotorPower(double left, double right)
 {
-    if (m_qmlRootObject) {
-        m_qmlRootObject->setProperty("leftMotorPower", left);
-        m_qmlRootObject->setProperty("rightMotorPower", right);
+    if (!m_qmlRootObject) return;
+    QObject *stateController = m_qmlRootObject->findChild<QObject*>("stateController");
+    if (stateController) {
+        stateController->setProperty("leftMotorPower", left);
+        stateController->setProperty("rightMotorPower", right);
     }
 }
 
 void QForm1::updateCarPosition(double position)
 {
-    if (m_qmlRootObject) {
-        // La lógica de los sensores y el cálculo de la posición (0.0 a 1.0) la haces en C++
-        // y aquí solo pasas el resultado final.
-        m_qmlRootObject->setProperty("carPosition", position);
+    if (!m_qmlRootObject) return;
+    QObject *stateController = m_qmlRootObject->findChild<QObject*>("stateController");
+    if (stateController) {
+        stateController->setProperty("carPosition", position);
     }
 }
 
 void QForm1::updateFrontSensor(bool visible){
-    if (m_qmlRootObject) {
-        // "setProperty" cambia el valor de una 'property' en QML
-        m_qmlRootObject->setProperty("sensorFrontal", visible);
+    if (!m_qmlRootObject) return; // Siempre comprueba que el objeto exista
+
+    // 1. Buscamos el objeto "stateController" dentro del QML
+    QObject *stateController = m_qmlRootObject->findChild<QObject*>("stateController");
+
+    if (stateController) {
+        // 2. Establecemos el valor de su propiedad "sensorFrontal"
+        stateController->setProperty("sensorFrontal", visible);
+    } else {
+        qWarning() << "Error: no se encontró el objeto 'stateController' en QML. SF";
     }
 }
 
 void QForm1::updateLeftSensor(bool visible){
-    if (m_qmlRootObject) {
-        // "setProperty" cambia el valor de una 'property' en QML
-        m_qmlRootObject->setProperty("sensorIzquierdo", visible);
+    if (!m_qmlRootObject) return;
+    QObject *stateController = m_qmlRootObject->findChild<QObject*>("stateController");
+    if (stateController) {
+        stateController->setProperty("sensorIzquierdo", visible);
     }
 }
 
 void QForm1::updateRightSensor(bool visible){
-    if (m_qmlRootObject) {
-        // "setProperty" cambia el valor de una 'property' en QML
-        m_qmlRootObject->setProperty("sensorDerecho", visible);
+    if (!m_qmlRootObject) return;
+    QObject *stateController = m_qmlRootObject->findChild<QObject*>("stateController");
+    if (stateController) {
+        stateController->setProperty("sensorDerecho", visible);
     }
+}
+
+void QForm1::triggerForward() {
+    if (!m_qmlRootObject) return;
+    QMetaObject::invokeMethod(m_qmlRootObject, "triggerMoveForward");
+}
+
+void QForm1::triggerLeft() {
+    if (!m_qmlRootObject) return;
+    QMetaObject::invokeMethod(m_qmlRootObject, "triggerTurnLeft");
+}
+
+void QForm1::triggerRight() {
+    if (!m_qmlRootObject) return;
+    QMetaObject::invokeMethod(m_qmlRootObject, "triggerTurnRight");
+}
+
+void QForm1::onAnimationDone() {
+    // Esta función se ejecuta cuando el QML termina el "truco" de teletransportarse
+    qDebug() << "Animación terminada. Actualizando muros lógicos...";
+
+    // AQUÍ debes actualizar tus sensores con los datos de la NUEVA celda
+    // Ejemplo (debes adaptarlo a tu lógica de laberinto):
+    // updateFrontSensor(nuevoValorFrontal);
+    // updateLeftSensor(nuevoValorIzquierdo);
+    // updateRightSensor(nuevoValorDerecho);
 }
 
 // void QForm1::updateMotorLabel(qreal value)
@@ -1245,5 +1491,29 @@ void QForm1::on_readWallPIDButton_clicked(){
     buf[0] = GET_PID_WALL_GAINS;
 
     SendCMD(buf, 1);
+}
+
+
+void QForm1::on_pushButton_clicked()
+{
+    rotationAngle += 90;
+    if (rotationAngle >= 360) rotationAngle = 0;
+}
+
+
+void QForm1::on_setBatteryVoltageButton_clicked()
+{
+    uint8_t buf[3];
+    buf[0] = SET_BATTERY_VOLTAGE;
+
+    // Tomar el valor del spinbox, multiplicarlo y hacer bitwise para enviar los MSB y LSB
+    double voltageDouble = ui->batteryVoltageSpinBox->value();
+
+    uint16_t voltage = static_cast<uint16_t>(voltageDouble*100);
+
+    buf[1] = static_cast<uint8_t>(voltage & 0xFF);
+    buf[2] = static_cast<uint8_t>((voltage >> 8) & 0xFF);
+
+    SendCMD(buf, 3);
 }
 

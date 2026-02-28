@@ -46,6 +46,6 @@ void Infrared_Convert(InfraredHandle_s *infraredData);
 
 void Infrared_To8Bits(InfraredHandle_s *infraredData);
 
-void Infrared_DigitalPerception(InfraredHandle_s *infraredData, uint8_t *byte, uint8_t threshold);
+void Infrared_DigitalPerception(InfraredHandle_s *infraredData, uint8_t *byte, uint16_t threshold);
 
 #endif /* INC_INFRARED_H_ */

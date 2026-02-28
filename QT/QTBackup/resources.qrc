@@ -887,5 +887,13 @@
         <file>3d/Car/qmldir</file>
         <file>cursor/mouse-pointer.png</file>
         <file>loadingScreen/loadingScreen.png</file>
+        <file>3d/road3D.qml</file>
+        <file>3d/Piso/meshes/madera_mesh.mesh</file>
+        <file>3d/Piso/Piso.qml</file>
+        <file>3d/Piso/qmldir</file>
+        <file>3d/Tabla/meshes/madera_mesh.mesh</file>
+        <file>3d/Tabla/qmldir</file>
+        <file>3d/Tabla/Tabla.qml</file>
+        <file>3d/assets/studio_small_09_1k.hdr</file>
     </qresource>
 </RCC>

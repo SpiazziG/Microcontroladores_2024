@@ -26,6 +26,27 @@ namespace _3d_Car_Car_qml {
         reinterpret_cast<const QV4::CompiledData::Unit*>(&qmlData), &aotBuiltFunctions[0], nullptr
     };
 }
+namespace _3d_road3D_qml { 
+    extern const unsigned char qmlData[];
+    extern const QQmlPrivate::AOTCompiledFunction aotBuiltFunctions[];
+    const QQmlPrivate::CachedQmlUnit unit = {
+        reinterpret_cast<const QV4::CompiledData::Unit*>(&qmlData), &aotBuiltFunctions[0], nullptr
+    };
+}
+namespace _3d_Piso_Piso_qml { 
+    extern const unsigned char qmlData[];
+    extern const QQmlPrivate::AOTCompiledFunction aotBuiltFunctions[];
+    const QQmlPrivate::CachedQmlUnit unit = {
+        reinterpret_cast<const QV4::CompiledData::Unit*>(&qmlData), &aotBuiltFunctions[0], nullptr
+    };
+}
+namespace _3d_Tabla_Tabla_qml { 
+    extern const unsigned char qmlData[];
+    extern const QQmlPrivate::AOTCompiledFunction aotBuiltFunctions[];
+    const QQmlPrivate::CachedQmlUnit unit = {
+        reinterpret_cast<const QV4::CompiledData::Unit*>(&qmlData), &aotBuiltFunctions[0], nullptr
+    };
+}
 
 }
 namespace {
@@ -43,6 +64,9 @@ Registry::Registry() {
     resourcePathToCachedUnit.insert(QStringLiteral("/img/Screen01.ui.qml"), &QmlCacheGeneratedCode::_img_Screen01_ui_0x2e_qml::unit);
     resourcePathToCachedUnit.insert(QStringLiteral("/3d/Screen01.ui.qml"), &QmlCacheGeneratedCode::_3d_Screen01_ui_0x2e_qml::unit);
     resourcePathToCachedUnit.insert(QStringLiteral("/3d/Car/Car.qml"), &QmlCacheGeneratedCode::_3d_Car_Car_qml::unit);
+    resourcePathToCachedUnit.insert(QStringLiteral("/3d/road3D.qml"), &QmlCacheGeneratedCode::_3d_road3D_qml::unit);
+    resourcePathToCachedUnit.insert(QStringLiteral("/3d/Piso/Piso.qml"), &QmlCacheGeneratedCode::_3d_Piso_Piso_qml::unit);
+    resourcePathToCachedUnit.insert(QStringLiteral("/3d/Tabla/Tabla.qml"), &QmlCacheGeneratedCode::_3d_Tabla_Tabla_qml::unit);
     QQmlPrivate::RegisterQmlUnitCacheHook registration;
     registration.structVersion = 0;
     registration.lookupCachedQmlUnit = &lookupCachedUnit;

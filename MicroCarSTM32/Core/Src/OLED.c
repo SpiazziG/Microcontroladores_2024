@@ -6,7 +6,7 @@
  */
 
 #include "OLED.h"
-
+#include "stdio.h"
 //static void OLED_UpdateScreen_DMA_Step(OLED_Handle_s *handle);
 //static void OLED_Tx_Cplt_Callback(void *context);
 static OLED_Status_e OLED_WriteCommand(OLED_Handle_s *handle, uint8_t command);
@@ -464,6 +464,128 @@ void OLED_DrawRect(OLED_Handle_s *handle, int16_t x, int16_t y, int16_t width, i
 	OLED_DrawHorizontalLine(handle, x, y + height - 1, width, color);
 }
 
+void OLED_DrawFilledRect(OLED_Handle_s *handle, int16_t x, int16_t y, int16_t w, int16_t h, OLED_Color_e color){
+	for (int i = 0; i < w; i++) {
+		OLED_DrawVerticalLine(handle, x + i, y, h, color);
+	}
+}
+
+void OLED_DrawHeader(OLED_Handle_s *handle, const char* title, uint32_t ticks) {
+	// Background
+	OLED_DrawFilledRect(handle, 0, 0, OLED_WIDTH, GUI_HEADER_HEIGHT, White);
+
+	OLED_SetCursor(handle, 2, 1);
+	OLED_WriteString(handle, (char*)title, Font_7x10, Black);
+
+	uint32_t totalSeconds = ticks / 1000;
+	uint8_t minutes = (totalSeconds / 60) % 100;
+	uint8_t seconds = totalSeconds % 60;
+
+	char timeStr[6];
+	sprintf(timeStr, "%02d:%02d", minutes, seconds);
+
+	OLED_SetCursor(handle, 88, 1);
+	OLED_WriteString(handle, timeStr, Font_7x10, Black);
+}
+
+/**
+ * @brief Dibuja un widget de sensor individual
+ * @param id: Número o letra para identificar el sensor
+ * @param val: Valor actual del sensor
+ * @param x, y: Coordenadas de la esquina superior izquierda del widget
+ */
+void OLED_DrawSensorWidget(OLED_Handle_s *handle, char *label, uint16_t val, uint8_t col, uint8_t row) {
+	// Calculate Coordinates
+	// Start X = Margin + Column * (Bar Width + Gap)
+	// Column 0: 4
+	// Column 1: 4 + 34 + 9 = 47
+	// Column 2: 47 + 34 + 9 = 90
+
+	int16_t x_base = GUI_MARGIN_LEFT + (col * (GUI_BAR_WIDTH + GUI_WIDGET_COL_GAP));
+
+	// Widget's total height = box + gapBoxBar + Bar + GapRow
+	// Height = 10 + 2 + 3 + 2 = 17
+	// Initial Offset = Header(11) + GapHeader(2) = 13
+	int16_t y_base = (GUI_HEADER_HEIGHT + 2) + (row * (GUI_BOX_HEIGHT + GUI_BOX_TO_BAR_GAP + GUI_BAR_HEIGHT + GUI_WIDGET_ROW_GAP));
+
+	// Components specifics coordinates
+	int16_t box_x = x_base + ((GUI_BAR_WIDTH - GUI_BOX_WIDTH) / 2); // Centered Box ID
+
+	int16_t bar_y = y_base + GUI_BOX_HEIGHT + GUI_BOX_TO_BAR_GAP;
+
+// Draw Value
+	char textBuf[6];
+	sprintf(textBuf, "%4d", val);
+	OLED_SetCursor(handle, x_base + 3, y_base);
+	OLED_WriteString(handle, textBuf, Font_7x10, White);
+	// Draw ID
+//	OLED_SetCursor(handle, box_x + 3, y_base);
+//	OLED_WriteString(handle, label, Font_7x10, White);
+
+	// Calculate bar width
+	if (val > GUI_BAR_MAX_VAL) val = GUI_BAR_MAX_VAL;
+
+	uint16_t fillWidth = (uint32_t)(val * GUI_BAR_WIDTH) / GUI_BAR_MAX_VAL;
+
+	// Draw filled Bar
+	//int16_t barX = x + (WIDGET_W - BAR_WIDTH) / 2;
+	//int16_t barY = y + BOX_HEIGHT + 2;
+
+	if (fillWidth > 0) {
+		OLED_DrawFilledRect(handle, x_base, bar_y, fillWidth, GUI_BAR_HEIGHT, White);
+	}
+}
+
+void OLED_DrawDigitalEye(OLED_Handle_s *handle, uint8_t x, uint8_t y, uint8_t w, uint8_t h) {
+	uint8_t r;
+	r = 3;
+
+	OLED_DrawFilledRect(handle, x + r, y, w - (2 * r), h, White);
+	OLED_DrawFilledRect(handle, x, y + r, w, h - (2 * r), White);
+
+	OLED_DrawPixel(handle, x + 1, y + 1, White);
+	OLED_DrawPixel(handle, x + w - 2, y + 1, White);
+	OLED_DrawPixel(handle, x + 1, y + h - 2, White);
+	OLED_DrawPixel(handle, x + w - 2, y + h - 2, White);
+}
+
+void OLED_DrawBidirectionalBar(OLED_Handle_s *handle, uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t val, int32_t maxScale) {
+	// Dibujar contorno
+	OLED_DrawRect(handle, x, y, w, h, White);
+
+	// Dibujar línea central
+	int8_t midX = x + (w / 2);
+	OLED_DrawVerticalLine(handle, midX, y, h, White);
+
+	// Calcular relleno
+	int16_t absVal = (val < 0) ? -val : val;
+
+	int8_t halfW = (w - 4) / 2;
+
+	if (maxScale == 0) maxScale = 1;
+
+	// Regla de 3
+	int8_t barLen = (absVal * halfW) / maxScale;
+
+	if (barLen > halfW) barLen = halfW; // Saturación
+
+	if (barLen > 0) {
+		if (val > 0) {
+			// Positivo, del centro hacia la derecha
+			// X start: midX + 1
+			OLED_DrawFilledRect(handle, midX + 1, y + 2, barLen, h - 4, White);
+		} else {
+			OLED_DrawFilledRect(handle, midX - barLen, y + 2, barLen, h - 4, White);
+		}
+	}
+
+	char str[6];
+
+	sprintf(str, "%4d", val);
+	OLED_SetCursor(handle, 94, y);
+	OLED_WriteString(handle, str, Font_7x10, White);
+
+}
 /*
 static void OLED_Tx_Cplt_Callback(void *context) {
     // 1. Convertir el puntero de contexto genérico de vuelta a nuestro tipo de handle.

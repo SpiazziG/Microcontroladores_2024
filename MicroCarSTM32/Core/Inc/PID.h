@@ -26,6 +26,7 @@ typedef struct {
 
 void PID_Init(PIDHandle_s *pid, int32_t Kp, int32_t Ki, int32_t Kd, int32_t min, int32_t max);
 void PID_Compute(PIDHandle_s *pid, int32_t error, int32_t dt_ms);
+void PID_Compute_Gyro(PIDHandle_s *pid, int32_t error, int32_t gyro_rate);
 void PID_Reset(PIDHandle_s *pid);
 
 #endif /* INC_PID_H_ */

@@ -30,10 +30,17 @@ Rectangle {
         environment: sceneEnvironment
         SceneEnvironment {
             id: sceneEnvironment
-            aoEnabled: false
+            //aoEnabled: false
+            // 1. Activar Oclusión Ambiental
+            aoEnabled: true
+            aoStrength: 100  // Intensidad (0 a 100). Prueba con 60-100 para notar el efecto.
+            aoBias: 0.5      // Ayuda a definir qué tan cerca deben estar los objetos para generar sombra.
+            aoDistance: 5.0  // Qué tan lejos se extiende la sombra.
+            // 2. Mejorar el mapeo de tonos (hace que los colores se vean más realistas/cinemáticos)
+            //tonemapMode: SceneEnvironment.TonemapModeFilmic
             clearColor: "#232729"
             backgroundMode: SceneEnvironment.Color
-            antialiasingQuality: SceneEnvironment.High
+            antialiasingQuality: SceneEnvironment.Medium
             antialiasingMode: SceneEnvironment.MSAA
         }
 
@@ -46,6 +53,11 @@ Rectangle {
                 eulerRotation.x: -23
                 z: 0
                 eulerRotation.y: -90
+
+                castsShadow: true
+
+                    // Opcional: Suavizar la sombra para que no sea un bloque negro perfecto
+                    shadowFactor: 20 // Un valor menor hace sombras más suaves/transparentes
             }
 
             PerspectiveCamera {

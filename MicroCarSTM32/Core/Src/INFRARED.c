@@ -57,7 +57,7 @@ void Infrared_Convert(InfraredHandle_s *infraredData){
     }
 }
 
-void Infrared_DigitalPerception(InfraredHandle_s *infraredData, uint8_t *byte, uint8_t threshold) {
+void Infrared_DigitalPerception(InfraredHandle_s *infraredData, uint8_t *byte, uint16_t threshold) {
 	*byte = 0;
 
 	for (uint8_t i = 0; i < ADC_CHANNELS; i++)

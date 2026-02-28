@@ -41,6 +41,19 @@
 #define OLED_COM_LR_REMAP    				0
 #define OLED_COM_ALTERNATIVE_PIN_CONFIG		1
 
+#define GUI_BAR_MAX_VAL 	4095
+#define GUI_BAR_WIDTH		34
+#define GUI_BAR_HEIGHT		3
+#define GUI_WIDGET_WIDTH	34
+#define GUI_WIDGET_HEIGHT	17
+#define GUI_MARGIN_LEFT		4
+#define GUI_HEADER_HEIGHT	11
+#define GUI_WIDGET_COL_GAP	9
+#define GUI_WIDGET_ROW_GAP	2
+#define GUI_BOX_HEIGHT		10
+#define GUI_BOX_WIDTH		10
+#define GUI_BOX_TO_BAR_GAP 	2
+
 typedef enum {
 	OLED_OK = 0,
 	OLED_ERROR = -1,
@@ -104,7 +117,11 @@ void OLED_DrawBitmap(OLED_Handle_s *handle, uint8_t W, uint8_t H, const uint8_t*
 void OLED_DrawHorizontalLine(OLED_Handle_s *handle, int16_t x, int16_t y, int16_t length, OLED_Color_e color);
 void OLED_DrawVerticalLine(OLED_Handle_s *handle, int16_t x, int16_t y, int16_t length, OLED_Color_e color);
 void OLED_DrawRect(OLED_Handle_s *handle, int16_t x, int16_t y, int16_t width, int16_t height, OLED_Color_e color);
-
+void OLED_DrawFilledRect(OLED_Handle_s *handle, int16_t x, int16_t y, int16_t w, int16_t h, OLED_Color_e color);
+void OLED_DrawHeader(OLED_Handle_s *handle, const char* title, uint32_t ticks);
+void OLED_DrawSensorWidget(OLED_Handle_s *handle, char *label, uint16_t val, uint8_t col, uint8_t row);
+void OLED_DrawDigitalEye(OLED_Handle_s *handle,uint8_t x, uint8_t y, uint8_t w, uint8_t h);
+void OLED_DrawBidirectionalBar(OLED_Handle_s *handle, uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t val, int32_t maxScale);
 /*
 uint8_t OLED_Init(I2C_HandleTypeDef *hi2c);
 

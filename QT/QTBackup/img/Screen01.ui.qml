@@ -176,4 +176,8 @@ Item {
             }
         }
     }
+
+    Item {
+        id: __materialLibrary__
+    }
 }

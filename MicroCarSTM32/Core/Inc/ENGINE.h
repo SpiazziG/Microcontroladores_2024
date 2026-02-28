@@ -20,6 +20,9 @@
 
 #define PWM_MAX_VALUE			9999
 
+#define ENGINE_MAX_STEP 		15
+#define ENGINE_DEADBAND			25
+
 typedef enum {
 	LEFT_MOTOR,
 	RIGHT_MOTOR
@@ -32,14 +35,23 @@ typedef struct {
 	uint32_t rightForwardChannel;
 	uint32_t rightBackwardChannel;
 
-	int8_t leftSpeed;
-	int8_t rightSpeed;
+	int8_t targetLeftSpeed;
+	int8_t targetRightSpeed;
+	int8_t currentLeftSpeed;
+	int8_t currentRightSpeed;
+
 
 	int16_t pwmMaxPeriod;
+
+	uint16_t nominalVoltage;
+	uint16_t currentVoltage;
 } ENGINE_Handle_s;
 
 void ENGINE_Init(ENGINE_Handle_s *handle);
+//static void ENGINE_CalculateRamp(int8_t *currentSpeed, int8_t targetSpeed);
+void ENGINE_Task(ENGINE_Handle_s *handle);
 void ENGINE_SetLeftSpeed(ENGINE_Handle_s *handle, int8_t speed);
 void ENGINE_SetRightSpeed(ENGINE_Handle_s *handle, int8_t speed);
+void ENGINE_SetBatteryVoltage(ENGINE_Handle_s *handle, uint16_t voltage);
 
 #endif /* INC_ENGINE_H_ */

@@ -888,5 +888,13 @@
         <file alias="3d/Car/qmldir">../QT/QTBackup/3d/Car/qmldir</file>
         <file alias="cursor/mouse-pointer.png">../QT/QTBackup/cursor/mouse-pointer.png</file>
         <file alias="loadingScreen/loadingScreen.png">../QT/QTBackup/loadingScreen/loadingScreen.png</file>
+        <file alias="3d/road3D.qml">../QT/QTBackup/3d/road3D.qml</file>
+        <file alias="3d/Piso/meshes/madera_mesh.mesh">../QT/QTBackup/3d/Piso/meshes/madera_mesh.mesh</file>
+        <file alias="3d/Piso/Piso.qml">../QT/QTBackup/3d/Piso/Piso.qml</file>
+        <file alias="3d/Piso/qmldir">../QT/QTBackup/3d/Piso/qmldir</file>
+        <file alias="3d/Tabla/meshes/madera_mesh.mesh">../QT/QTBackup/3d/Tabla/meshes/madera_mesh.mesh</file>
+        <file alias="3d/Tabla/qmldir">../QT/QTBackup/3d/Tabla/qmldir</file>
+        <file alias="3d/Tabla/Tabla.qml">../QT/QTBackup/3d/Tabla/Tabla.qml</file>
+        <file alias="3d/assets/studio_small_09_1k.hdr">../QT/QTBackup/3d/assets/studio_small_09_1k.hdr</file>
     </qresource>
 </RCC>

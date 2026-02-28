@@ -53,6 +53,10 @@ static constexpr auto qt_meta_stringdata_CLASSQForm1ENDCLASS = QtMocHelpers::str
     "right",
     "updateCarPosition",
     "position",
+    "onAnimationDone",
+    "triggerForward",
+    "triggerLeft",
+    "triggerRight",
     "Initialize",
     "OnQTimer1",
     "OnRxChar",
@@ -99,11 +103,13 @@ static constexpr auto qt_meta_stringdata_CLASSQForm1ENDCLASS = QtMocHelpers::str
     "frequencyHz",
     "on_readTurnPIDButton_clicked",
     "on_readWallPIDButton_clicked",
-    "on_viewTabButton_clicked"
+    "on_viewTabButton_clicked",
+    "on_pushButton_clicked",
+    "on_setBatteryVoltageButton_clicked"
 );
 #else  // !QT_MOC_HAS_STRING_DATA
 struct qt_meta_stringdata_CLASSQForm1ENDCLASS_t {
-    uint offsetsAndSizes[124];
+    uint offsetsAndSizes[136];
     char stringdata0[7];
     char stringdata1[13];
     char stringdata2[1];
@@ -119,53 +125,59 @@ struct qt_meta_stringdata_CLASSQForm1ENDCLASS_t {
     char stringdata12[6];
     char stringdata13[18];
     char stringdata14[9];
-    char stringdata15[11];
-    char stringdata16[10];
-    char stringdata17[9];
-    char stringdata18[12];
-    char stringdata19[8];
-    char stringdata20[8];
-    char stringdata21[6];
-    char stringdata22[26];
-    char stringdata23[23];
-    char stringdata24[29];
-    char stringdata25[13];
-    char stringdata26[15];
-    char stringdata27[8];
-    char stringdata28[9];
-    char stringdata29[4];
-    char stringdata30[8];
-    char stringdata31[7];
-    char stringdata32[10];
-    char stringdata33[6];
-    char stringdata34[11];
-    char stringdata35[5];
-    char stringdata36[5];
-    char stringdata37[23];
-    char stringdata38[26];
-    char stringdata39[8];
-    char stringdata40[13];
-    char stringdata41[6];
-    char stringdata42[10];
-    char stringdata43[13];
-    char stringdata44[10];
-    char stringdata45[23];
-    char stringdata46[26];
-    char stringdata47[30];
-    char stringdata48[25];
-    char stringdata49[24];
-    char stringdata50[28];
-    char stringdata51[28];
-    char stringdata52[27];
-    char stringdata53[34];
-    char stringdata54[5];
-    char stringdata55[31];
-    char stringdata56[25];
-    char stringdata57[16];
-    char stringdata58[12];
-    char stringdata59[29];
-    char stringdata60[29];
-    char stringdata61[25];
+    char stringdata15[16];
+    char stringdata16[15];
+    char stringdata17[12];
+    char stringdata18[13];
+    char stringdata19[11];
+    char stringdata20[10];
+    char stringdata21[9];
+    char stringdata22[12];
+    char stringdata23[8];
+    char stringdata24[8];
+    char stringdata25[6];
+    char stringdata26[26];
+    char stringdata27[23];
+    char stringdata28[29];
+    char stringdata29[13];
+    char stringdata30[15];
+    char stringdata31[8];
+    char stringdata32[9];
+    char stringdata33[4];
+    char stringdata34[8];
+    char stringdata35[7];
+    char stringdata36[10];
+    char stringdata37[6];
+    char stringdata38[11];
+    char stringdata39[5];
+    char stringdata40[5];
+    char stringdata41[23];
+    char stringdata42[26];
+    char stringdata43[8];
+    char stringdata44[13];
+    char stringdata45[6];
+    char stringdata46[10];
+    char stringdata47[13];
+    char stringdata48[10];
+    char stringdata49[23];
+    char stringdata50[26];
+    char stringdata51[30];
+    char stringdata52[25];
+    char stringdata53[24];
+    char stringdata54[28];
+    char stringdata55[28];
+    char stringdata56[27];
+    char stringdata57[34];
+    char stringdata58[5];
+    char stringdata59[31];
+    char stringdata60[25];
+    char stringdata61[16];
+    char stringdata62[12];
+    char stringdata63[29];
+    char stringdata64[29];
+    char stringdata65[25];
+    char stringdata66[22];
+    char stringdata67[35];
 };
 #define QT_MOC_LITERAL(ofs, len) \
     uint(sizeof(qt_meta_stringdata_CLASSQForm1ENDCLASS_t::offsetsAndSizes) + ofs), len 
@@ -186,53 +198,59 @@ Q_CONSTINIT static const qt_meta_stringdata_CLASSQForm1ENDCLASS_t qt_meta_string
         QT_MOC_LITERAL(121, 5),  // "right"
         QT_MOC_LITERAL(127, 17),  // "updateCarPosition"
         QT_MOC_LITERAL(145, 8),  // "position"
-        QT_MOC_LITERAL(154, 10),  // "Initialize"
-        QT_MOC_LITERAL(165, 9),  // "OnQTimer1"
-        QT_MOC_LITERAL(175, 8),  // "OnRxChar"
-        QT_MOC_LITERAL(184, 11),  // "eventFilter"
-        QT_MOC_LITERAL(196, 7),  // "watched"
-        QT_MOC_LITERAL(204, 7),  // "QEvent*"
-        QT_MOC_LITERAL(212, 5),  // "event"
-        QT_MOC_LITERAL(218, 25),  // "on_OpenPortButton_clicked"
-        QT_MOC_LITERAL(244, 22),  // "on_buttonClear_clicked"
-        QT_MOC_LITERAL(267, 28),  // "on_SendCommandButton_clicked"
-        QT_MOC_LITERAL(296, 12),  // "InitPaintBox"
-        QT_MOC_LITERAL(309, 14),  // "DrawBackground"
-        QT_MOC_LITERAL(324, 7),  // "SendCMD"
-        QT_MOC_LITERAL(332, 8),  // "uint8_t*"
-        QT_MOC_LITERAL(341, 3),  // "buf"
-        QT_MOC_LITERAL(345, 7),  // "uint8_t"
-        QT_MOC_LITERAL(353, 6),  // "length"
-        QT_MOC_LITERAL(360, 9),  // "DecodeCmd"
-        QT_MOC_LITERAL(370, 5),  // "rxBuf"
-        QT_MOC_LITERAL(376, 10),  // "EngineTest"
-        QT_MOC_LITERAL(387, 4),  // "Eng1"
-        QT_MOC_LITERAL(392, 4),  // "Eng2"
-        QT_MOC_LITERAL(397, 22),  // "on_aliveButton_clicked"
-        QT_MOC_LITERAL(420, 25),  // "on_OpenWifiButton_clicked"
-        QT_MOC_LITERAL(446, 7),  // "onRxUDP"
-        QT_MOC_LITERAL(454, 12),  // "DecodeHeader"
-        QT_MOC_LITERAL(467, 5),  // "count"
-        QT_MOC_LITERAL(473, 9),  // "Heartbeat"
-        QT_MOC_LITERAL(483, 12),  // "DrawMovement"
-        QT_MOC_LITERAL(496, 9),  // "Integrate"
-        QT_MOC_LITERAL(506, 22),  // "on_powerButton_clicked"
-        QT_MOC_LITERAL(529, 25),  // "on_debugTabButton_clicked"
-        QT_MOC_LITERAL(555, 29),  // "on_telemetryTabButton_clicked"
-        QT_MOC_LITERAL(585, 24),  // "on_homeTabButton_clicked"
-        QT_MOC_LITERAL(610, 23),  // "on_PIDTabButton_clicked"
-        QT_MOC_LITERAL(634, 27),  // "on_setTurnPIDButton_clicked"
-        QT_MOC_LITERAL(662, 27),  // "on_setWallPIDButton_clicked"
-        QT_MOC_LITERAL(690, 26),  // "on_pwmConfigButton_clicked"
-        QT_MOC_LITERAL(717, 33),  // "on_pwmPrescalerConfig_textCha..."
-        QT_MOC_LITERAL(751, 4),  // "arg1"
-        QT_MOC_LITERAL(756, 30),  // "on_pwmPeriodConfig_textChanged"
-        QT_MOC_LITERAL(787, 24),  // "updateResultingFrequency"
-        QT_MOC_LITERAL(812, 15),  // "formatFrequency"
-        QT_MOC_LITERAL(828, 11),  // "frequencyHz"
-        QT_MOC_LITERAL(840, 28),  // "on_readTurnPIDButton_clicked"
-        QT_MOC_LITERAL(869, 28),  // "on_readWallPIDButton_clicked"
-        QT_MOC_LITERAL(898, 24)   // "on_viewTabButton_clicked"
+        QT_MOC_LITERAL(154, 15),  // "onAnimationDone"
+        QT_MOC_LITERAL(170, 14),  // "triggerForward"
+        QT_MOC_LITERAL(185, 11),  // "triggerLeft"
+        QT_MOC_LITERAL(197, 12),  // "triggerRight"
+        QT_MOC_LITERAL(210, 10),  // "Initialize"
+        QT_MOC_LITERAL(221, 9),  // "OnQTimer1"
+        QT_MOC_LITERAL(231, 8),  // "OnRxChar"
+        QT_MOC_LITERAL(240, 11),  // "eventFilter"
+        QT_MOC_LITERAL(252, 7),  // "watched"
+        QT_MOC_LITERAL(260, 7),  // "QEvent*"
+        QT_MOC_LITERAL(268, 5),  // "event"
+        QT_MOC_LITERAL(274, 25),  // "on_OpenPortButton_clicked"
+        QT_MOC_LITERAL(300, 22),  // "on_buttonClear_clicked"
+        QT_MOC_LITERAL(323, 28),  // "on_SendCommandButton_clicked"
+        QT_MOC_LITERAL(352, 12),  // "InitPaintBox"
+        QT_MOC_LITERAL(365, 14),  // "DrawBackground"
+        QT_MOC_LITERAL(380, 7),  // "SendCMD"
+        QT_MOC_LITERAL(388, 8),  // "uint8_t*"
+        QT_MOC_LITERAL(397, 3),  // "buf"
+        QT_MOC_LITERAL(401, 7),  // "uint8_t"
+        QT_MOC_LITERAL(409, 6),  // "length"
+        QT_MOC_LITERAL(416, 9),  // "DecodeCmd"
+        QT_MOC_LITERAL(426, 5),  // "rxBuf"
+        QT_MOC_LITERAL(432, 10),  // "EngineTest"
+        QT_MOC_LITERAL(443, 4),  // "Eng1"
+        QT_MOC_LITERAL(448, 4),  // "Eng2"
+        QT_MOC_LITERAL(453, 22),  // "on_aliveButton_clicked"
+        QT_MOC_LITERAL(476, 25),  // "on_OpenWifiButton_clicked"
+        QT_MOC_LITERAL(502, 7),  // "onRxUDP"
+        QT_MOC_LITERAL(510, 12),  // "DecodeHeader"
+        QT_MOC_LITERAL(523, 5),  // "count"
+        QT_MOC_LITERAL(529, 9),  // "Heartbeat"
+        QT_MOC_LITERAL(539, 12),  // "DrawMovement"
+        QT_MOC_LITERAL(552, 9),  // "Integrate"
+        QT_MOC_LITERAL(562, 22),  // "on_powerButton_clicked"
+        QT_MOC_LITERAL(585, 25),  // "on_debugTabButton_clicked"
+        QT_MOC_LITERAL(611, 29),  // "on_telemetryTabButton_clicked"
+        QT_MOC_LITERAL(641, 24),  // "on_homeTabButton_clicked"
+        QT_MOC_LITERAL(666, 23),  // "on_PIDTabButton_clicked"
+        QT_MOC_LITERAL(690, 27),  // "on_setTurnPIDButton_clicked"
+        QT_MOC_LITERAL(718, 27),  // "on_setWallPIDButton_clicked"
+        QT_MOC_LITERAL(746, 26),  // "on_pwmConfigButton_clicked"
+        QT_MOC_LITERAL(773, 33),  // "on_pwmPrescalerConfig_textCha..."
+        QT_MOC_LITERAL(807, 4),  // "arg1"
+        QT_MOC_LITERAL(812, 30),  // "on_pwmPeriodConfig_textChanged"
+        QT_MOC_LITERAL(843, 24),  // "updateResultingFrequency"
+        QT_MOC_LITERAL(868, 15),  // "formatFrequency"
+        QT_MOC_LITERAL(884, 11),  // "frequencyHz"
+        QT_MOC_LITERAL(896, 28),  // "on_readTurnPIDButton_clicked"
+        QT_MOC_LITERAL(925, 28),  // "on_readWallPIDButton_clicked"
+        QT_MOC_LITERAL(954, 24),  // "on_viewTabButton_clicked"
+        QT_MOC_LITERAL(979, 21),  // "on_pushButton_clicked"
+        QT_MOC_LITERAL(1001, 34)   // "on_setBatteryVoltageButton_cl..."
     },
     "QForm1",
     "maxMinValues",
@@ -249,6 +267,10 @@ Q_CONSTINIT static const qt_meta_stringdata_CLASSQForm1ENDCLASS_t qt_meta_string
     "right",
     "updateCarPosition",
     "position",
+    "onAnimationDone",
+    "triggerForward",
+    "triggerLeft",
+    "triggerRight",
     "Initialize",
     "OnQTimer1",
     "OnRxChar",
@@ -295,7 +317,9 @@ Q_CONSTINIT static const qt_meta_stringdata_CLASSQForm1ENDCLASS_t qt_meta_string
     "frequencyHz",
     "on_readTurnPIDButton_clicked",
     "on_readWallPIDButton_clicked",
-    "on_viewTabButton_clicked"
+    "on_viewTabButton_clicked",
+    "on_pushButton_clicked",
+    "on_setBatteryVoltageButton_clicked"
 };
 #undef QT_MOC_LITERAL
 #endif // !QT_MOC_HAS_STRING_DATA
@@ -307,7 +331,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSQForm1ENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      40,   14, // methods
+      46,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -315,48 +339,54 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSQForm1ENDCLASS[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    2,  254,    2, 0x06,    1 /* Public */,
+       1,    2,  290,    2, 0x06,    1 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       6,    1,  259,    2, 0x0a,    4 /* Public */,
-       8,    1,  262,    2, 0x0a,    6 /* Public */,
-       9,    1,  265,    2, 0x0a,    8 /* Public */,
-      10,    2,  268,    2, 0x0a,   10 /* Public */,
-      13,    1,  273,    2, 0x0a,   13 /* Public */,
-      15,    0,  276,    2, 0x08,   15 /* Private */,
-      16,    0,  277,    2, 0x08,   16 /* Private */,
-      17,    0,  278,    2, 0x08,   17 /* Private */,
-      18,    2,  279,    2, 0x08,   18 /* Private */,
-      22,    0,  284,    2, 0x08,   21 /* Private */,
-      23,    0,  285,    2, 0x08,   22 /* Private */,
-      24,    0,  286,    2, 0x08,   23 /* Private */,
-      25,    0,  287,    2, 0x08,   24 /* Private */,
-      26,    0,  288,    2, 0x08,   25 /* Private */,
-      27,    2,  289,    2, 0x08,   26 /* Private */,
-      32,    1,  294,    2, 0x08,   29 /* Private */,
-      34,    2,  297,    2, 0x08,   31 /* Private */,
-      37,    0,  302,    2, 0x08,   34 /* Private */,
-      38,    0,  303,    2, 0x08,   35 /* Private */,
-      39,    0,  304,    2, 0x08,   36 /* Private */,
-      40,    2,  305,    2, 0x08,   37 /* Private */,
-      42,    0,  310,    2, 0x08,   40 /* Private */,
-      43,    0,  311,    2, 0x08,   41 /* Private */,
-      44,    0,  312,    2, 0x08,   42 /* Private */,
-      45,    0,  313,    2, 0x08,   43 /* Private */,
-      46,    0,  314,    2, 0x08,   44 /* Private */,
-      47,    0,  315,    2, 0x08,   45 /* Private */,
-      48,    0,  316,    2, 0x08,   46 /* Private */,
-      49,    0,  317,    2, 0x08,   47 /* Private */,
-      50,    0,  318,    2, 0x08,   48 /* Private */,
-      51,    0,  319,    2, 0x08,   49 /* Private */,
-      52,    0,  320,    2, 0x08,   50 /* Private */,
-      53,    1,  321,    2, 0x08,   51 /* Private */,
-      55,    1,  324,    2, 0x08,   53 /* Private */,
-      56,    0,  327,    2, 0x08,   55 /* Private */,
-      57,    1,  328,    2, 0x08,   56 /* Private */,
-      59,    0,  331,    2, 0x08,   58 /* Private */,
-      60,    0,  332,    2, 0x08,   59 /* Private */,
-      61,    0,  333,    2, 0x08,   60 /* Private */,
+       6,    1,  295,    2, 0x0a,    4 /* Public */,
+       8,    1,  298,    2, 0x0a,    6 /* Public */,
+       9,    1,  301,    2, 0x0a,    8 /* Public */,
+      10,    2,  304,    2, 0x0a,   10 /* Public */,
+      13,    1,  309,    2, 0x0a,   13 /* Public */,
+      15,    0,  312,    2, 0x0a,   15 /* Public */,
+      16,    0,  313,    2, 0x0a,   16 /* Public */,
+      17,    0,  314,    2, 0x0a,   17 /* Public */,
+      18,    0,  315,    2, 0x0a,   18 /* Public */,
+      19,    0,  316,    2, 0x08,   19 /* Private */,
+      20,    0,  317,    2, 0x08,   20 /* Private */,
+      21,    0,  318,    2, 0x08,   21 /* Private */,
+      22,    2,  319,    2, 0x08,   22 /* Private */,
+      26,    0,  324,    2, 0x08,   25 /* Private */,
+      27,    0,  325,    2, 0x08,   26 /* Private */,
+      28,    0,  326,    2, 0x08,   27 /* Private */,
+      29,    0,  327,    2, 0x08,   28 /* Private */,
+      30,    0,  328,    2, 0x08,   29 /* Private */,
+      31,    2,  329,    2, 0x08,   30 /* Private */,
+      36,    1,  334,    2, 0x08,   33 /* Private */,
+      38,    2,  337,    2, 0x08,   35 /* Private */,
+      41,    0,  342,    2, 0x08,   38 /* Private */,
+      42,    0,  343,    2, 0x08,   39 /* Private */,
+      43,    0,  344,    2, 0x08,   40 /* Private */,
+      44,    2,  345,    2, 0x08,   41 /* Private */,
+      46,    0,  350,    2, 0x08,   44 /* Private */,
+      47,    0,  351,    2, 0x08,   45 /* Private */,
+      48,    0,  352,    2, 0x08,   46 /* Private */,
+      49,    0,  353,    2, 0x08,   47 /* Private */,
+      50,    0,  354,    2, 0x08,   48 /* Private */,
+      51,    0,  355,    2, 0x08,   49 /* Private */,
+      52,    0,  356,    2, 0x08,   50 /* Private */,
+      53,    0,  357,    2, 0x08,   51 /* Private */,
+      54,    0,  358,    2, 0x08,   52 /* Private */,
+      55,    0,  359,    2, 0x08,   53 /* Private */,
+      56,    0,  360,    2, 0x08,   54 /* Private */,
+      57,    1,  361,    2, 0x08,   55 /* Private */,
+      59,    1,  364,    2, 0x08,   57 /* Private */,
+      60,    0,  367,    2, 0x08,   59 /* Private */,
+      61,    1,  368,    2, 0x08,   60 /* Private */,
+      63,    0,  371,    2, 0x08,   62 /* Private */,
+      64,    0,  372,    2, 0x08,   63 /* Private */,
+      65,    0,  373,    2, 0x08,   64 /* Private */,
+      66,    0,  374,    2, 0x08,   65 /* Private */,
+      67,    0,  375,    2, 0x08,   66 /* Private */,
 
  // signals: parameters
     QMetaType::Void, 0x80000000 | 3, 0x80000000 | 3,    4,    5,
@@ -370,23 +400,23 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSQForm1ENDCLASS[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Bool, QMetaType::QObjectStar, 0x80000000 | 20,   19,   21,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Bool, QMetaType::QObjectStar, 0x80000000 | 24,   23,   25,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 28, 0x80000000 | 30,   29,   31,
-    QMetaType::Void, 0x80000000 | 28,   33,
-    QMetaType::Void, 0x80000000 | 30, 0x80000000 | 30,   35,   36,
+    QMetaType::Void, 0x80000000 | 32, 0x80000000 | 34,   33,   35,
+    QMetaType::Void, 0x80000000 | 32,   37,
+    QMetaType::Void, 0x80000000 | 34, 0x80000000 | 34,   39,   40,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 28, QMetaType::Int,   29,   41,
-    QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void,
-    QMetaType::Void,
+    QMetaType::Void, 0x80000000 | 32, QMetaType::Int,   33,   45,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -394,10 +424,16 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSQForm1ENDCLASS[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QString,   54,
-    QMetaType::Void, QMetaType::QString,   54,
     QMetaType::Void,
-    QMetaType::QString, QMetaType::Double,   58,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::QString,   58,
+    QMetaType::Void, QMetaType::QString,   58,
+    QMetaType::Void,
+    QMetaType::QString, QMetaType::Double,   62,
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -434,6 +470,14 @@ Q_CONSTINIT const QMetaObject QForm1::staticMetaObject = { {
         // method 'updateCarPosition'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<double, std::false_type>,
+        // method 'onAnimationDone'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'triggerForward'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'triggerLeft'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'triggerRight'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'Initialize'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'OnQTimer1'
@@ -513,6 +557,10 @@ Q_CONSTINIT const QMetaObject QForm1::staticMetaObject = { {
         // method 'on_readWallPIDButton_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'on_viewTabButton_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_pushButton_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_setBatteryVoltageButton_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -530,42 +578,48 @@ void QForm1::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 3: _t->updateRightSensor((*reinterpret_cast< std::add_pointer_t<bool>>(_a[1]))); break;
         case 4: _t->updateMotorPower((*reinterpret_cast< std::add_pointer_t<double>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<double>>(_a[2]))); break;
         case 5: _t->updateCarPosition((*reinterpret_cast< std::add_pointer_t<double>>(_a[1]))); break;
-        case 6: _t->Initialize(); break;
-        case 7: _t->OnQTimer1(); break;
-        case 8: _t->OnRxChar(); break;
-        case 9: { bool _r = _t->eventFilter((*reinterpret_cast< std::add_pointer_t<QObject*>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QEvent*>>(_a[2])));
+        case 6: _t->onAnimationDone(); break;
+        case 7: _t->triggerForward(); break;
+        case 8: _t->triggerLeft(); break;
+        case 9: _t->triggerRight(); break;
+        case 10: _t->Initialize(); break;
+        case 11: _t->OnQTimer1(); break;
+        case 12: _t->OnRxChar(); break;
+        case 13: { bool _r = _t->eventFilter((*reinterpret_cast< std::add_pointer_t<QObject*>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QEvent*>>(_a[2])));
             if (_a[0]) *reinterpret_cast< bool*>(_a[0]) = std::move(_r); }  break;
-        case 10: _t->on_OpenPortButton_clicked(); break;
-        case 11: _t->on_buttonClear_clicked(); break;
-        case 12: _t->on_SendCommandButton_clicked(); break;
-        case 13: _t->InitPaintBox(); break;
-        case 14: _t->DrawBackground(); break;
-        case 15: _t->SendCMD((*reinterpret_cast< std::add_pointer_t<uint8_t*>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<uint8_t>>(_a[2]))); break;
-        case 16: _t->DecodeCmd((*reinterpret_cast< std::add_pointer_t<uint8_t*>>(_a[1]))); break;
-        case 17: _t->EngineTest((*reinterpret_cast< std::add_pointer_t<uint8_t>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<uint8_t>>(_a[2]))); break;
-        case 18: _t->on_aliveButton_clicked(); break;
-        case 19: _t->on_OpenWifiButton_clicked(); break;
-        case 20: _t->onRxUDP(); break;
-        case 21: _t->DecodeHeader((*reinterpret_cast< std::add_pointer_t<uint8_t*>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<int>>(_a[2]))); break;
-        case 22: _t->Heartbeat(); break;
-        case 23: _t->DrawMovement(); break;
-        case 24: _t->Integrate(); break;
-        case 25: _t->on_powerButton_clicked(); break;
-        case 26: _t->on_debugTabButton_clicked(); break;
-        case 27: _t->on_telemetryTabButton_clicked(); break;
-        case 28: _t->on_homeTabButton_clicked(); break;
-        case 29: _t->on_PIDTabButton_clicked(); break;
-        case 30: _t->on_setTurnPIDButton_clicked(); break;
-        case 31: _t->on_setWallPIDButton_clicked(); break;
-        case 32: _t->on_pwmConfigButton_clicked(); break;
-        case 33: _t->on_pwmPrescalerConfig_textChanged((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
-        case 34: _t->on_pwmPeriodConfig_textChanged((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
-        case 35: _t->updateResultingFrequency(); break;
-        case 36: { QString _r = _t->formatFrequency((*reinterpret_cast< std::add_pointer_t<double>>(_a[1])));
+        case 14: _t->on_OpenPortButton_clicked(); break;
+        case 15: _t->on_buttonClear_clicked(); break;
+        case 16: _t->on_SendCommandButton_clicked(); break;
+        case 17: _t->InitPaintBox(); break;
+        case 18: _t->DrawBackground(); break;
+        case 19: _t->SendCMD((*reinterpret_cast< std::add_pointer_t<uint8_t*>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<uint8_t>>(_a[2]))); break;
+        case 20: _t->DecodeCmd((*reinterpret_cast< std::add_pointer_t<uint8_t*>>(_a[1]))); break;
+        case 21: _t->EngineTest((*reinterpret_cast< std::add_pointer_t<uint8_t>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<uint8_t>>(_a[2]))); break;
+        case 22: _t->on_aliveButton_clicked(); break;
+        case 23: _t->on_OpenWifiButton_clicked(); break;
+        case 24: _t->onRxUDP(); break;
+        case 25: _t->DecodeHeader((*reinterpret_cast< std::add_pointer_t<uint8_t*>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<int>>(_a[2]))); break;
+        case 26: _t->Heartbeat(); break;
+        case 27: _t->DrawMovement(); break;
+        case 28: _t->Integrate(); break;
+        case 29: _t->on_powerButton_clicked(); break;
+        case 30: _t->on_debugTabButton_clicked(); break;
+        case 31: _t->on_telemetryTabButton_clicked(); break;
+        case 32: _t->on_homeTabButton_clicked(); break;
+        case 33: _t->on_PIDTabButton_clicked(); break;
+        case 34: _t->on_setTurnPIDButton_clicked(); break;
+        case 35: _t->on_setWallPIDButton_clicked(); break;
+        case 36: _t->on_pwmConfigButton_clicked(); break;
+        case 37: _t->on_pwmPrescalerConfig_textChanged((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 38: _t->on_pwmPeriodConfig_textChanged((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 39: _t->updateResultingFrequency(); break;
+        case 40: { QString _r = _t->formatFrequency((*reinterpret_cast< std::add_pointer_t<double>>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
-        case 37: _t->on_readTurnPIDButton_clicked(); break;
-        case 38: _t->on_readWallPIDButton_clicked(); break;
-        case 39: _t->on_viewTabButton_clicked(); break;
+        case 41: _t->on_readTurnPIDButton_clicked(); break;
+        case 42: _t->on_readWallPIDButton_clicked(); break;
+        case 43: _t->on_viewTabButton_clicked(); break;
+        case 44: _t->on_pushButton_clicked(); break;
+        case 45: _t->on_setBatteryVoltageButton_clicked(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -599,13 +653,13 @@ int QForm1::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 40)
+        if (_id < 46)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 40;
+        _id -= 46;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 40)
+        if (_id < 46)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 40;
+        _id -= 46;
     }
     return _id;
 }
