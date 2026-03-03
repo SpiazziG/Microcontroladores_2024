@@ -135,6 +135,14 @@ private slots:
 
     void on_setBatteryVoltageButton_clicked();
 
+    void on_readSmoothPIDButton_clicked();
+
+    void on_readStopPIDButton_clicked();
+
+    void on_setSmoothPIDButton_clicked();
+
+    void on_setStopPIDButton_clicked();
+
 private:
     Ui::QForm1 *ui;
 
@@ -211,13 +219,21 @@ private:
         SET_BATTERY_VOLTAGE = 0xC4,
 
         // 0xD_ : PID Configuration
-        // Turn PID
+        // Pivot Turn PID
         SET_PID_TURN_GAINS  = 0xD0, //SET_PID
         GET_PID_TURN_GAINS  = 0xD1,
 
         // Wall PID
         SET_PID_WALL_GAINS  = 0xD2,
         GET_PID_WALL_GAINS  = 0xD3,
+
+        // Smooth Turn PID
+        SET_PID_SMOOTH_GAINS = 0xD4,
+        GET_PID_SMOOTH_GAINS = 0xD5,
+
+        // Stop PID
+        SET_PID_STOP_GAINS = 0xD6,
+        GET_PID_STOP_GAINS = 0xD7,
 
         // Movement parameters
         SET_TURN_SPEED      = 0xD8,

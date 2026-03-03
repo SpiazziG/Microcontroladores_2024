@@ -133,31 +133,49 @@ public:
     QGridLayout *gridLayout_9;
     QFrame *framePID;
     QGridLayout *gridLayout_12;
-    QPushButton *readTurnPIDButton;
-    QLabel *labelKD;
-    QLineEdit *lineEditTurnKD;
-    QLineEdit *lineEditTurnBase;
-    QLineEdit *lineEditTurnMax;
-    QLineEdit *lineEditTurnMin;
-    QPushButton *setTurnPIDButton;
-    QLabel *labelBaseOut;
-    QLineEdit *lineEditTurnKP;
-    QLabel *labelMaxOut;
-    QLabel *labelMinOut;
     QLineEdit *lineEditTurnKI;
-    QLabel *labelKP;
-    QLabel *labelKI;
+    QLabel *labelMaxOut;
+    QPushButton *readTurnPIDButton;
+    QLabel *labelWallPID;
     QPushButton *readWallPIDButton;
     QLineEdit *lineEditWallBase;
-    QLineEdit *lineEditWallMax;
-    QLineEdit *lineEditWallMin;
-    QLineEdit *lineEditWallKD;
     QLineEdit *lineEditWallKI;
-    QLineEdit *lineEditWallKP;
-    QPushButton *setWallPIDButton;
     QLabel *labelTurnPID;
-    QLabel *labelWallPID;
+    QLabel *labelKD;
+    QLabel *labelMinOut;
+    QPushButton *readSmoothPIDButton;
+    QPushButton *setSmoothPIDButton;
+    QLineEdit *lineEditWallKP;
+    QLineEdit *lineEditSmoothKP;
+    QLineEdit *lineEditWallKD;
+    QPushButton *readStopPIDButton;
+    QLabel *labelBaseOut;
+    QPushButton *setTurnPIDButton;
+    QLineEdit *lineEditSmoothKI;
+    QPushButton *setWallPIDButton;
+    QLabel *labelKP;
+    QLineEdit *lineEditTurnMax;
+    QLineEdit *lineEditTurnKP;
+    QLabel *labelKI;
+    QLineEdit *lineEditWallMax;
+    QLineEdit *lineEditTurnMin;
+    QLineEdit *lineEditWallMin;
+    QLineEdit *lineEditTurnBase;
+    QLineEdit *lineEditSmoothKD;
+    QLineEdit *lineEditTurnKD;
     QLabel *labelPIDValues;
+    QPushButton *setStopPIDButton;
+    QLineEdit *lineEditStopMax;
+    QLineEdit *lineEditStopKI;
+    QLineEdit *lineEditStopKP;
+    QLabel *label_4;
+    QLabel *label_3;
+    QLineEdit *lineEditStopKD;
+    QLineEdit *lineEditStopMin;
+    QLineEdit *lineEditStopBase;
+    QLineEdit *lineEditSmoothMin;
+    QLineEdit *lineEditSmoothMax;
+    QLineEdit *lineEditSmoothBase;
     QFrame *frameSoftwareConfig;
     QGridLayout *gridLayout_13;
     QLineEdit *pwmPrescalerConfig;
@@ -1283,132 +1301,19 @@ public:
         framePID->setFrameShadow(QFrame::Plain);
         gridLayout_12 = new QGridLayout(framePID);
         gridLayout_12->setObjectName("gridLayout_12");
-        readTurnPIDButton = new QPushButton(framePID);
-        readTurnPIDButton->setObjectName("readTurnPIDButton");
-        QSizePolicy sizePolicy6(QSizePolicy::Minimum, QSizePolicy::Preferred);
-        sizePolicy6.setHorizontalStretch(0);
-        sizePolicy6.setVerticalStretch(0);
-        sizePolicy6.setHeightForWidth(readTurnPIDButton->sizePolicy().hasHeightForWidth());
-        readTurnPIDButton->setSizePolicy(sizePolicy6);
-        readTurnPIDButton->setMinimumSize(QSize(79, 0));
-        readTurnPIDButton->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+        lineEditTurnKI = new QLineEdit(framePID);
+        lineEditTurnKI->setObjectName("lineEditTurnKI");
+        sizePolicy.setHeightForWidth(lineEditTurnKI->sizePolicy().hasHeightForWidth());
+        lineEditTurnKI->setSizePolicy(sizePolicy);
+        lineEditTurnKI->setMinimumSize(QSize(0, 0));
+        lineEditTurnKI->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
 "font: 10pt \"Century Gothic\";\n"
 "font-weight: bold;\n"
 "background-color: rgb(57, 63, 68);\n"
 "color: rgb(227, 227, 229);"));
-        readTurnPIDButton->setFlat(true);
+        lineEditTurnKI->setAlignment(Qt::AlignCenter);
 
-        gridLayout_12->addWidget(readTurnPIDButton, 11, 1, 1, 1);
-
-        labelKD = new QLabel(framePID);
-        labelKD->setObjectName("labelKD");
-        sizePolicy.setHeightForWidth(labelKD->sizePolicy().hasHeightForWidth());
-        labelKD->setSizePolicy(sizePolicy);
-        labelKD->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
-"font: 13pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"color: rgb(96, 100, 103);\n"
-"background-color: transparent;"));
-        labelKD->setAlignment(Qt::AlignCenter);
-
-        gridLayout_12->addWidget(labelKD, 5, 0, 1, 1);
-
-        lineEditTurnKD = new QLineEdit(framePID);
-        lineEditTurnKD->setObjectName("lineEditTurnKD");
-        QSizePolicy sizePolicy7(QSizePolicy::Expanding, QSizePolicy::Preferred);
-        sizePolicy7.setHorizontalStretch(0);
-        sizePolicy7.setVerticalStretch(0);
-        sizePolicy7.setHeightForWidth(lineEditTurnKD->sizePolicy().hasHeightForWidth());
-        lineEditTurnKD->setSizePolicy(sizePolicy7);
-        lineEditTurnKD->setMinimumSize(QSize(79, 0));
-        lineEditTurnKD->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
-"font: 10pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"background-color: rgb(57, 63, 68);\n"
-"color: rgb(227, 227, 229);"));
-        lineEditTurnKD->setAlignment(Qt::AlignCenter);
-
-        gridLayout_12->addWidget(lineEditTurnKD, 5, 1, 1, 2);
-
-        lineEditTurnBase = new QLineEdit(framePID);
-        lineEditTurnBase->setObjectName("lineEditTurnBase");
-        sizePolicy7.setHeightForWidth(lineEditTurnBase->sizePolicy().hasHeightForWidth());
-        lineEditTurnBase->setSizePolicy(sizePolicy7);
-        lineEditTurnBase->setMinimumSize(QSize(79, 0));
-        lineEditTurnBase->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
-"font: 10pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"background-color: rgb(57, 63, 68);\n"
-"color: rgb(227, 227, 229);"));
-        lineEditTurnBase->setAlignment(Qt::AlignCenter);
-
-        gridLayout_12->addWidget(lineEditTurnBase, 9, 1, 1, 2);
-
-        lineEditTurnMax = new QLineEdit(framePID);
-        lineEditTurnMax->setObjectName("lineEditTurnMax");
-        sizePolicy7.setHeightForWidth(lineEditTurnMax->sizePolicy().hasHeightForWidth());
-        lineEditTurnMax->setSizePolicy(sizePolicy7);
-        lineEditTurnMax->setMinimumSize(QSize(79, 0));
-        lineEditTurnMax->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
-"font: 10pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"background-color: rgb(57, 63, 68);\n"
-"color: rgb(227, 227, 229);"));
-        lineEditTurnMax->setAlignment(Qt::AlignCenter);
-
-        gridLayout_12->addWidget(lineEditTurnMax, 7, 1, 1, 2);
-
-        lineEditTurnMin = new QLineEdit(framePID);
-        lineEditTurnMin->setObjectName("lineEditTurnMin");
-        sizePolicy7.setHeightForWidth(lineEditTurnMin->sizePolicy().hasHeightForWidth());
-        lineEditTurnMin->setSizePolicy(sizePolicy7);
-        lineEditTurnMin->setMinimumSize(QSize(79, 0));
-        lineEditTurnMin->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
-"font: 10pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"background-color: rgb(57, 63, 68);\n"
-"color: rgb(227, 227, 229);"));
-        lineEditTurnMin->setAlignment(Qt::AlignCenter);
-
-        gridLayout_12->addWidget(lineEditTurnMin, 6, 1, 1, 2);
-
-        setTurnPIDButton = new QPushButton(framePID);
-        setTurnPIDButton->setObjectName("setTurnPIDButton");
-        sizePolicy6.setHeightForWidth(setTurnPIDButton->sizePolicy().hasHeightForWidth());
-        setTurnPIDButton->setSizePolicy(sizePolicy6);
-        setTurnPIDButton->setMinimumSize(QSize(79, 0));
-        setTurnPIDButton->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
-"font: 10pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"background-color: rgb(57, 63, 68);\n"
-"color: rgb(227, 227, 229);"));
-
-        gridLayout_12->addWidget(setTurnPIDButton, 11, 2, 1, 1);
-
-        labelBaseOut = new QLabel(framePID);
-        labelBaseOut->setObjectName("labelBaseOut");
-        labelBaseOut->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
-"font: 13pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"color: rgb(96, 100, 103);\n"
-"background-color: transparent;"));
-        labelBaseOut->setAlignment(Qt::AlignCenter);
-
-        gridLayout_12->addWidget(labelBaseOut, 9, 0, 1, 1);
-
-        lineEditTurnKP = new QLineEdit(framePID);
-        lineEditTurnKP->setObjectName("lineEditTurnKP");
-        sizePolicy7.setHeightForWidth(lineEditTurnKP->sizePolicy().hasHeightForWidth());
-        lineEditTurnKP->setSizePolicy(sizePolicy7);
-        lineEditTurnKP->setMinimumSize(QSize(79, 0));
-        lineEditTurnKP->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
-"font: 10pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"background-color: rgb(57, 63, 68);\n"
-"color: rgb(227, 227, 229);"));
-        lineEditTurnKP->setAlignment(Qt::AlignCenter);
-
-        gridLayout_12->addWidget(lineEditTurnKP, 3, 1, 1, 2);
+        gridLayout_12->addWidget(lineEditTurnKI, 4, 1, 1, 2);
 
         labelMaxOut = new QLabel(framePID);
         labelMaxOut->setObjectName("labelMaxOut");
@@ -1421,57 +1326,35 @@ public:
 
         gridLayout_12->addWidget(labelMaxOut, 7, 0, 1, 1);
 
-        labelMinOut = new QLabel(framePID);
-        labelMinOut->setObjectName("labelMinOut");
-        labelMinOut->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
-"font: 13pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"color: rgb(96, 100, 103);\n"
-"background-color: transparent;"));
-        labelMinOut->setAlignment(Qt::AlignCenter);
-
-        gridLayout_12->addWidget(labelMinOut, 6, 0, 1, 1);
-
-        lineEditTurnKI = new QLineEdit(framePID);
-        lineEditTurnKI->setObjectName("lineEditTurnKI");
-        sizePolicy7.setHeightForWidth(lineEditTurnKI->sizePolicy().hasHeightForWidth());
-        lineEditTurnKI->setSizePolicy(sizePolicy7);
-        lineEditTurnKI->setMinimumSize(QSize(79, 0));
-        lineEditTurnKI->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+        readTurnPIDButton = new QPushButton(framePID);
+        readTurnPIDButton->setObjectName("readTurnPIDButton");
+        QSizePolicy sizePolicy6(QSizePolicy::Minimum, QSizePolicy::Preferred);
+        sizePolicy6.setHorizontalStretch(0);
+        sizePolicy6.setVerticalStretch(0);
+        sizePolicy6.setHeightForWidth(readTurnPIDButton->sizePolicy().hasHeightForWidth());
+        readTurnPIDButton->setSizePolicy(sizePolicy6);
+        readTurnPIDButton->setMinimumSize(QSize(0, 0));
+        readTurnPIDButton->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
 "font: 10pt \"Century Gothic\";\n"
 "font-weight: bold;\n"
 "background-color: rgb(57, 63, 68);\n"
 "color: rgb(227, 227, 229);"));
-        lineEditTurnKI->setAlignment(Qt::AlignCenter);
+        readTurnPIDButton->setFlat(true);
 
-        gridLayout_12->addWidget(lineEditTurnKI, 4, 1, 1, 2);
+        gridLayout_12->addWidget(readTurnPIDButton, 11, 1, 1, 1);
 
-        labelKP = new QLabel(framePID);
-        labelKP->setObjectName("labelKP");
-        sizePolicy.setHeightForWidth(labelKP->sizePolicy().hasHeightForWidth());
-        labelKP->setSizePolicy(sizePolicy);
-        labelKP->setLayoutDirection(Qt::LeftToRight);
-        labelKP->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
+        labelWallPID = new QLabel(framePID);
+        labelWallPID->setObjectName("labelWallPID");
+        sizePolicy.setHeightForWidth(labelWallPID->sizePolicy().hasHeightForWidth());
+        labelWallPID->setSizePolicy(sizePolicy);
+        labelWallPID->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
 "font: 13pt \"Century Gothic\";\n"
 "font-weight: bold;\n"
-"color: rgb(96, 100, 103);\n"
+"color: rgb(222, 223, 225);\n"
 "background-color: transparent;"));
-        labelKP->setAlignment(Qt::AlignCenter);
+        labelWallPID->setAlignment(Qt::AlignCenter);
 
-        gridLayout_12->addWidget(labelKP, 3, 0, 1, 1);
-
-        labelKI = new QLabel(framePID);
-        labelKI->setObjectName("labelKI");
-        sizePolicy.setHeightForWidth(labelKI->sizePolicy().hasHeightForWidth());
-        labelKI->setSizePolicy(sizePolicy);
-        labelKI->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
-"font: 13pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"color: rgb(96, 100, 103);\n"
-"background-color: transparent;"));
-        labelKI->setAlignment(Qt::AlignCenter);
-
-        gridLayout_12->addWidget(labelKI, 4, 0, 1, 1);
+        gridLayout_12->addWidget(labelWallPID, 2, 3, 1, 2);
 
         readWallPIDButton = new QPushButton(framePID);
         readWallPIDButton->setObjectName("readWallPIDButton");
@@ -1488,8 +1371,8 @@ public:
 
         lineEditWallBase = new QLineEdit(framePID);
         lineEditWallBase->setObjectName("lineEditWallBase");
-        sizePolicy7.setHeightForWidth(lineEditWallBase->sizePolicy().hasHeightForWidth());
-        lineEditWallBase->setSizePolicy(sizePolicy7);
+        sizePolicy.setHeightForWidth(lineEditWallBase->sizePolicy().hasHeightForWidth());
+        lineEditWallBase->setSizePolicy(sizePolicy);
         lineEditWallBase->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
 "font: 10pt \"Century Gothic\";\n"
 "font-weight: bold;\n"
@@ -1499,51 +1382,11 @@ public:
 
         gridLayout_12->addWidget(lineEditWallBase, 9, 3, 1, 2);
 
-        lineEditWallMax = new QLineEdit(framePID);
-        lineEditWallMax->setObjectName("lineEditWallMax");
-        sizePolicy7.setHeightForWidth(lineEditWallMax->sizePolicy().hasHeightForWidth());
-        lineEditWallMax->setSizePolicy(sizePolicy7);
-        lineEditWallMax->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
-"font: 10pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"background-color: rgb(57, 63, 68);\n"
-"color: rgb(227, 227, 229);"));
-        lineEditWallMax->setAlignment(Qt::AlignCenter);
-
-        gridLayout_12->addWidget(lineEditWallMax, 7, 3, 1, 2);
-
-        lineEditWallMin = new QLineEdit(framePID);
-        lineEditWallMin->setObjectName("lineEditWallMin");
-        sizePolicy7.setHeightForWidth(lineEditWallMin->sizePolicy().hasHeightForWidth());
-        lineEditWallMin->setSizePolicy(sizePolicy7);
-        lineEditWallMin->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
-"font: 10pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"background-color: rgb(57, 63, 68);\n"
-"color: rgb(227, 227, 229);"));
-        lineEditWallMin->setAlignment(Qt::AlignCenter);
-
-        gridLayout_12->addWidget(lineEditWallMin, 6, 3, 1, 2);
-
-        lineEditWallKD = new QLineEdit(framePID);
-        lineEditWallKD->setObjectName("lineEditWallKD");
-        sizePolicy7.setHeightForWidth(lineEditWallKD->sizePolicy().hasHeightForWidth());
-        lineEditWallKD->setSizePolicy(sizePolicy7);
-        lineEditWallKD->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
-"font: 10pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"background-color: rgb(57, 63, 68);\n"
-"color: rgb(227, 227, 229);"));
-        lineEditWallKD->setFrame(true);
-        lineEditWallKD->setAlignment(Qt::AlignCenter);
-        lineEditWallKD->setClearButtonEnabled(false);
-
-        gridLayout_12->addWidget(lineEditWallKD, 5, 3, 1, 2);
-
         lineEditWallKI = new QLineEdit(framePID);
         lineEditWallKI->setObjectName("lineEditWallKI");
-        sizePolicy7.setHeightForWidth(lineEditWallKI->sizePolicy().hasHeightForWidth());
-        lineEditWallKI->setSizePolicy(sizePolicy7);
+        sizePolicy.setHeightForWidth(lineEditWallKI->sizePolicy().hasHeightForWidth());
+        lineEditWallKI->setSizePolicy(sizePolicy);
+        lineEditWallKI->setMinimumSize(QSize(0, 0));
         lineEditWallKI->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
 "font: 10pt \"Century Gothic\";\n"
 "font-weight: bold;\n"
@@ -1552,31 +1395,6 @@ public:
         lineEditWallKI->setAlignment(Qt::AlignCenter);
 
         gridLayout_12->addWidget(lineEditWallKI, 4, 3, 1, 2);
-
-        lineEditWallKP = new QLineEdit(framePID);
-        lineEditWallKP->setObjectName("lineEditWallKP");
-        sizePolicy7.setHeightForWidth(lineEditWallKP->sizePolicy().hasHeightForWidth());
-        lineEditWallKP->setSizePolicy(sizePolicy7);
-        lineEditWallKP->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
-"font: 10pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"background-color: rgb(57, 63, 68);\n"
-"color: rgb(227, 227, 229);"));
-        lineEditWallKP->setAlignment(Qt::AlignCenter);
-
-        gridLayout_12->addWidget(lineEditWallKP, 3, 3, 1, 2);
-
-        setWallPIDButton = new QPushButton(framePID);
-        setWallPIDButton->setObjectName("setWallPIDButton");
-        sizePolicy6.setHeightForWidth(setWallPIDButton->sizePolicy().hasHeightForWidth());
-        setWallPIDButton->setSizePolicy(sizePolicy6);
-        setWallPIDButton->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
-"font: 10pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"background-color: rgb(57, 63, 68);\n"
-"color: rgb(227, 227, 229);"));
-
-        gridLayout_12->addWidget(setWallPIDButton, 11, 4, 1, 1);
 
         labelTurnPID = new QLabel(framePID);
         labelTurnPID->setObjectName("labelTurnPID");
@@ -1591,18 +1409,285 @@ public:
 
         gridLayout_12->addWidget(labelTurnPID, 2, 1, 1, 2);
 
-        labelWallPID = new QLabel(framePID);
-        labelWallPID->setObjectName("labelWallPID");
-        sizePolicy.setHeightForWidth(labelWallPID->sizePolicy().hasHeightForWidth());
-        labelWallPID->setSizePolicy(sizePolicy);
-        labelWallPID->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
+        labelKD = new QLabel(framePID);
+        labelKD->setObjectName("labelKD");
+        sizePolicy.setHeightForWidth(labelKD->sizePolicy().hasHeightForWidth());
+        labelKD->setSizePolicy(sizePolicy);
+        labelKD->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
 "font: 13pt \"Century Gothic\";\n"
 "font-weight: bold;\n"
-"color: rgb(222, 223, 225);\n"
+"color: rgb(96, 100, 103);\n"
 "background-color: transparent;"));
-        labelWallPID->setAlignment(Qt::AlignCenter);
+        labelKD->setAlignment(Qt::AlignCenter);
 
-        gridLayout_12->addWidget(labelWallPID, 2, 3, 1, 2);
+        gridLayout_12->addWidget(labelKD, 5, 0, 1, 1);
+
+        labelMinOut = new QLabel(framePID);
+        labelMinOut->setObjectName("labelMinOut");
+        labelMinOut->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
+"font: 13pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"color: rgb(96, 100, 103);\n"
+"background-color: transparent;"));
+        labelMinOut->setAlignment(Qt::AlignCenter);
+
+        gridLayout_12->addWidget(labelMinOut, 6, 0, 1, 1);
+
+        readSmoothPIDButton = new QPushButton(framePID);
+        readSmoothPIDButton->setObjectName("readSmoothPIDButton");
+        readSmoothPIDButton->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+        readSmoothPIDButton->setFlat(true);
+
+        gridLayout_12->addWidget(readSmoothPIDButton, 11, 5, 1, 1);
+
+        setSmoothPIDButton = new QPushButton(framePID);
+        setSmoothPIDButton->setObjectName("setSmoothPIDButton");
+        setSmoothPIDButton->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_12->addWidget(setSmoothPIDButton, 11, 6, 1, 1);
+
+        lineEditWallKP = new QLineEdit(framePID);
+        lineEditWallKP->setObjectName("lineEditWallKP");
+        sizePolicy.setHeightForWidth(lineEditWallKP->sizePolicy().hasHeightForWidth());
+        lineEditWallKP->setSizePolicy(sizePolicy);
+        lineEditWallKP->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+        lineEditWallKP->setAlignment(Qt::AlignCenter);
+
+        gridLayout_12->addWidget(lineEditWallKP, 3, 3, 1, 2);
+
+        lineEditSmoothKP = new QLineEdit(framePID);
+        lineEditSmoothKP->setObjectName("lineEditSmoothKP");
+        sizePolicy.setHeightForWidth(lineEditSmoothKP->sizePolicy().hasHeightForWidth());
+        lineEditSmoothKP->setSizePolicy(sizePolicy);
+        lineEditSmoothKP->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_12->addWidget(lineEditSmoothKP, 3, 5, 1, 2);
+
+        lineEditWallKD = new QLineEdit(framePID);
+        lineEditWallKD->setObjectName("lineEditWallKD");
+        sizePolicy.setHeightForWidth(lineEditWallKD->sizePolicy().hasHeightForWidth());
+        lineEditWallKD->setSizePolicy(sizePolicy);
+        lineEditWallKD->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+        lineEditWallKD->setFrame(true);
+        lineEditWallKD->setAlignment(Qt::AlignCenter);
+        lineEditWallKD->setClearButtonEnabled(false);
+
+        gridLayout_12->addWidget(lineEditWallKD, 5, 3, 1, 2);
+
+        readStopPIDButton = new QPushButton(framePID);
+        readStopPIDButton->setObjectName("readStopPIDButton");
+        readStopPIDButton->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+        readStopPIDButton->setFlat(true);
+
+        gridLayout_12->addWidget(readStopPIDButton, 11, 7, 1, 1);
+
+        labelBaseOut = new QLabel(framePID);
+        labelBaseOut->setObjectName("labelBaseOut");
+        labelBaseOut->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
+"font: 13pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"color: rgb(96, 100, 103);\n"
+"background-color: transparent;"));
+        labelBaseOut->setAlignment(Qt::AlignCenter);
+
+        gridLayout_12->addWidget(labelBaseOut, 9, 0, 1, 1);
+
+        setTurnPIDButton = new QPushButton(framePID);
+        setTurnPIDButton->setObjectName("setTurnPIDButton");
+        sizePolicy6.setHeightForWidth(setTurnPIDButton->sizePolicy().hasHeightForWidth());
+        setTurnPIDButton->setSizePolicy(sizePolicy6);
+        setTurnPIDButton->setMinimumSize(QSize(0, 0));
+        setTurnPIDButton->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_12->addWidget(setTurnPIDButton, 11, 2, 1, 1);
+
+        lineEditSmoothKI = new QLineEdit(framePID);
+        lineEditSmoothKI->setObjectName("lineEditSmoothKI");
+        sizePolicy.setHeightForWidth(lineEditSmoothKI->sizePolicy().hasHeightForWidth());
+        lineEditSmoothKI->setSizePolicy(sizePolicy);
+        lineEditSmoothKI->setMinimumSize(QSize(0, 0));
+        lineEditSmoothKI->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_12->addWidget(lineEditSmoothKI, 4, 5, 1, 2);
+
+        setWallPIDButton = new QPushButton(framePID);
+        setWallPIDButton->setObjectName("setWallPIDButton");
+        sizePolicy6.setHeightForWidth(setWallPIDButton->sizePolicy().hasHeightForWidth());
+        setWallPIDButton->setSizePolicy(sizePolicy6);
+        setWallPIDButton->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_12->addWidget(setWallPIDButton, 11, 4, 1, 1);
+
+        labelKP = new QLabel(framePID);
+        labelKP->setObjectName("labelKP");
+        sizePolicy.setHeightForWidth(labelKP->sizePolicy().hasHeightForWidth());
+        labelKP->setSizePolicy(sizePolicy);
+        labelKP->setLayoutDirection(Qt::LeftToRight);
+        labelKP->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
+"font: 13pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"color: rgb(96, 100, 103);\n"
+"background-color: transparent;"));
+        labelKP->setAlignment(Qt::AlignCenter);
+
+        gridLayout_12->addWidget(labelKP, 3, 0, 1, 1);
+
+        lineEditTurnMax = new QLineEdit(framePID);
+        lineEditTurnMax->setObjectName("lineEditTurnMax");
+        sizePolicy.setHeightForWidth(lineEditTurnMax->sizePolicy().hasHeightForWidth());
+        lineEditTurnMax->setSizePolicy(sizePolicy);
+        lineEditTurnMax->setMinimumSize(QSize(0, 0));
+        lineEditTurnMax->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+        lineEditTurnMax->setAlignment(Qt::AlignCenter);
+
+        gridLayout_12->addWidget(lineEditTurnMax, 7, 1, 1, 2);
+
+        lineEditTurnKP = new QLineEdit(framePID);
+        lineEditTurnKP->setObjectName("lineEditTurnKP");
+        sizePolicy.setHeightForWidth(lineEditTurnKP->sizePolicy().hasHeightForWidth());
+        lineEditTurnKP->setSizePolicy(sizePolicy);
+        lineEditTurnKP->setMinimumSize(QSize(0, 0));
+        lineEditTurnKP->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+        lineEditTurnKP->setAlignment(Qt::AlignCenter);
+
+        gridLayout_12->addWidget(lineEditTurnKP, 3, 1, 1, 2);
+
+        labelKI = new QLabel(framePID);
+        labelKI->setObjectName("labelKI");
+        sizePolicy.setHeightForWidth(labelKI->sizePolicy().hasHeightForWidth());
+        labelKI->setSizePolicy(sizePolicy);
+        labelKI->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
+"font: 13pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"color: rgb(96, 100, 103);\n"
+"background-color: transparent;"));
+        labelKI->setAlignment(Qt::AlignCenter);
+
+        gridLayout_12->addWidget(labelKI, 4, 0, 1, 1);
+
+        lineEditWallMax = new QLineEdit(framePID);
+        lineEditWallMax->setObjectName("lineEditWallMax");
+        sizePolicy.setHeightForWidth(lineEditWallMax->sizePolicy().hasHeightForWidth());
+        lineEditWallMax->setSizePolicy(sizePolicy);
+        lineEditWallMax->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+        lineEditWallMax->setAlignment(Qt::AlignCenter);
+
+        gridLayout_12->addWidget(lineEditWallMax, 7, 3, 1, 2);
+
+        lineEditTurnMin = new QLineEdit(framePID);
+        lineEditTurnMin->setObjectName("lineEditTurnMin");
+        sizePolicy.setHeightForWidth(lineEditTurnMin->sizePolicy().hasHeightForWidth());
+        lineEditTurnMin->setSizePolicy(sizePolicy);
+        lineEditTurnMin->setMinimumSize(QSize(0, 0));
+        lineEditTurnMin->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+        lineEditTurnMin->setAlignment(Qt::AlignCenter);
+
+        gridLayout_12->addWidget(lineEditTurnMin, 6, 1, 1, 2);
+
+        lineEditWallMin = new QLineEdit(framePID);
+        lineEditWallMin->setObjectName("lineEditWallMin");
+        sizePolicy.setHeightForWidth(lineEditWallMin->sizePolicy().hasHeightForWidth());
+        lineEditWallMin->setSizePolicy(sizePolicy);
+        lineEditWallMin->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+        lineEditWallMin->setAlignment(Qt::AlignCenter);
+
+        gridLayout_12->addWidget(lineEditWallMin, 6, 3, 1, 2);
+
+        lineEditTurnBase = new QLineEdit(framePID);
+        lineEditTurnBase->setObjectName("lineEditTurnBase");
+        sizePolicy.setHeightForWidth(lineEditTurnBase->sizePolicy().hasHeightForWidth());
+        lineEditTurnBase->setSizePolicy(sizePolicy);
+        lineEditTurnBase->setMinimumSize(QSize(0, 0));
+        lineEditTurnBase->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+        lineEditTurnBase->setAlignment(Qt::AlignCenter);
+
+        gridLayout_12->addWidget(lineEditTurnBase, 9, 1, 1, 2);
+
+        lineEditSmoothKD = new QLineEdit(framePID);
+        lineEditSmoothKD->setObjectName("lineEditSmoothKD");
+        sizePolicy.setHeightForWidth(lineEditSmoothKD->sizePolicy().hasHeightForWidth());
+        lineEditSmoothKD->setSizePolicy(sizePolicy);
+        lineEditSmoothKD->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_12->addWidget(lineEditSmoothKD, 5, 5, 1, 2);
+
+        lineEditTurnKD = new QLineEdit(framePID);
+        lineEditTurnKD->setObjectName("lineEditTurnKD");
+        sizePolicy.setHeightForWidth(lineEditTurnKD->sizePolicy().hasHeightForWidth());
+        lineEditTurnKD->setSizePolicy(sizePolicy);
+        lineEditTurnKD->setMinimumSize(QSize(0, 0));
+        lineEditTurnKD->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+        lineEditTurnKD->setAlignment(Qt::AlignCenter);
+
+        gridLayout_12->addWidget(lineEditTurnKD, 5, 1, 1, 2);
 
         labelPIDValues = new QLabel(framePID);
         labelPIDValues->setObjectName("labelPIDValues");
@@ -1615,6 +1700,138 @@ public:
 "background-color: transparent;"));
 
         gridLayout_12->addWidget(labelPIDValues, 0, 0, 1, 5);
+
+        setStopPIDButton = new QPushButton(framePID);
+        setStopPIDButton->setObjectName("setStopPIDButton");
+        setStopPIDButton->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_12->addWidget(setStopPIDButton, 11, 8, 1, 1);
+
+        lineEditStopMax = new QLineEdit(framePID);
+        lineEditStopMax->setObjectName("lineEditStopMax");
+        sizePolicy.setHeightForWidth(lineEditStopMax->sizePolicy().hasHeightForWidth());
+        lineEditStopMax->setSizePolicy(sizePolicy);
+        lineEditStopMax->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_12->addWidget(lineEditStopMax, 7, 7, 1, 2);
+
+        lineEditStopKI = new QLineEdit(framePID);
+        lineEditStopKI->setObjectName("lineEditStopKI");
+        QSizePolicy sizePolicy7(QSizePolicy::Maximum, QSizePolicy::Preferred);
+        sizePolicy7.setHorizontalStretch(0);
+        sizePolicy7.setVerticalStretch(0);
+        sizePolicy7.setHeightForWidth(lineEditStopKI->sizePolicy().hasHeightForWidth());
+        lineEditStopKI->setSizePolicy(sizePolicy7);
+        lineEditStopKI->setMinimumSize(QSize(0, 0));
+        lineEditStopKI->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_12->addWidget(lineEditStopKI, 4, 7, 1, 2);
+
+        lineEditStopKP = new QLineEdit(framePID);
+        lineEditStopKP->setObjectName("lineEditStopKP");
+        sizePolicy.setHeightForWidth(lineEditStopKP->sizePolicy().hasHeightForWidth());
+        lineEditStopKP->setSizePolicy(sizePolicy);
+        lineEditStopKP->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_12->addWidget(lineEditStopKP, 3, 7, 1, 2);
+
+        label_4 = new QLabel(framePID);
+        label_4->setObjectName("label_4");
+        label_4->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
+"font: 13pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"color: rgb(222, 223, 225);\n"
+"background-color: transparent;"));
+        label_4->setAlignment(Qt::AlignCenter);
+
+        gridLayout_12->addWidget(label_4, 2, 7, 1, 2);
+
+        label_3 = new QLabel(framePID);
+        label_3->setObjectName("label_3");
+        label_3->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
+"font: 13pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"color: rgb(222, 223, 225);\n"
+"background-color: transparent;"));
+        label_3->setAlignment(Qt::AlignCenter);
+
+        gridLayout_12->addWidget(label_3, 2, 5, 1, 2);
+
+        lineEditStopKD = new QLineEdit(framePID);
+        lineEditStopKD->setObjectName("lineEditStopKD");
+        lineEditStopKD->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_12->addWidget(lineEditStopKD, 5, 7, 1, 2);
+
+        lineEditStopMin = new QLineEdit(framePID);
+        lineEditStopMin->setObjectName("lineEditStopMin");
+        lineEditStopMin->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_12->addWidget(lineEditStopMin, 6, 7, 1, 2);
+
+        lineEditStopBase = new QLineEdit(framePID);
+        lineEditStopBase->setObjectName("lineEditStopBase");
+        lineEditStopBase->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_12->addWidget(lineEditStopBase, 9, 7, 1, 2);
+
+        lineEditSmoothMin = new QLineEdit(framePID);
+        lineEditSmoothMin->setObjectName("lineEditSmoothMin");
+        lineEditSmoothMin->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_12->addWidget(lineEditSmoothMin, 6, 5, 1, 2);
+
+        lineEditSmoothMax = new QLineEdit(framePID);
+        lineEditSmoothMax->setObjectName("lineEditSmoothMax");
+        lineEditSmoothMax->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_12->addWidget(lineEditSmoothMax, 7, 5, 1, 2);
+
+        lineEditSmoothBase = new QLineEdit(framePID);
+        lineEditSmoothBase->setObjectName("lineEditSmoothBase");
+        lineEditSmoothBase->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
+"font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_12->addWidget(lineEditSmoothBase, 9, 5, 1, 2);
 
 
         gridLayout_9->addWidget(framePID, 1, 0, 4, 2);
@@ -1633,8 +1850,11 @@ public:
         gridLayout_13->setObjectName("gridLayout_13");
         pwmPrescalerConfig = new QLineEdit(frameSoftwareConfig);
         pwmPrescalerConfig->setObjectName("pwmPrescalerConfig");
-        sizePolicy7.setHeightForWidth(pwmPrescalerConfig->sizePolicy().hasHeightForWidth());
-        pwmPrescalerConfig->setSizePolicy(sizePolicy7);
+        QSizePolicy sizePolicy8(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        sizePolicy8.setHorizontalStretch(0);
+        sizePolicy8.setVerticalStretch(0);
+        sizePolicy8.setHeightForWidth(pwmPrescalerConfig->sizePolicy().hasHeightForWidth());
+        pwmPrescalerConfig->setSizePolicy(sizePolicy8);
         pwmPrescalerConfig->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
 "font: 10pt \"Century Gothic\";\n"
 "font-weight: bold;\n"
@@ -1669,8 +1889,8 @@ public:
 
         pwmPeriodConfig = new QLineEdit(frameSoftwareConfig);
         pwmPeriodConfig->setObjectName("pwmPeriodConfig");
-        sizePolicy7.setHeightForWidth(pwmPeriodConfig->sizePolicy().hasHeightForWidth());
-        pwmPeriodConfig->setSizePolicy(sizePolicy7);
+        sizePolicy8.setHeightForWidth(pwmPeriodConfig->sizePolicy().hasHeightForWidth());
+        pwmPeriodConfig->setSizePolicy(sizePolicy8);
         pwmPeriodConfig->setCursor(QCursor(Qt::IBeamCursor));
         pwmPeriodConfig->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
 "font: 10pt \"Century Gothic\";\n"
@@ -1980,11 +2200,11 @@ public:
         gridLayout_3->setObjectName("gridLayout_3");
         plainTextEdit = new QPlainTextEdit(Communication);
         plainTextEdit->setObjectName("plainTextEdit");
-        QSizePolicy sizePolicy8(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        sizePolicy8.setHorizontalStretch(0);
-        sizePolicy8.setVerticalStretch(0);
-        sizePolicy8.setHeightForWidth(plainTextEdit->sizePolicy().hasHeightForWidth());
-        plainTextEdit->setSizePolicy(sizePolicy8);
+        QSizePolicy sizePolicy9(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy9.setHorizontalStretch(0);
+        sizePolicy9.setVerticalStretch(0);
+        sizePolicy9.setHeightForWidth(plainTextEdit->sizePolicy().hasHeightForWidth());
+        plainTextEdit->setSizePolicy(sizePolicy9);
         plainTextEdit->setToolTipDuration(-1);
         plainTextEdit->setStyleSheet(QString::fromUtf8("QWidget#plainTextEdit{\n"
 "border: 2px solid rgb(150, 150, 150);\n"
@@ -2076,8 +2296,8 @@ public:
         gridLayout_20->setContentsMargins(0, 0, 0, 0);
         qmlDisplayWidget = new QQuickWidget(frameDisplayIntersection);
         qmlDisplayWidget->setObjectName("qmlDisplayWidget");
-        sizePolicy8.setHeightForWidth(qmlDisplayWidget->sizePolicy().hasHeightForWidth());
-        qmlDisplayWidget->setSizePolicy(sizePolicy8);
+        sizePolicy9.setHeightForWidth(qmlDisplayWidget->sizePolicy().hasHeightForWidth());
+        qmlDisplayWidget->setSizePolicy(sizePolicy9);
         qmlDisplayWidget->setStyleSheet(QString::fromUtf8("QWidget#qmlDisplayWidget{\n"
 "border: 2px solid rgb(150, 150, 150);\n"
 "border-radius: 5px;\n"
@@ -2105,11 +2325,11 @@ public:
         gridLayout_15->setContentsMargins(0, 0, 0, 0);
         buttonClear = new QPushButton(frameRadar);
         buttonClear->setObjectName("buttonClear");
-        QSizePolicy sizePolicy9(QSizePolicy::Minimum, QSizePolicy::Maximum);
-        sizePolicy9.setHorizontalStretch(0);
-        sizePolicy9.setVerticalStretch(0);
-        sizePolicy9.setHeightForWidth(buttonClear->sizePolicy().hasHeightForWidth());
-        buttonClear->setSizePolicy(sizePolicy9);
+        QSizePolicy sizePolicy10(QSizePolicy::Minimum, QSizePolicy::Maximum);
+        sizePolicy10.setHorizontalStretch(0);
+        sizePolicy10.setVerticalStretch(0);
+        sizePolicy10.setHeightForWidth(buttonClear->sizePolicy().hasHeightForWidth());
+        buttonClear->setSizePolicy(sizePolicy10);
         buttonClear->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
 "font: 10pt \"Century Gothic\";\n"
 "font-weight: bold;\n"
@@ -2274,19 +2494,25 @@ public:
         labelY_G->setText(QCoreApplication::translate("QForm1", "Y", nullptr));
         labelZ_G->setText(QCoreApplication::translate("QForm1", "Z", nullptr));
         labelAngularPosition->setText(QCoreApplication::translate("QForm1", "Angular Position [\302\260]", nullptr));
+        labelMaxOut->setText(QCoreApplication::translate("QForm1", "Max.", nullptr));
         readTurnPIDButton->setText(QCoreApplication::translate("QForm1", "READ", nullptr));
+        labelWallPID->setText(QCoreApplication::translate("QForm1", "Wall PID", nullptr));
+        readWallPIDButton->setText(QCoreApplication::translate("QForm1", "READ", nullptr));
+        labelTurnPID->setText(QCoreApplication::translate("QForm1", "Turn PID", nullptr));
         labelKD->setText(QCoreApplication::translate("QForm1", "KD", nullptr));
+        labelMinOut->setText(QCoreApplication::translate("QForm1", "Min.", nullptr));
+        readSmoothPIDButton->setText(QCoreApplication::translate("QForm1", "READ", nullptr));
+        setSmoothPIDButton->setText(QCoreApplication::translate("QForm1", "SET", nullptr));
+        readStopPIDButton->setText(QCoreApplication::translate("QForm1", "READ", nullptr));
+        labelBaseOut->setText(QCoreApplication::translate("QForm1", "Base", nullptr));
         setTurnPIDButton->setText(QCoreApplication::translate("QForm1", "SET", nullptr));
-        labelBaseOut->setText(QCoreApplication::translate("QForm1", "Base Out", nullptr));
-        labelMaxOut->setText(QCoreApplication::translate("QForm1", "Max. Out", nullptr));
-        labelMinOut->setText(QCoreApplication::translate("QForm1", "Min. Out", nullptr));
+        setWallPIDButton->setText(QCoreApplication::translate("QForm1", "SET", nullptr));
         labelKP->setText(QCoreApplication::translate("QForm1", "KP", nullptr));
         labelKI->setText(QCoreApplication::translate("QForm1", "KI", nullptr));
-        readWallPIDButton->setText(QCoreApplication::translate("QForm1", "READ", nullptr));
-        setWallPIDButton->setText(QCoreApplication::translate("QForm1", "SET", nullptr));
-        labelTurnPID->setText(QCoreApplication::translate("QForm1", "Turn PID", nullptr));
-        labelWallPID->setText(QCoreApplication::translate("QForm1", "Wall PID", nullptr));
         labelPIDValues->setText(QCoreApplication::translate("QForm1", "PID Values", nullptr));
+        setStopPIDButton->setText(QCoreApplication::translate("QForm1", "SET", nullptr));
+        label_4->setText(QCoreApplication::translate("QForm1", "Stop PID", nullptr));
+        label_3->setText(QCoreApplication::translate("QForm1", "Smooth PID", nullptr));
         labelPrescaler->setText(QCoreApplication::translate("QForm1", "Prescaler", nullptr));
         labelPeriod->setText(QCoreApplication::translate("QForm1", "Period", nullptr));
         changeConfigWidgetButton->setText(QCoreApplication::translate("QForm1", "Engines Timer Configuration", nullptr));

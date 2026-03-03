@@ -105,11 +105,15 @@ static constexpr auto qt_meta_stringdata_CLASSQForm1ENDCLASS = QtMocHelpers::str
     "on_readWallPIDButton_clicked",
     "on_viewTabButton_clicked",
     "on_pushButton_clicked",
-    "on_setBatteryVoltageButton_clicked"
+    "on_setBatteryVoltageButton_clicked",
+    "on_readSmoothPIDButton_clicked",
+    "on_readStopPIDButton_clicked",
+    "on_setSmoothPIDButton_clicked",
+    "on_setStopPIDButton_clicked"
 );
 #else  // !QT_MOC_HAS_STRING_DATA
 struct qt_meta_stringdata_CLASSQForm1ENDCLASS_t {
-    uint offsetsAndSizes[136];
+    uint offsetsAndSizes[144];
     char stringdata0[7];
     char stringdata1[13];
     char stringdata2[1];
@@ -178,6 +182,10 @@ struct qt_meta_stringdata_CLASSQForm1ENDCLASS_t {
     char stringdata65[25];
     char stringdata66[22];
     char stringdata67[35];
+    char stringdata68[31];
+    char stringdata69[29];
+    char stringdata70[30];
+    char stringdata71[28];
 };
 #define QT_MOC_LITERAL(ofs, len) \
     uint(sizeof(qt_meta_stringdata_CLASSQForm1ENDCLASS_t::offsetsAndSizes) + ofs), len 
@@ -250,7 +258,11 @@ Q_CONSTINIT static const qt_meta_stringdata_CLASSQForm1ENDCLASS_t qt_meta_string
         QT_MOC_LITERAL(925, 28),  // "on_readWallPIDButton_clicked"
         QT_MOC_LITERAL(954, 24),  // "on_viewTabButton_clicked"
         QT_MOC_LITERAL(979, 21),  // "on_pushButton_clicked"
-        QT_MOC_LITERAL(1001, 34)   // "on_setBatteryVoltageButton_cl..."
+        QT_MOC_LITERAL(1001, 34),  // "on_setBatteryVoltageButton_cl..."
+        QT_MOC_LITERAL(1036, 30),  // "on_readSmoothPIDButton_clicked"
+        QT_MOC_LITERAL(1067, 28),  // "on_readStopPIDButton_clicked"
+        QT_MOC_LITERAL(1096, 29),  // "on_setSmoothPIDButton_clicked"
+        QT_MOC_LITERAL(1126, 27)   // "on_setStopPIDButton_clicked"
     },
     "QForm1",
     "maxMinValues",
@@ -319,7 +331,11 @@ Q_CONSTINIT static const qt_meta_stringdata_CLASSQForm1ENDCLASS_t qt_meta_string
     "on_readWallPIDButton_clicked",
     "on_viewTabButton_clicked",
     "on_pushButton_clicked",
-    "on_setBatteryVoltageButton_clicked"
+    "on_setBatteryVoltageButton_clicked",
+    "on_readSmoothPIDButton_clicked",
+    "on_readStopPIDButton_clicked",
+    "on_setSmoothPIDButton_clicked",
+    "on_setStopPIDButton_clicked"
 };
 #undef QT_MOC_LITERAL
 #endif // !QT_MOC_HAS_STRING_DATA
@@ -331,7 +347,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSQForm1ENDCLASS[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-      46,   14, // methods
+      50,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -339,54 +355,58 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSQForm1ENDCLASS[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    2,  290,    2, 0x06,    1 /* Public */,
+       1,    2,  314,    2, 0x06,    1 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       6,    1,  295,    2, 0x0a,    4 /* Public */,
-       8,    1,  298,    2, 0x0a,    6 /* Public */,
-       9,    1,  301,    2, 0x0a,    8 /* Public */,
-      10,    2,  304,    2, 0x0a,   10 /* Public */,
-      13,    1,  309,    2, 0x0a,   13 /* Public */,
-      15,    0,  312,    2, 0x0a,   15 /* Public */,
-      16,    0,  313,    2, 0x0a,   16 /* Public */,
-      17,    0,  314,    2, 0x0a,   17 /* Public */,
-      18,    0,  315,    2, 0x0a,   18 /* Public */,
-      19,    0,  316,    2, 0x08,   19 /* Private */,
-      20,    0,  317,    2, 0x08,   20 /* Private */,
-      21,    0,  318,    2, 0x08,   21 /* Private */,
-      22,    2,  319,    2, 0x08,   22 /* Private */,
-      26,    0,  324,    2, 0x08,   25 /* Private */,
-      27,    0,  325,    2, 0x08,   26 /* Private */,
-      28,    0,  326,    2, 0x08,   27 /* Private */,
-      29,    0,  327,    2, 0x08,   28 /* Private */,
-      30,    0,  328,    2, 0x08,   29 /* Private */,
-      31,    2,  329,    2, 0x08,   30 /* Private */,
-      36,    1,  334,    2, 0x08,   33 /* Private */,
-      38,    2,  337,    2, 0x08,   35 /* Private */,
-      41,    0,  342,    2, 0x08,   38 /* Private */,
-      42,    0,  343,    2, 0x08,   39 /* Private */,
-      43,    0,  344,    2, 0x08,   40 /* Private */,
-      44,    2,  345,    2, 0x08,   41 /* Private */,
-      46,    0,  350,    2, 0x08,   44 /* Private */,
-      47,    0,  351,    2, 0x08,   45 /* Private */,
-      48,    0,  352,    2, 0x08,   46 /* Private */,
-      49,    0,  353,    2, 0x08,   47 /* Private */,
-      50,    0,  354,    2, 0x08,   48 /* Private */,
-      51,    0,  355,    2, 0x08,   49 /* Private */,
-      52,    0,  356,    2, 0x08,   50 /* Private */,
-      53,    0,  357,    2, 0x08,   51 /* Private */,
-      54,    0,  358,    2, 0x08,   52 /* Private */,
-      55,    0,  359,    2, 0x08,   53 /* Private */,
-      56,    0,  360,    2, 0x08,   54 /* Private */,
-      57,    1,  361,    2, 0x08,   55 /* Private */,
-      59,    1,  364,    2, 0x08,   57 /* Private */,
-      60,    0,  367,    2, 0x08,   59 /* Private */,
-      61,    1,  368,    2, 0x08,   60 /* Private */,
-      63,    0,  371,    2, 0x08,   62 /* Private */,
-      64,    0,  372,    2, 0x08,   63 /* Private */,
-      65,    0,  373,    2, 0x08,   64 /* Private */,
-      66,    0,  374,    2, 0x08,   65 /* Private */,
-      67,    0,  375,    2, 0x08,   66 /* Private */,
+       6,    1,  319,    2, 0x0a,    4 /* Public */,
+       8,    1,  322,    2, 0x0a,    6 /* Public */,
+       9,    1,  325,    2, 0x0a,    8 /* Public */,
+      10,    2,  328,    2, 0x0a,   10 /* Public */,
+      13,    1,  333,    2, 0x0a,   13 /* Public */,
+      15,    0,  336,    2, 0x0a,   15 /* Public */,
+      16,    0,  337,    2, 0x0a,   16 /* Public */,
+      17,    0,  338,    2, 0x0a,   17 /* Public */,
+      18,    0,  339,    2, 0x0a,   18 /* Public */,
+      19,    0,  340,    2, 0x08,   19 /* Private */,
+      20,    0,  341,    2, 0x08,   20 /* Private */,
+      21,    0,  342,    2, 0x08,   21 /* Private */,
+      22,    2,  343,    2, 0x08,   22 /* Private */,
+      26,    0,  348,    2, 0x08,   25 /* Private */,
+      27,    0,  349,    2, 0x08,   26 /* Private */,
+      28,    0,  350,    2, 0x08,   27 /* Private */,
+      29,    0,  351,    2, 0x08,   28 /* Private */,
+      30,    0,  352,    2, 0x08,   29 /* Private */,
+      31,    2,  353,    2, 0x08,   30 /* Private */,
+      36,    1,  358,    2, 0x08,   33 /* Private */,
+      38,    2,  361,    2, 0x08,   35 /* Private */,
+      41,    0,  366,    2, 0x08,   38 /* Private */,
+      42,    0,  367,    2, 0x08,   39 /* Private */,
+      43,    0,  368,    2, 0x08,   40 /* Private */,
+      44,    2,  369,    2, 0x08,   41 /* Private */,
+      46,    0,  374,    2, 0x08,   44 /* Private */,
+      47,    0,  375,    2, 0x08,   45 /* Private */,
+      48,    0,  376,    2, 0x08,   46 /* Private */,
+      49,    0,  377,    2, 0x08,   47 /* Private */,
+      50,    0,  378,    2, 0x08,   48 /* Private */,
+      51,    0,  379,    2, 0x08,   49 /* Private */,
+      52,    0,  380,    2, 0x08,   50 /* Private */,
+      53,    0,  381,    2, 0x08,   51 /* Private */,
+      54,    0,  382,    2, 0x08,   52 /* Private */,
+      55,    0,  383,    2, 0x08,   53 /* Private */,
+      56,    0,  384,    2, 0x08,   54 /* Private */,
+      57,    1,  385,    2, 0x08,   55 /* Private */,
+      59,    1,  388,    2, 0x08,   57 /* Private */,
+      60,    0,  391,    2, 0x08,   59 /* Private */,
+      61,    1,  392,    2, 0x08,   60 /* Private */,
+      63,    0,  395,    2, 0x08,   62 /* Private */,
+      64,    0,  396,    2, 0x08,   63 /* Private */,
+      65,    0,  397,    2, 0x08,   64 /* Private */,
+      66,    0,  398,    2, 0x08,   65 /* Private */,
+      67,    0,  399,    2, 0x08,   66 /* Private */,
+      68,    0,  400,    2, 0x08,   67 /* Private */,
+      69,    0,  401,    2, 0x08,   68 /* Private */,
+      70,    0,  402,    2, 0x08,   69 /* Private */,
+      71,    0,  403,    2, 0x08,   70 /* Private */,
 
  // signals: parameters
     QMetaType::Void, 0x80000000 | 3, 0x80000000 | 3,    4,    5,
@@ -432,6 +452,10 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSQForm1ENDCLASS[] = {
     QMetaType::Void, QMetaType::QString,   58,
     QMetaType::Void,
     QMetaType::QString, QMetaType::Double,   62,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -561,6 +585,14 @@ Q_CONSTINIT const QMetaObject QForm1::staticMetaObject = { {
         // method 'on_pushButton_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         // method 'on_setBatteryVoltageButton_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_readSmoothPIDButton_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_readStopPIDButton_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_setSmoothPIDButton_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_setStopPIDButton_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -620,6 +652,10 @@ void QForm1::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 43: _t->on_viewTabButton_clicked(); break;
         case 44: _t->on_pushButton_clicked(); break;
         case 45: _t->on_setBatteryVoltageButton_clicked(); break;
+        case 46: _t->on_readSmoothPIDButton_clicked(); break;
+        case 47: _t->on_readStopPIDButton_clicked(); break;
+        case 48: _t->on_setSmoothPIDButton_clicked(); break;
+        case 49: _t->on_setStopPIDButton_clicked(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -653,13 +689,13 @@ int QForm1::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 46)
+        if (_id < 50)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 46;
+        _id -= 50;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 46)
+        if (_id < 50)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 46;
+        _id -= 50;
     }
     return _id;
 }

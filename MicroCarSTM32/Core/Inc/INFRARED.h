@@ -10,6 +10,10 @@
 
 #include <stdint.h>
 
+#define THR_DIGITAL_FRONT    	120  // mm - A qué distancia considero que tengo pared enfrente
+#define THR_DIGITAL_LATERAL  	90   // mm - A qué distancia considero que tengo pared a los costados
+#define THR_DIGITAL_DIAG     	85   // mm - A qué distancia considero pared diagonal
+
 #define ADC_CHANNELS			8
 #define SIZE_BUF_ADC			16 // Must be a power of 2
 #define LOOKUP_SIZE				20
@@ -25,14 +29,14 @@
 
 typedef struct{
 	//uint8_t iwBufADC, irBufADC;
-	uint8_t index[SIZE_BUF_ADC];
+	uint8_t index[ADC_CHANNELS];
 	uint16_t bufADC[ADC_CHANNELS][SIZE_BUF_ADC];
 	uint16_t rawSamples[ADC_CHANNELS];
 	uint16_t filteredSamples[ADC_CHANNELS];
 	uint8_t auxSamples[ADC_CHANNELS*2];
 	uint32_t acumulated[ADC_CHANNELS];
 	uint8_t millimeterSamples[ADC_CHANNELS];
-	uint16_t lookUp[LOOKUP_SIZE];
+	uint16_t lookUp[ADC_CHANNELS][LOOKUP_SIZE];
 } InfraredHandle_s;
 
 
@@ -42,7 +46,7 @@ void Infrared_Init(InfraredHandle_s *infraredData);
 
 void Infrared_Filter(InfraredHandle_s *infraredData);
 
-void Infrared_Convert(InfraredHandle_s *infraredData);
+void Infrared_Convert(InfraredHandle_s *infraredData, uint16_t threshold);
 
 void Infrared_To8Bits(InfraredHandle_s *infraredData);
 

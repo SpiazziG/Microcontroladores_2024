@@ -73,38 +73,41 @@ void ENGINE_Init(ENGINE_Handle_s *handle) {
 	handle->currentVoltage = 820;
 }
 
-static void ENGINE_CalculateRamp(int8_t *currentSpeed, int8_t targetSpeed) {
-    if (targetSpeed == 0 ||
-       (targetSpeed > 0 && targetSpeed < *currentSpeed) ||
-       (targetSpeed < 0 && targetSpeed > *currentSpeed)) {
-
-        *currentSpeed = targetSpeed; // Freno inmediato
-    }
-    else if ((targetSpeed > 0 && *currentSpeed < 0) ||
-             (targetSpeed < 0 && *currentSpeed > 0)) {
-
-        *currentSpeed = 0; // Inversión de giro (pasar por 0)
-    }
-    else {
-        // Aceleración progresiva (Rampa con salto de zona muerta)
-        if (targetSpeed > *currentSpeed) {
-            if (*currentSpeed == 0 && targetSpeed >= 25) *currentSpeed = 25; // Salto Deadband
-            else *currentSpeed += 10; // Incremento normal
-
-            if (*currentSpeed > targetSpeed) *currentSpeed = targetSpeed; // Tope
-
-        } else if (targetSpeed < *currentSpeed) {
-            if (*currentSpeed == 0 && targetSpeed <= -25) *currentSpeed = -25; // Salto Deadband
-            else *currentSpeed -= 10;
-
-            if (*currentSpeed < targetSpeed) *currentSpeed = targetSpeed; // Tope
-        }
-    }
-}
+//static void ENGINE_CalculateRamp(int8_t *currentSpeed, int8_t targetSpeed) {
+//    if (targetSpeed == 0 ||
+//       (targetSpeed > 0 && targetSpeed < *currentSpeed) ||
+//       (targetSpeed < 0 && targetSpeed > *currentSpeed)) {
+//
+//        *currentSpeed = targetSpeed; // Freno inmediato
+//    }
+//    else if ((targetSpeed > 0 && *currentSpeed < 0) ||
+//             (targetSpeed < 0 && *currentSpeed > 0)) {
+//
+//        *currentSpeed = 0; // Inversión de giro (pasar por 0)
+//    }
+//    else {
+//        // Aceleración progresiva (Rampa con salto de zona muerta)
+//        if (targetSpeed > *currentSpeed) {
+//            if (*currentSpeed == 0 && targetSpeed >= 25) *currentSpeed = 25; // Salto Deadband
+//            else *currentSpeed += 10; // Incremento normal
+//
+//            if (*currentSpeed > targetSpeed) *currentSpeed = targetSpeed; // Tope
+//
+//        } else if (targetSpeed < *currentSpeed) {
+//            if (*currentSpeed == 0 && targetSpeed <= -25) *currentSpeed = -25; // Salto Deadband
+//            else *currentSpeed -= 10;
+//
+//            if (*currentSpeed < targetSpeed) *currentSpeed = targetSpeed; // Tope
+//        }
+//    }
+//}
 
 void ENGINE_Task(ENGINE_Handle_s *handle) {
-	ENGINE_CalculateRamp(&handle->currentLeftSpeed, handle->targetLeftSpeed);
-	ENGINE_CalculateRamp(&handle->currentRightSpeed, handle->targetRightSpeed);
+//	ENGINE_CalculateRamp(&handle->currentLeftSpeed, handle->targetLeftSpeed);
+//	ENGINE_CalculateRamp(&handle->currentRightSpeed, handle->targetRightSpeed);
+
+	handle->currentLeftSpeed = handle->targetLeftSpeed;
+	handle->currentRightSpeed = handle->targetRightSpeed;
 
 	ENGINE_UpdateMotor(handle, LEFT_MOTOR);
 	ENGINE_UpdateMotor(handle, RIGHT_MOTOR);

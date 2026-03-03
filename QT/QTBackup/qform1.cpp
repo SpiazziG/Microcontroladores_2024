@@ -608,43 +608,43 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         break;
     case GET_PID_TURN_GAINS:
         w.u16[0] = ((uint16_t)rxBuf[2] << 8 | rxBuf[1]);
-        ui->lineEditTurnKP->setText(QString::number(w.f/100.0, 'f', 2));
+        ui->lineEditTurnKP->setText(QString::number(w.u16[0]/100.0f, 'f', 2));
 
         w.u16[0] = ((uint16_t)rxBuf[4] << 8 | rxBuf[3]);
-        ui->lineEditTurnKI->setText(QString::number(w.f/100.0, 'f', 2));
+        ui->lineEditTurnKI->setText(QString::number(w.u16[0]/100.0f, 'f', 2));
 
         w.u16[0] = ((uint16_t)rxBuf[6] << 8 | rxBuf[5]);
-        ui->lineEditTurnKD->setText(QString::number(w.f/100.0, 'f', 2));
+        ui->lineEditTurnKD->setText(QString::number(w.u16[0]/100.0f, 'f', 2));
 
         w.i32 = 0;
         w.i8[0] = static_cast <int8_t> (rxBuf[7]);
-        ui->lineEditTurnMin->setText(QString::number(w.i8[0], 'd', 2));
+        ui->lineEditTurnMin->setText(QString::number(w.i8[0]));
 
         w.i8[0] = static_cast <int8_t> (rxBuf[8]);
-        ui->lineEditTurnMax->setText(QString::number(w.i8[0], 'd', 2));
+        ui->lineEditTurnMax->setText(QString::number(w.i8[0]));
 
         w.i8[0] = static_cast <int8_t> (rxBuf[9]);
-        ui->lineEditTurnBase->setText(QString::number(w.i8[0], 'd', 2));
+        ui->lineEditTurnBase->setText(QString::number(w.i8[0]));
         break;
     case GET_PID_WALL_GAINS:
         w.u16[0] = ((uint16_t)rxBuf[2] << 8 | rxBuf[1]);
-        ui->lineEditWallKP->setText(QString::number(w.f/100.0, 'f', 2));
+        ui->lineEditWallKP->setText(QString::number(w.u16[0]/100.0f, 'f', 2));
 
         w.u16[0] = ((uint16_t)rxBuf[4] << 8 | rxBuf[3]);
-        ui->lineEditWallKI->setText(QString::number(w.f/100.0, 'f', 2));
+        ui->lineEditWallKI->setText(QString::number(w.u16[0]/100.0f, 'f', 2));
 
         w.u16[0] = ((uint16_t)rxBuf[6] << 8 | rxBuf[5]);
-        ui->lineEditWallKD->setText(QString::number(w.f/100.0, 'f', 2));
+        ui->lineEditWallKD->setText(QString::number(w.u16[0]/100.0f, 'f', 2));
 
         w.i32 = 0;
         w.i8[0] = static_cast <int8_t> (rxBuf[7]);
-        ui->lineEditWallMin->setText(QString::number(w.i8[0], 'd', 2));
+        ui->lineEditWallMin->setText(QString::number(w.i8[0]));
 
         w.i8[0] = static_cast <int8_t> (rxBuf[8]);
-        ui->lineEditWallMax->setText(QString::number(w.i8[0], 'd', 2));
+        ui->lineEditWallMax->setText(QString::number(w.i8[0]));
 
         w.i8[0] = static_cast <int8_t> (rxBuf[9]);
-        ui->lineEditWallBase->setText(QString::number(w.i8[0], 'd', 2));
+        ui->lineEditWallBase->setText(QString::number(w.i8[0]));
         break;
     case GET_INTERSECTION_TYPE:
     {
@@ -1373,9 +1373,21 @@ void QForm1::on_setWallPIDButton_clicked(){
     uint16_t kp, ki, kd;
     buf[0] = SET_PID_WALL_GAINS;
 
-    kp = static_cast<uint16_t> (ui->lineEditWallKP->text().toFloat() * 100.0f);
-    ki = static_cast<uint16_t> (ui->lineEditWallKI->text().toFloat() * 100.0f);
-    kd = static_cast<uint16_t> (ui->lineEditWallKD->text().toFloat() * 100.0f);
+    QString strKp = ui->lineEditWallKP->text().replace(",", ".");
+    uint32_t rawKp = strKp.toFloat() * 100.0f; // Usar uint32 temporalmente para atrapar overflows
+    if(rawKp > 65535) rawKp = 65535;
+
+    QString strKi = ui->lineEditWallKI->text().replace(",", ".");
+    uint32_t rawKi = strKi.toFloat() * 100.0f; // Usar uint32 temporalmente para atrapar overflows
+    if(rawKi > 65535) rawKi = 65535;
+
+    QString strKd = ui->lineEditWallKD->text().replace(",", ".");
+    uint32_t rawKd = strKd.toFloat() * 100.0f; // Usar uint32 temporalmente para atrapar overflows
+    if(rawKd > 65535) rawKd = 65535;
+
+    kp = static_cast<uint16_t> (rawKp);
+    ki = static_cast<uint16_t> (rawKi);
+    kd = static_cast<uint16_t> (rawKd);
 
     buf[1] = (uint8_t)(kp & 0xFF);
     buf[2] = (uint8_t)((kp >> 8) & 0xFF);
@@ -1515,5 +1527,101 @@ void QForm1::on_setBatteryVoltageButton_clicked()
     buf[2] = static_cast<uint8_t>((voltage >> 8) & 0xFF);
 
     SendCMD(buf, 3);
+}
+
+
+void QForm1::on_readSmoothPIDButton_clicked(){
+    uint8_t buf[1];
+
+    buf[0] = GET_PID_SMOOTH_GAINS;
+
+    SendCMD(buf, 1);
+}
+
+
+
+void QForm1::on_readStopPIDButton_clicked(){
+    uint8_t buf[1];
+
+    buf[0] = GET_PID_STOP_GAINS;
+
+    SendCMD(buf, 1);
+}
+
+
+void QForm1::on_setSmoothPIDButton_clicked(){
+    uint8_t buf[10];
+    uint16_t kp, ki, kd;
+    buf[0] = SET_PID_SMOOTH_GAINS;
+
+    QString strKp = ui->lineEditSmoothKP->text().replace(",", ".");
+    uint32_t rawKp = strKp.toFloat() * 100.0f; // Usar uint32 temporalmente para atrapar overflows
+    if(rawKp > 65535) rawKp = 65535;
+
+    QString strKi = ui->lineEditSmoothKI->text().replace(",", ".");
+    uint32_t rawKi = strKi.toFloat() * 100.0f; // Usar uint32 temporalmente para atrapar overflows
+    if(rawKi > 65535) rawKi = 65535;
+
+    QString strKd = ui->lineEditSmoothKD->text().replace(",", ".");
+    uint32_t rawKd = strKd.toFloat() * 100.0f; // Usar uint32 temporalmente para atrapar overflows
+    if(rawKd > 65535) rawKd = 65535;
+
+    kp = static_cast<uint16_t> (rawKp);
+    ki = static_cast<uint16_t> (rawKi);
+    kd = static_cast<uint16_t> (rawKd);
+
+    buf[1] = (uint8_t)(kp & 0xFF);
+    buf[2] = (uint8_t)((kp >> 8) & 0xFF);
+
+    buf[3] = (uint8_t)(ki & 0xFF);
+    buf[4] = (uint8_t)((ki >> 8) & 0xFF);
+
+    buf[5] = (uint8_t)(kd & 0xFF);
+    buf[6] = (uint8_t)((kd >> 8) & 0xFF);
+
+    buf[7] = static_cast<int8_t>(ui->lineEditSmoothMin->text().toShort());
+    buf[8] = static_cast<int8_t>(ui->lineEditSmoothMax->text().toShort());
+    buf[9] = static_cast<int8_t>(ui->lineEditSmoothBase->text().toShort());
+
+    SendCMD(buf, 10);
+}
+
+
+
+void QForm1::on_setStopPIDButton_clicked(){
+    uint8_t buf[10];
+    uint16_t kp, ki, kd;
+    buf[0] = SET_PID_STOP_GAINS;
+
+    QString strKp = ui->lineEditStopKP->text().replace(",", ".");
+    uint32_t rawKp = strKp.toFloat() * 100.0f; // Usar uint32 temporalmente para atrapar overflows
+    if(rawKp > 65535) rawKp = 65535;
+
+    QString strKi = ui->lineEditStopKI->text().replace(",", ".");
+    uint32_t rawKi = strKi.toFloat() * 100.0f; // Usar uint32 temporalmente para atrapar overflows
+    if(rawKi > 65535) rawKi = 65535;
+
+    QString strKd = ui->lineEditStopKD->text().replace(",", ".");
+    uint32_t rawKd = strKd.toFloat() * 100.0f; // Usar uint32 temporalmente para atrapar overflows
+    if(rawKd > 65535) rawKd = 65535;
+
+    kp = static_cast<uint16_t> (rawKp);
+    ki = static_cast<uint16_t> (rawKi);
+    kd = static_cast<uint16_t> (rawKd);
+
+    buf[1] = (uint8_t)(kp & 0xFF);
+    buf[2] = (uint8_t)((kp >> 8) & 0xFF);
+
+    buf[3] = (uint8_t)(ki & 0xFF);
+    buf[4] = (uint8_t)((ki >> 8) & 0xFF);
+
+    buf[5] = (uint8_t)(kd & 0xFF);
+    buf[6] = (uint8_t)((kd >> 8) & 0xFF);
+
+    buf[7] = static_cast<int8_t>(ui->lineEditStopMin->text().toShort());
+    buf[8] = static_cast<int8_t>(ui->lineEditStopMax->text().toShort());
+    buf[9] = static_cast<int8_t>(ui->lineEditStopBase->text().toShort());
+
+    SendCMD(buf, 10);
 }
 
