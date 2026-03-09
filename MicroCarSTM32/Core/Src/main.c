@@ -191,7 +191,9 @@ typedef struct {
 
 typedef struct {
 	uint32_t time_frontLineDetect;
+	uint32_t time_frontLineLost;
 	uint32_t time_rearLineDetect;
+	uint32_t time_rearLineLost;
 	uint32_t currentVelocity_mm_s;
 	uint32_t time_dt_ms;
 } VELOCITY_Handle_s;
@@ -219,9 +221,9 @@ typedef struct {
 #define	HEARTBEAT_UDP_READY		0xF5400000
 
 // Wi-Fi configuration macros
-#define WIFI_SSID				"InternetPlus_86aa10"//"FCAL" "InternetPlus_86aa10" "LabPrototip" "InternetPlus_8e2fbb"
-#define WIFI_PASSWORD			"wlan7955ef"//"fcalconcordia.06-2019" "wlan7955ef" "labproto" "Akhantos2340"
-#define WIFI_UDP_REMOTE_IP		"192.168.1.31"//"192.168.1.18"	//La IP de la PC 172.23.229.43 "192.168.1.31"
+#define WIFI_SSID				"FCAL"//"FCAL" "InternetPlus_86aa10" "LabPrototip" "InternetPlus_8e2fbb"
+#define WIFI_PASSWORD			"fcalconcordia.06-2019"//"fcalconcordia.06-2019" "wlan7955ef" "labproto" "Akhantos2340"
+#define WIFI_UDP_REMOTE_IP		"172.23.229.43"//"192.168.1.18"	//La IP de la PC 172.23.229.43 "192.168.1.31"
 #define WIFI_UDP_REMOTE_PORT	30010				//El puerto UDP en la PC
 #define WIFI_UDP_LOCAL_PORT		30000
 
@@ -260,20 +262,31 @@ typedef struct {
 #define TURN_MIN_PWM				30
 
 // Wall follow control macros
-#define WALL_FRONT_THRESHOLD		1050 	// Para no chocar la pared de enfrente 			// Casa: 1050 	// Facu: 1200
-#define OPEN_CORNER_THRESHOLD		320 	// Para detectar la apertura de una esquina 	// Casa: 320 	// Facu: 170
-#define ONE_WALL_TARGET_DISTANCE 	1400 	// Para seguir la pared 						// Casa: 1400 	// Facu: 1100
-#define OBJECT_DETECTION_THRESHOLD	130 	// Para detectar pared al otro lado del cruce 	// Casa: 150 	// Facu: 190
-#define LINE_DETECTION_THRESHOLD	1400 	// Para detectar la línea de la celda 			// Casa: 1400 	// Facu: 1500
-#define LATERAL_WALL_THRESHOLD		800 	// Detectar si hay pared al lado (mapeo) 		// Casa: 500 	// Facu: 800
+// Millimeter IR Thresholds
+#define WALL_FRONT_THRESHOLD_MM		10
+#define WALL_TARGET_DISTANCE_MM		50
 
-#define DIAG_COLLISION_THRESHOLD 	1600  // Ajustar según calibración (valor alto = muy cerca)
-#define ANTI_CRASH_TURN_SPEED    	30    // Potencia para corregir el choque
+
+// RAW IR THRESHOLDS
+#define WALL_FRONT_THRESHOLD		2700 	// Para no chocar la pared de enfrente 			// Casa: 1050 	// Facu: 1200
+#define OPEN_CORNER_THRESHOLD		190 	// Para detectar la apertura de una esquina 	// Casa: 320 	// Facu: 170
+#define ONE_WALL_TARGET_DISTANCE 	1100 	// Para seguir la pared 						// Casa: 1400 	// Facu: 1100
+#define OBJECT_DETECTION_THRESHOLD	180 	// Para detectar pared al otro lado del cruce 	// Casa: 150 	// Facu: 190
+#define LINE_DETECTION_THRESHOLD	1600 	// Para detectar la línea de la celda 			// Casa: 1400 	// Facu: 1500
+#define LATERAL_WALL_THRESHOLD		800 	// Detectar si hay pared al lado				// Casa: 500 	// Facu: 450
 
 #define WALL_ERROR_DEADZONE			50
 #define GYRO_COMPENSATION_GAIN		30 		// Ponderación del giroscopio para mantenerse recto en un cruce con una sola pared
 
-// IR MACROS
+#define DIST_RIGHT_IR			myInfraredValues.millimeterSamples[0]
+#define DIST_DIAG_RIGHT_IR		myInfraredValues.millimeterSamples[1]
+#define DIST_FRONT_RIGHT_IR		myInfraredValues.millimeterSamples[2]
+#define DIST_FRONT_UNDER_IR		myInfraredValues.millimeterSamples[3]
+#define DIST_FRONT_LEFT_IR		myInfraredValues.millimeterSamples[4]
+#define DIST_DIAG_LEFT_IR		myInfraredValues.millimeterSamples[5]
+#define DIST_LEFT_IR			myInfraredValues.millimeterSamples[6]
+#define DIST_REAR_UNDER_IR		myInfraredValues.millimeterSamples[7]
+
 #define FILTERED_RIGHT_IR			myInfraredValues.filteredSamples[0]
 #define FILTERED_DIAG_RIGHT_IR		myInfraredValues.filteredSamples[1]
 #define FILTERED_FRONT_RIGHT_IR		myInfraredValues.filteredSamples[2]
@@ -368,8 +381,6 @@ int8_t scrollOffset;
 Robot_Mode_e currentMode;
 Robot_Action_e currentAction;
 
-static uint16_t snapDiagLeft = 0, snapFront = 0, snapDiagRight = 0;
-
 CellCrossingState_e cellState;
 
 Map_Position_s currentPosition;
@@ -399,6 +410,8 @@ IntersectionType_e detectedIntersection;
 
 uint8_t intersectionType;
 int16_t pivotDegreesTarget;
+
+uint8_t showIrInMillimeters;
 
 int32_t wallFollowTargetYaw = 0;
 uint16_t referenceLeftWall = 0, referenceRightWall = 0;
@@ -519,9 +532,9 @@ void Robot_GoBlind(void);
 void Robot_Turn_Control(int16_t degreesToTurn);
 void Robot_CheckCellCrossing(void);
 IntersectionType_e Robot_IdentifyIntersection(void);
-void Robot_UpdateWall(void);
-void Robot_UpdateDirection(int8_t turnDir);
-void Robot_UpdateCoordinates(void);
+void Map_UpdateWall(void);
+void Map_UpdateDirection(int8_t turnDir);
+void Map_UpdateCoordinates(void);
 
 void ChangeDisplayPage(DisplayPage_e page);
 
@@ -707,8 +720,8 @@ void DecodeCMD(struct UNERBUSHandle *aBus, uint8_t iStartData){
 		//length = ADC_CHANNELS + 1;
 		break;
 	case SET_IR_CALIBRATION:
-		for(uint8_t i = 0; i < 20; i++)
-			myInfraredValues.lookUp[i] = UNERBUS_GetInt16(aBus);
+//		for(uint8_t i = 0; i < 20; i++)
+//			myInfraredValues.lookUp[i] = UNERBUS_GetInt16(aBus);
 		break;
 	case GET_MPU_DATA:
 		MPU6050_Compose_Number(&myMpuValues, buf);
@@ -813,7 +826,8 @@ void Do1ms(){
 	if(t10MS)
 		t10MS--;
 
-	Infrared_DigitalPerception(&myInfraredValues, &flagsIR.byte, OBJECT_DETECTION_THRESHOLD);
+	Infrared_DigitalPerception(&myInfraredValues, &flagsIR.byte);
+//	Infrared_DigitalPerception(&myInfraredValues, &flagsIR.byte, OBJECT_DETECTION_THRESHOLD);
 }
 
 void Do10ms(){
@@ -1005,17 +1019,6 @@ void Robot_StateMachine() {
 				ENGINE_SetLeftSpeed(&myEngines, 0);
 				ENGINE_SetRightSpeed(&myEngines, 0);
 
-				if (pivotDegreesTarget == 180 || pivotDegreesTarget == -180) {
-					// Menor valor IR = Más espacio libre
-					if (FILTERED_LEFT_IR < FILTERED_RIGHT_IR) {
-						// Hay más lugar a la izquierda -> giramos por la izquierda
-						pivotDegreesTarget = 180;  // Asumiendo que + es izquierda
-					} else {
-						// Hay más lugar a la derecha -> giramos por la derecha
-						pivotDegreesTarget = -180; // Asumiendo que - es derecha
-					}
-				}
-
 				currentAction = ACTION_TURN_PIVOT;
 
 				PID_Reset(&myTurnValues);
@@ -1093,27 +1096,16 @@ void Robot_FollowWall_Control(void) {
 
 	int32_t currentYaw = myMpuValues.data.relativeYawScaled;
 
-//	if (currentAction == ACTION_AFTER_TURN) {
-//		if (pivotDegreesTarget == 90) {
-//			hasLeftWall = 0;
-//			hasRightWall = (detectedIntersection >> 1) & 0x01;
-//		}
-//		else if (pivotDegreesTarget == -90) {
-//			hasLeftWall = (detectedIntersection >> 1) & 0x01;
-//			hasRightWall = 0;
-//		}
-//		else if (pivotDegreesTarget == 180 || pivotDegreesTarget == -180) {
-//			hasLeftWall == detectedIntersection & 0x01;
-//			hasRightWall == (detectedIntersection >> 2) & 0x01;
-//		}
-////		hasLeftWall = (FILTERED_LEFT_IR > LATERAL_WALL_THRESHOLD);
-////		hasRightWall = (FILTERED_RIGHT_IR > LATERAL_WALL_THRESHOLD);
-//	} else {
-//			hasLeftWall = (detectedIntersection & 0x04) >> 2;
-//			hasRightWall = detectedIntersection & 0x01;
-		hasLeftWall = (FILTERED_LEFT_IR > LATERAL_WALL_THRESHOLD) ? 1 : 0;
-		hasRightWall = (FILTERED_RIGHT_IR > LATERAL_WALL_THRESHOLD) ? 1 : 0;
-//	}
+
+	// Si el robot va por el pasillo, detecta en tiempo real las paredes a los costados
+	// Si está en otra situación, se basa en la detección de la intersección para definir que paredes usar
+	if (cellState == CELL_INSIDE_CELL && currentAction == ACTION_FOLLOW_WALL) {
+		hasLeftWall = (FILTERED_LEFT_IR > LEFT_THR_RAW) ? 1 : 0;
+		hasRightWall = (FILTERED_RIGHT_IR > RIGHT_THR_RAW) ? 1 : 0;
+	} else {
+		hasLeftWall = (detectedIntersection & 0b100) ? 1 : 0;
+		hasRightWall = (detectedIntersection & 0b001) ? 1 : 0;
+	}
 
 	if (hasLeftWall && hasRightWall) {
 		// Caso 1: Dos paredes. El error es la diferencia entre ellas.
@@ -1163,25 +1155,26 @@ void Robot_FollowWall_Control(void) {
 	// --- INICIO PID FRENO ---
 	int8_t currentBaseSpeed = myWallValues.base; // Guardamos la velocidad base original temporalmente
 
-	// Tomamos el valor más alto de los dos sensores frontales por seguridad
-	uint16_t maxFrontIR = (FILTERED_FRONT_LEFT_IR > FILTERED_FRONT_RIGHT_IR) ? FILTERED_FRONT_LEFT_IR : FILTERED_FRONT_RIGHT_IR;
+	// Tomamos el valor más bajo de los dos sensores frontales por seguridad
+	uint16_t minFrontDist = (DIST_FRONT_LEFT_IR < DIST_FRONT_RIGHT_IR) ? DIST_FRONT_LEFT_IR : DIST_FRONT_RIGHT_IR;
 
-	uint16_t brakeStartIR = 500; // Distancia a la que empezamos a soltar el acelerador
-	uint16_t stopTolerance = 50; // Distancia a la que cortamos (850 +/- 50)
+	uint16_t brakeStartMm = 95; // Distancia a la que empezamos a soltar el acelerador
+	uint16_t targetStopMm = 50;
+	uint16_t stopToleranceMm = 5; // Distancia a la que cortamos (850 +/- 50)
 
 	if ((detectedIntersection & 0b010) && (currentAction == ACTION_CENTER_IN_CELL)) {
-		if (maxFrontIR >= brakeStartIR) {
+		if (minFrontDist <= brakeStartMm) {
 			// Calculamos el error.
 			// Si maxFrontIR es 300 (lejos) -> errorDistance es +550
 			// Si maxFrontIR es 900 (se pasó por inercia) -> errorDistance es -50
-			int16_t errorDistance = WALL_FRONT_THRESHOLD - maxFrontIR;
+			int16_t errorDistance = minFrontDist - targetStopMm;
 
 			PID_Compute(&myStopValues, errorDistance, 10);
 
 			currentBaseSpeed = (int8_t)myStopValues.output;
 
 			// Si estamos dentro del rango objetivo, cortamos todo y salimos
-			if (abs(errorDistance) <= stopTolerance) {
+			if (abs(errorDistance) <= stopToleranceMm) {
 				ENGINE_SetLeftSpeed(&myEngines, 0);
 				ENGINE_SetRightSpeed(&myEngines, 0);
 
@@ -1197,15 +1190,62 @@ void Robot_FollowWall_Control(void) {
 			PID_Reset(&myStopValues);
 		}
 
-		int8_t brake_min_pwm = 30;
-
-		// Si el PID calculó una fuerza muy chica, la subimos al mínimo necesario para moverse
-		if (currentBaseSpeed > 0 && currentBaseSpeed < brake_min_pwm) {
-		    currentBaseSpeed = brake_min_pwm;
-		} else if (currentBaseSpeed < 0 && currentBaseSpeed > -brake_min_pwm) {
-		    currentBaseSpeed = -brake_min_pwm;
-		}
+//		int8_t brake_min_pwm = 30;
+//
+//		// Si el PID calculó una fuerza muy chica, la subimos al mínimo necesario para moverse
+//		if (currentBaseSpeed > 0 && currentBaseSpeed < brake_min_pwm) {
+//		    currentBaseSpeed = brake_min_pwm;
+//		} else if (currentBaseSpeed < 0 && currentBaseSpeed > -brake_min_pwm) {
+//		    currentBaseSpeed = -brake_min_pwm;
+//		}
 	}
+
+//	// --- INICIO PID FRENO ---
+//	int8_t currentBaseSpeed = myWallValues.base; // Guardamos la velocidad base original temporalmente
+//
+//	// Tomamos el valor más alto de los dos sensores frontales por seguridad
+//	uint16_t maxFrontIR = (FILTERED_FRONT_LEFT_IR > FILTERED_FRONT_RIGHT_IR) ? FILTERED_FRONT_LEFT_IR : FILTERED_FRONT_RIGHT_IR;
+//
+//	uint16_t brakeStartIR = 550; // Distancia a la que empezamos a soltar el acelerador
+//	uint16_t stopTolerance = 50; // Distancia a la que cortamos (850 +/- 50)
+//
+//	if ((detectedIntersection & 0b010) && (currentAction == ACTION_CENTER_IN_CELL)) {
+//		if (maxFrontIR >= brakeStartIR) {
+//			// Calculamos el error.
+//			// Si maxFrontIR es 300 (lejos) -> errorDistance es +550
+//			// Si maxFrontIR es 900 (se pasó por inercia) -> errorDistance es -50
+//			int16_t errorDistance = WALL_FRONT_THRESHOLD - maxFrontIR;
+//
+//			PID_Compute(&myStopValues, errorDistance, 10);
+//
+//			currentBaseSpeed = (int8_t)myStopValues.output;
+//
+//			// Si estamos dentro del rango objetivo, cortamos todo y salimos
+//			if (abs(errorDistance) <= stopTolerance) {
+//				ENGINE_SetLeftSpeed(&myEngines, 0);
+//				ENGINE_SetRightSpeed(&myEngines, 0);
+//
+//				PID_Reset(&myStopValues);
+//				PID_Reset(&myWallValues);
+//				MPU6050_Reset_Yaw(&myMpuValues);
+//
+//				// Cambia el estado aquí según la lógica de tu laberinto
+//				currentAction = ACTION_TURN_PIVOT;
+//				return; // Abortamos para no sobrescribir el 0
+//			}
+//		} else {
+//			PID_Reset(&myStopValues);
+//		}
+//
+//		int8_t brake_min_pwm = 30;
+//
+//		// Si el PID calculó una fuerza muy chica, la subimos al mínimo necesario para moverse
+//		if (currentBaseSpeed > 0 && currentBaseSpeed < brake_min_pwm) {
+//		    currentBaseSpeed = brake_min_pwm;
+//		} else if (currentBaseSpeed < 0 && currentBaseSpeed > -brake_min_pwm) {
+//		    currentBaseSpeed = -brake_min_pwm;
+//		}
+//	}
 	ENGINE_SetLeftSpeed(&myEngines, (-currentBaseSpeed - correction));
 	ENGINE_SetRightSpeed(&myEngines, (-currentBaseSpeed + correction));
 //	ENGINE_SetLeftSpeed(&myEngines, (-myWallValues.base - correction));
@@ -1220,31 +1260,14 @@ void Robot_Turn_Control(int16_t degreesToTurn) {
 		ENGINE_SetLeftSpeed(&myEngines, 0);
 		ENGINE_SetRightSpeed(&myEngines, 0);
 		currentAction = ACTION_AFTER_TURN;
-//		currentAction = ACTION_IDLE;
 		PID_Reset(&myWallValues);
 		PID_Reset(&myTurnValues);
 		MPU6050_Reset_Yaw(&myMpuValues);
 
+		cellState = CELL_INSIDE_CELL;
 		wallFollowTargetYaw = 0;
 
-		if (LINE_DETECTED_TURNING) {
-			LINE_DETECTED_TURNING = 0;
-
-			snapDiagLeft = FILTERED_DIAG_LEFT_IR;
-			snapDiagRight = FILTERED_DIAG_RIGHT_IR;
-			// Para el frente, tomamos el mayor de los dos frontales por seguridad
-			snapFront = (FILTERED_FRONT_LEFT_IR > FILTERED_FRONT_RIGHT_IR) ? FILTERED_FRONT_LEFT_IR : FILTERED_FRONT_RIGHT_IR;
-
-			detectedIntersection = Robot_IdentifyIntersection();
-
-			cellState = CELL_FRONT_LINE;
-
-			myVelocity.time_frontLineDetect = HAL_GetTick();
-		} else {
-			cellState = CELL_INSIDE_CELL;
-		}
-
-//		cellState = CELL_INSIDE_CELL;
+//		Robot_AfterTurn();
 		return;
 	}
 
@@ -1260,33 +1283,6 @@ void Robot_Turn_Control(int16_t degreesToTurn) {
 	ENGINE_SetLeftSpeed(&myEngines, -power);
 	ENGINE_SetRightSpeed(&myEngines, power);
 }
-
-//void Robot_GoBlind(void) {
-//	int32_t errorGyro = 0;
-//	int8_t correction = 0;
-//
-//	errorGyro = ((currentYaw - wallFollowTargetYaw) / YAW_SCALE) * GYRO_COMPENSATION_GAIN;
-//
-//	int32_t currentYaw = myMpuValues.data.relativeYawScaled;
-//    if (abs(errorTotal) > WALL_ERROR_DEADZONE) {
-//        PID_Compute(&myWallValues, errorGyro, 10);
-//        correction = (int8_t)myWallValues.output;
-//
-//        // El PID para una sola pared derecha debe actuar en dirección opuesta.
-//        // Si solo hay pared derecha, la corrección debe ser negativa.
-//        if (!hasLeftWall && hasRightWall)
-//            correction = -correction;
-//    } else {
-//        // Si estamos en la zona muerta o no hay paredes, no hay corrección.
-//        // Además, reseteamos el PID para evitar que el término integral acumulado
-//        // cause un salto brusco cuando volvamos a necesitarlo.
-//        PID_Reset(&myWallValues);
-//        correction = 0;
-//    }
-//
-//	ENGINE_SetLeftSpeed(&myEngines, (-myWallValues.base - correction));
-//	ENGINE_SetRightSpeed(&myEngines, (-myWallValues.base + correction));
-//}
 
 IntersectionType_e Robot_IdentifyIntersection(void) {
     // 1. Determinar el estado de las paredes
@@ -1306,6 +1302,8 @@ void Robot_CheckCellCrossing(void) {
     uint8_t frontLine = (FILTERED_FRONT_UNDER_IR < LINE_DETECTION_THRESHOLD);
     uint8_t rearLine  = (FILTERED_REAR_UNDER_IR < LINE_DETECTION_THRESHOLD);
 
+    static int8_t earlyIntersection = 0, finalIntersection;
+
     switch (cellState) {
         case CELL_INSIDE_CELL:
             if (frontLine) { 		// Wait until the front sensor see the line
@@ -1315,36 +1313,47 @@ void Robot_CheckCellCrossing(void) {
 
                 cellState = CELL_FRONT_LINE;
 
-                snapDiagLeft = FILTERED_DIAG_LEFT_IR;
-				snapDiagRight = FILTERED_DIAG_RIGHT_IR;
-				// Para el frente, tomamos el mayor de los dos frontales por seguridad
-				snapFront = (FILTERED_FRONT_LEFT_IR > FILTERED_FRONT_RIGHT_IR) ? FILTERED_FRONT_LEFT_IR : FILTERED_FRONT_RIGHT_IR;
+                earlyIntersection = 0;
+                earlyIntersection = ((FILTERED_DIAG_LEFT_IR > LEFT_DIAG_THR_RAW) << 2) | (FILTERED_DIAG_RIGHT_IR > RIGHT_DIAG_THR_RAW);
 
-            	detectedIntersection = Robot_IdentifyIntersection();
+                detectedIntersection = (IntersectionType_e)earlyIntersection;
+            }
+            break;
+        case CELL_FRONT_LINE:
+            if (!frontLine) {
 
-            	if (currentAction != ACTION_AFTER_TURN) {
-//					referenceLeftWall = ONE_WALL_TARGET_DISTANCE;
-//					referenceRightWall = ONE_WALL_TARGET_DISTANCE;
-            	}
+            }
+
+            if (rearLine) {
+            	myVelocity.time_rearLineDetect = HAL_GetTick();
+            	myVelocity.time_dt_ms = myVelocity.time_rearLineDetect - myVelocity.time_frontLineDetect;
+            	myVelocity.currentVelocity_mm_s = (DISTANCE_FRONT_TO_REAR_IR * 1000) / myVelocity.time_dt_ms;
+
+            	uint8_t minFrontDist = (FILTERED_FRONT_LEFT_IR > FILTERED_FRONT_RIGHT_IR) ? (FILTERED_FRONT_LEFT_IR > FRONT_LEFT_THR_RAW) : (FILTERED_FRONT_RIGHT_IR > FRONT_RIGHT_THR_RAW);
+
+            	finalIntersection = earlyIntersection | (minFrontDist << 1);
+
+            	detectedIntersection = (IntersectionType_e)finalIntersection;
+
 				switch(detectedIntersection) {
 					// GIROS A LA IZQUIERDA
 					case INTERSECTION_LEFT_FRONT_OPEN:
 					case INTERSECTION_LEFT_SQUARE:
 					case INTERSECTION_CROSSROAD:
 						pivotDegreesTarget = 90;
-						Robot_UpdateDirection(-1);
+						Map_UpdateDirection(-1);
 						break;
 					// GIROS A LA DERECHA
 					case INTERSECTION_T_ROAD: // Forzado a izquierda para pruebas
 						pivotDegreesTarget = 90;
-						Robot_UpdateDirection(-1);
+						Map_UpdateDirection(-1);
 						break;
 					case INTERSECTION_RIGHT_FRONT_OPEN:
 						pivotDegreesTarget = -90;
 						break;
 					case INTERSECTION_RIGHT_SQUARE:
 						pivotDegreesTarget = -90;
-						Robot_UpdateDirection(1);
+						Map_UpdateDirection(1);
 						break;
 					// CALLEJÓN SIN SALIDA (CASO ESPECIAL)
 					// Aquí quizás quieras frenar ANTES, no esperar a perder la línea
@@ -1362,19 +1371,6 @@ void Robot_CheckCellCrossing(void) {
 					default:
 						break;
 				}
-            }
-            break;
-        case CELL_FRONT_LINE:
-            if (!frontLine) {
-
-            }
-
-            if (rearLine) {
-            	myVelocity.time_rearLineDetect = HAL_GetTick();
-
-            	myVelocity.time_dt_ms = myVelocity.time_rearLineDetect - myVelocity.time_frontLineDetect;
-
-            	myVelocity.currentVelocity_mm_s = (DISTANCE_FRONT_TO_REAR_IR * 1000) / myVelocity.time_dt_ms;
 
                 cellState = CELL_REAR_LINE;
 
@@ -1392,15 +1388,17 @@ void Robot_CheckCellCrossing(void) {
                 	}
                 }
                 // 1. Actualizamos coordenadas basándonos en la dirección con la que LLEGAMOS
-				Robot_UpdateCoordinates();
+				Map_UpdateCoordinates();
 
 				// 2. Mapear paredes de la nueva celda (opcional aquí o al estabilizarse)
-				Robot_UpdateWall();
+				Map_UpdateWall();
             }
             break;
         case CELL_REAR_LINE:
-            if (!rearLine)
-                cellState = CELL_CROSS_FINISHED;
+            if (!rearLine) {
+            	if (currentAction == ACTION_FOLLOW_WALL)
+            		cellState = CELL_CROSS_FINISHED;
+            }
 
 
             break;
@@ -1415,7 +1413,21 @@ void Robot_CheckCellCrossing(void) {
     }
 }
 
-void Robot_UpdateWall(void) {
+//void Robot_AfterTurn(void) {
+//	switch(pivotDegreesTarget) {
+//	case 90:
+//
+//	break;
+//	case -90:
+//	break;
+//	case 180:
+//	case -180:
+//	break;
+//	}
+//}
+
+
+void Map_UpdateWall(void) {
 	uint8_t dir;
 	uint8_t buf[5];
 
@@ -1448,7 +1460,7 @@ void Robot_UpdateWall(void) {
     UNERBUS_Send(&unerbusESP01, GET_MAP_INFO, 4);
 }
 
-void Robot_UpdateDirection(int8_t turnDir) {
+void Map_UpdateDirection(int8_t turnDir) {
 	// La aritmética de punteros con el enum Map_Direction_e:
 	// NORTH=0, EAST=1, SOUTH=2, WEST=3
 
@@ -1463,7 +1475,7 @@ void Robot_UpdateDirection(int8_t turnDir) {
 	currentDirection = (Map_Direction_e)newDir;
 }
 
-void Robot_UpdateCoordinates(void) {
+void Map_UpdateCoordinates(void) {
 	switch(currentDirection){
 		case NORTH:
 			if(currentPosition.currentY > 0) currentPosition.currentY++; //y--;
@@ -1598,7 +1610,7 @@ void ChangeDisplayPage(DisplayPage_e page){
 
 			OLED_SetCursor(&myOled, 1, y_pos+12);
 
-			sprintf(str, "%d %d %d", snapDiagLeft, snapFront, snapDiagRight);
+//			sprintf(str, "%d %d %d", snapDiagLeft, snapFront, snapDiagRight);
 //			sprintf(str, "L:%3d R:%3d", myEngines.currentLeftSpeed, myEngines.currentRightSpeed);
 //	        switch(cellState) {
 //	            case CELL_INSIDE_CELL:
@@ -1614,7 +1626,25 @@ void ChangeDisplayPage(DisplayPage_e page){
 //	            	sprintf(str, "C: END");
 //	            	break;
 //	        }
+//			sprintf(str, "%d %d %d", PERCEPTION_DIAG_LEFT, (PERCEPTION_FRONT_LEFT | PERCEPTION_FRONT_RIGHT), PERCEPTION_DIAG_RIGHT);
+			sprintf(str, "FL:%3d FR:%3d", DIST_FRONT_LEFT_IR, DIST_FRONT_RIGHT_IR);
 			OLED_WriteString(&myOled, str, Font_7x10, White);
+			OLED_SetCursor(&myOled, 1, y_pos+24);
+				        switch(cellState) {
+				            case CELL_INSIDE_CELL:
+				            	sprintf(str, "C: INSIDE");
+				            	break;
+				            case CELL_FRONT_LINE:
+				            	sprintf(str, "C: FRONT");
+				            	break;
+				            case CELL_REAR_LINE:
+				            	sprintf(str, "C: REAR");
+				                break;
+				            case CELL_CROSS_FINISHED:
+				            	sprintf(str, "C: END");
+				            	break;
+				        }
+				        OLED_WriteString(&myOled, str, Font_7x10, White);
 			//OJOS
 //		    uint8_t baseW = 23;
 //		    uint8_t baseH = 34;
@@ -1709,19 +1739,49 @@ void ChangeDisplayPage(DisplayPage_e page){
 			currentTitle = menuItems[MENU_IR_DATA];
 			OLED_Fill(&myOled, Black);
 
-			// Left Column
-			OLED_DrawSensorWidget(&myOled, "1", FILTERED_RIGHT_IR, 0, 0);
-			OLED_DrawSensorWidget(&myOled, "2", FILTERED_DIAG_RIGHT_IR, 0, 1);
-			OLED_DrawSensorWidget(&myOled, "3", FILTERED_FRONT_RIGHT_IR, 0, 2);
+			if (showIrInMillimeters) {
+				// Left Column
+				OLED_DrawSensorWidget(&myOled, "1", DIST_RIGHT_IR, 0, 0);
+				OLED_DrawSensorWidget(&myOled, "2", DIST_DIAG_RIGHT_IR, 0, 1);
+				OLED_DrawSensorWidget(&myOled, "3", DIST_FRONT_RIGHT_IR, 0, 2);
 
-			// Center Column
-			OLED_DrawSensorWidget(&myOled, "8", FILTERED_REAR_UNDER_IR, 1, 0);
-			OLED_DrawSensorWidget(&myOled, "4", FILTERED_FRONT_UNDER_IR, 1, 2);
+				// Center Column
+				OLED_DrawSensorWidget(&myOled, "8", FILTERED_REAR_UNDER_IR, 1, 0);
+				OLED_DrawSensorWidget(&myOled, "4", FILTERED_FRONT_UNDER_IR, 1, 2);
 
-			// Right Column
-			OLED_DrawSensorWidget(&myOled, "7", FILTERED_LEFT_IR, 2, 0);
-			OLED_DrawSensorWidget(&myOled, "6", FILTERED_DIAG_LEFT_IR, 2, 1);
-			OLED_DrawSensorWidget(&myOled, "5", FILTERED_FRONT_LEFT_IR, 2, 2);
+				// Right Column
+				OLED_DrawSensorWidget(&myOled, "7", DIST_LEFT_IR, 2, 0);
+				OLED_DrawSensorWidget(&myOled, "6", DIST_DIAG_LEFT_IR, 2, 1);
+				OLED_DrawSensorWidget(&myOled, "5", DIST_FRONT_LEFT_IR, 2, 2);
+
+			} else {
+				// Left Column
+				OLED_DrawSensorWidget(&myOled, "1", FILTERED_RIGHT_IR, 0, 0);
+				OLED_DrawSensorWidget(&myOled, "2", FILTERED_DIAG_RIGHT_IR, 0, 1);
+				OLED_DrawSensorWidget(&myOled, "3", FILTERED_FRONT_RIGHT_IR, 0, 2);
+
+				// Center Column
+				OLED_DrawSensorWidget(&myOled, "8", FILTERED_REAR_UNDER_IR, 1, 0);
+				OLED_DrawSensorWidget(&myOled, "4", FILTERED_FRONT_UNDER_IR, 1, 2);
+
+				// Right Column
+				OLED_DrawSensorWidget(&myOled, "7", FILTERED_LEFT_IR, 2, 0);
+				OLED_DrawSensorWidget(&myOled, "6", FILTERED_DIAG_LEFT_IR, 2, 1);
+				OLED_DrawSensorWidget(&myOled, "5", FILTERED_FRONT_LEFT_IR, 2, 2);
+			}
+//			// Left Column
+//			OLED_DrawSensorWidget(&myOled, "1", FILTERED_RIGHT_IR, 0, 0);
+//			OLED_DrawSensorWidget(&myOled, "2", FILTERED_DIAG_RIGHT_IR, 0, 1);
+//			OLED_DrawSensorWidget(&myOled, "3", FILTERED_FRONT_RIGHT_IR, 0, 2);
+//
+//			// Center Column
+//			OLED_DrawSensorWidget(&myOled, "8", FILTERED_REAR_UNDER_IR, 1, 0);
+//			OLED_DrawSensorWidget(&myOled, "4", FILTERED_FRONT_UNDER_IR, 1, 2);
+//
+//			// Right Column
+//			OLED_DrawSensorWidget(&myOled, "7", FILTERED_LEFT_IR, 2, 0);
+//			OLED_DrawSensorWidget(&myOled, "6", FILTERED_DIAG_LEFT_IR, 2, 1);
+//			OLED_DrawSensorWidget(&myOled, "5", FILTERED_FRONT_LEFT_IR, 2, 2);
 
 			break;
 		case DISPLAY_MPU:
@@ -1872,6 +1932,8 @@ static void ButtonNormalPress(void) {
 		}
 		detectedIntersection = Robot_IdentifyIntersection();
 		//ChangeDisplayPage(DISPLAY_MENU);
+	} else if (currentPage == DISPLAY_IR_SENSORS) {
+		showIrInMillimeters = !showIrInMillimeters; // Alterna entre 0 y 1
 	}
 
 // Si estamos parados, iniciamos la secuencia de giros.
@@ -1898,12 +1960,12 @@ static void ButtonLongPress(void) {
 			case MENU_START:
 				currentPage = DISPLAY_RUN;
 				ChangeDisplayPage(DISPLAY_RUN);
-				Robot_UpdateWall();
+				Map_UpdateWall();
 				detectedIntersection = INTERSECTION_UNKNOWN;
 //				referenceLeftWall = FILTERED_LEFT_IR;
 //				referenceRightWall = FILTERED_RIGHT_IR;
-								referenceLeftWall = ONE_WALL_TARGET_DISTANCE;
-								referenceRightWall = ONE_WALL_TARGET_DISTANCE;
+				referenceLeftWall = ONE_WALL_TARGET_DISTANCE - 200;
+				referenceRightWall = ONE_WALL_TARGET_DISTANCE - 200;
 				currentAction = ACTION_FOLLOW_WALL;
 				break;
 			case MENU_IR_DATA:
@@ -2082,7 +2144,7 @@ int main(void)
   myTurnValues.base = TURN_MIN_PWM;
   myWallValues.base = 50;
 
-  PID_Init(&myStopValues, 10, 10, 1500, -55, 55);
+  PID_Init(&myStopValues, 1000, 0, 5000, -80, 80);
   // IR Sensors Initialization
   Infrared_Init(&myInfraredValues);
 

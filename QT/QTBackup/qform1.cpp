@@ -1517,3 +1517,9 @@ void QForm1::on_setBatteryVoltageButton_clicked()
     SendCMD(buf, 3);
 }
 
+
+void QForm1::on_changeThresholdUnitButton_toggled(bool checked)
+{
+
+}
+
