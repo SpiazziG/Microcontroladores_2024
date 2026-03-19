@@ -1612,7 +1612,7 @@ void QForm1::on_buttonGenerateMap_clicked()
     }
 
     // Definimos el tamaño del laberinto de prueba (Ej: 5x5)
-    int mazeW = 5;
+    int mazeW = 4;
     int mazeH = 5;
 
     // 2. Armamos el piso y el perímetro exterior cerrado
@@ -1630,23 +1630,22 @@ void QForm1::on_buttonGenerateMap_clicked()
     // 3. Agregamos las paredes internas para armar un camino (Diseño libre)
     // Usamos: 0=Norte, 1=Este, 2=Sur, 3=Oeste
     setWall(0, 0, 0); // Bloqueamos ir al norte desde la salida
-    setWall(1, 0, 1);
-    setWall(4, 0, 0);
+    setWall(2, 0, 0);
     setWall(1, 1, 0);
-    setWall(2, 1, 0);
-    setWall(3, 1, 1);
-    setWall(0, 2, 0);
-    setWall(0, 2, 1);
-    setWall(0, 3, 0);
-    setWall(1, 3, 1);
+    setWall(1, 1, 1);
+    setWall(2, 2, 1);
     setWall(3, 2, 0);
-    setWall(3, 4, 0);
-    setWall(3, 4, 1);
-    setWall(3, 4, 3);
-    // setWall(2, 2, 2);
-    // setWall(3, 1, 3);
-    // setWall(3, 3, 2);
-    // setWall(4, 2, 3);
+    setWall(1, 3, 0);
+    setWall(1, 3, 1);
+    setWall(1, 3, 3);
+    setWall(2, 3, 0);
+    // setWall(0, 2, 0);
+    // setWall(0, 2, 1);
+    // setWall(0, 3, 0);
+    // setWall(1, 3, 1);
+    // setWall(3, 2, 0);
+    // setWall(3, 4, 0);
+    // setWall(3, 4, 1);
     // (Podés agregar todos los SetWall que quieras acá para hacerlo más difícil)
 
     // 4. Seteamos al robot en la salida y definimos la meta
@@ -1730,5 +1729,21 @@ void QForm1::calculateFloodFill() {
 void QForm1::on_buttonCalculatePath_clicked()
 {
     calculateFloodFill();
+}
+
+
+void QForm1::on_buttonStartExploration_clicked(){
+    uint8_t buf[2];
+    buf[0] = SET_ROBOT_MODE;
+    buf[1] = 2; // EXPLORE MAZE
+    SendCMD(buf, 2);
+}
+
+
+void QForm1::on_pushButton_2_clicked(){
+    uint8_t buf[2];
+    buf[0] = SET_ROBOT_MODE;
+    buf[1] = 0; // IDLE
+    SendCMD(buf, 2);
 }
 

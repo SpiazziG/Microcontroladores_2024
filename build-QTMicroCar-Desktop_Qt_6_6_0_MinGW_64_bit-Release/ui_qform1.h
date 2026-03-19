@@ -220,10 +220,10 @@ public:
     QGridLayout *gridLayout_10;
     QWidget *widget;
     QGridLayout *gridLayout_17;
-    QFrame *frameCurrentAction;
-    QGridLayout *gridLayout_21;
-    QLabel *labelCurrentAction;
-    QLabel *labelCurrentActionState;
+    QPushButton *pushButton_2;
+    QFrame *frameDisplayIntersection;
+    QGridLayout *gridLayout_20;
+    QQuickWidget *qmlDisplayWidget;
     QFrame *frameRadar;
     QGridLayout *gridLayout_15;
     QSpinBox *spinBoxTargetY;
@@ -232,12 +232,15 @@ public:
     QWidget *widgetRadar;
     QSpinBox *spinBoxTargetX;
     QPushButton *buttonSetTargetXY;
-    QPushButton *buttonGenerateMap;
-    QFrame *frameDisplayIntersection;
-    QGridLayout *gridLayout_20;
-    QQuickWidget *qmlDisplayWidget;
-    QSpacerItem *verticalSpacer_4;
     QPushButton *buttonCalculatePath;
+    QFrame *frameCurrentAction;
+    QGridLayout *gridLayout_21;
+    QLabel *labelCurrentAction;
+    QLabel *labelCurrentActionState;
+    QPushButton *buttonGenerateMap;
+    QPushButton *buttonStartExploration;
+    QSpacerItem *verticalSpacer_4;
+    QPushButton *buttonStartRun;
     QStatusBar *statusbar;
 
     void setupUi(QMainWindow *QForm1)
@@ -2248,41 +2251,42 @@ public:
         gridLayout_17 = new QGridLayout(widget);
         gridLayout_17->setObjectName("gridLayout_17");
         gridLayout_17->setContentsMargins(0, 0, 0, 0);
-        frameCurrentAction = new QFrame(widget);
-        frameCurrentAction->setObjectName("frameCurrentAction");
-        frameCurrentAction->setStyleSheet(QString::fromUtf8("QWidget#frameCurrentAction{\n"
-"border: 2px solid rgb(150, 150, 150);\n"
+        pushButton_2 = new QPushButton(widget);
+        pushButton_2->setObjectName("pushButton_2");
+        pushButton_2->setStyleSheet(QString::fromUtf8("font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
 "background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_17->addWidget(pushButton_2, 5, 0, 1, 1);
+
+        frameDisplayIntersection = new QFrame(widget);
+        frameDisplayIntersection->setObjectName("frameDisplayIntersection");
+        frameDisplayIntersection->setMinimumSize(QSize(0, 0));
+        frameDisplayIntersection->setMaximumSize(QSize(16777215, 332));
+        frameDisplayIntersection->setStyleSheet(QString::fromUtf8("QWidget#frameDisplayIntersection{\n"
+"border: 2px solid rgb(150, 150, 150);\n"
 "border-radius: 5px;\n"
 "}"));
-        frameCurrentAction->setFrameShape(QFrame::StyledPanel);
-        frameCurrentAction->setFrameShadow(QFrame::Raised);
-        gridLayout_21 = new QGridLayout(frameCurrentAction);
-        gridLayout_21->setObjectName("gridLayout_21");
-        labelCurrentAction = new QLabel(frameCurrentAction);
-        labelCurrentAction->setObjectName("labelCurrentAction");
-        labelCurrentAction->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
-"font: 13pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"color: rgb(222, 223, 225);\n"
-"background-color: transparent;"));
+        frameDisplayIntersection->setFrameShape(QFrame::StyledPanel);
+        frameDisplayIntersection->setFrameShadow(QFrame::Raised);
+        gridLayout_20 = new QGridLayout(frameDisplayIntersection);
+        gridLayout_20->setObjectName("gridLayout_20");
+        gridLayout_20->setContentsMargins(0, 0, 0, 0);
+        qmlDisplayWidget = new QQuickWidget(frameDisplayIntersection);
+        qmlDisplayWidget->setObjectName("qmlDisplayWidget");
+        sizePolicy9.setHeightForWidth(qmlDisplayWidget->sizePolicy().hasHeightForWidth());
+        qmlDisplayWidget->setSizePolicy(sizePolicy9);
+        qmlDisplayWidget->setStyleSheet(QString::fromUtf8("QWidget#qmlDisplayWidget{\n"
+"border: 2px solid rgb(150, 150, 150);\n"
+"border-radius: 5px;\n"
+"}"));
+        qmlDisplayWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
 
-        gridLayout_21->addWidget(labelCurrentAction, 0, 0, 1, 1);
-
-        labelCurrentActionState = new QLabel(frameCurrentAction);
-        labelCurrentActionState->setObjectName("labelCurrentActionState");
-        labelCurrentActionState->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
-"font: 13pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"color: rgb(96, 100, 103);\n"
-"color: rgb(0, 250, 154);\n"
-"background-color: transparent;"));
-        labelCurrentActionState->setAlignment(Qt::AlignCenter);
-
-        gridLayout_21->addWidget(labelCurrentActionState, 0, 1, 1, 1);
+        gridLayout_20->addWidget(qmlDisplayWidget, 0, 0, 1, 1);
 
 
-        gridLayout_17->addWidget(frameCurrentAction, 3, 0, 1, 2);
+        gridLayout_17->addWidget(frameDisplayIntersection, 1, 1, 1, 1);
 
         frameRadar = new QFrame(widget);
         frameRadar->setObjectName("frameRadar");
@@ -2366,47 +2370,73 @@ public:
 
         gridLayout_17->addWidget(frameRadar, 1, 0, 1, 1);
 
-        buttonGenerateMap = new QPushButton(widget);
-        buttonGenerateMap->setObjectName("buttonGenerateMap");
-
-        gridLayout_17->addWidget(buttonGenerateMap, 4, 0, 1, 1);
-
-        frameDisplayIntersection = new QFrame(widget);
-        frameDisplayIntersection->setObjectName("frameDisplayIntersection");
-        frameDisplayIntersection->setMinimumSize(QSize(0, 0));
-        frameDisplayIntersection->setMaximumSize(QSize(16777215, 332));
-        frameDisplayIntersection->setStyleSheet(QString::fromUtf8("QWidget#frameDisplayIntersection{\n"
-"border: 2px solid rgb(150, 150, 150);\n"
-"border-radius: 5px;\n"
-"}"));
-        frameDisplayIntersection->setFrameShape(QFrame::StyledPanel);
-        frameDisplayIntersection->setFrameShadow(QFrame::Raised);
-        gridLayout_20 = new QGridLayout(frameDisplayIntersection);
-        gridLayout_20->setObjectName("gridLayout_20");
-        gridLayout_20->setContentsMargins(0, 0, 0, 0);
-        qmlDisplayWidget = new QQuickWidget(frameDisplayIntersection);
-        qmlDisplayWidget->setObjectName("qmlDisplayWidget");
-        sizePolicy9.setHeightForWidth(qmlDisplayWidget->sizePolicy().hasHeightForWidth());
-        qmlDisplayWidget->setSizePolicy(sizePolicy9);
-        qmlDisplayWidget->setStyleSheet(QString::fromUtf8("QWidget#qmlDisplayWidget{\n"
-"border: 2px solid rgb(150, 150, 150);\n"
-"border-radius: 5px;\n"
-"}"));
-        qmlDisplayWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
-
-        gridLayout_20->addWidget(qmlDisplayWidget, 0, 0, 1, 1);
-
-
-        gridLayout_17->addWidget(frameDisplayIntersection, 1, 1, 1, 1);
-
-        verticalSpacer_4 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-
-        gridLayout_17->addItem(verticalSpacer_4, 6, 0, 1, 1);
-
         buttonCalculatePath = new QPushButton(widget);
         buttonCalculatePath->setObjectName("buttonCalculatePath");
 
-        gridLayout_17->addWidget(buttonCalculatePath, 5, 0, 1, 1);
+        gridLayout_17->addWidget(buttonCalculatePath, 8, 0, 1, 1);
+
+        frameCurrentAction = new QFrame(widget);
+        frameCurrentAction->setObjectName("frameCurrentAction");
+        frameCurrentAction->setStyleSheet(QString::fromUtf8("QWidget#frameCurrentAction{\n"
+"border: 2px solid rgb(150, 150, 150);\n"
+"background-color: rgb(57, 63, 68);\n"
+"border-radius: 5px;\n"
+"}"));
+        frameCurrentAction->setFrameShape(QFrame::StyledPanel);
+        frameCurrentAction->setFrameShadow(QFrame::Raised);
+        gridLayout_21 = new QGridLayout(frameCurrentAction);
+        gridLayout_21->setObjectName("gridLayout_21");
+        labelCurrentAction = new QLabel(frameCurrentAction);
+        labelCurrentAction->setObjectName("labelCurrentAction");
+        labelCurrentAction->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
+"font: 13pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"color: rgb(222, 223, 225);\n"
+"background-color: transparent;"));
+
+        gridLayout_21->addWidget(labelCurrentAction, 0, 0, 1, 1);
+
+        labelCurrentActionState = new QLabel(frameCurrentAction);
+        labelCurrentActionState->setObjectName("labelCurrentActionState");
+        labelCurrentActionState->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
+"font: 13pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"color: rgb(96, 100, 103);\n"
+"color: rgb(0, 250, 154);\n"
+"background-color: transparent;"));
+        labelCurrentActionState->setAlignment(Qt::AlignCenter);
+
+        gridLayout_21->addWidget(labelCurrentActionState, 0, 1, 1, 1);
+
+
+        gridLayout_17->addWidget(frameCurrentAction, 3, 1, 1, 1);
+
+        buttonGenerateMap = new QPushButton(widget);
+        buttonGenerateMap->setObjectName("buttonGenerateMap");
+
+        gridLayout_17->addWidget(buttonGenerateMap, 7, 0, 1, 1);
+
+        buttonStartExploration = new QPushButton(widget);
+        buttonStartExploration->setObjectName("buttonStartExploration");
+        buttonStartExploration->setStyleSheet(QString::fromUtf8("font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_17->addWidget(buttonStartExploration, 3, 0, 1, 1);
+
+        verticalSpacer_4 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout_17->addItem(verticalSpacer_4, 9, 0, 1, 1);
+
+        buttonStartRun = new QPushButton(widget);
+        buttonStartRun->setObjectName("buttonStartRun");
+        buttonStartRun->setStyleSheet(QString::fromUtf8("font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_17->addWidget(buttonStartRun, 4, 0, 1, 1);
 
 
         gridLayout_10->addWidget(widget, 0, 0, 1, 1);
@@ -2548,13 +2578,16 @@ public:
         SendCommandButton->setText(QCoreApplication::translate("QForm1", "SEND", nullptr));
         aliveButton->setText(QCoreApplication::translate("QForm1", "ALIVE", nullptr));
         labelCommand->setText(QCoreApplication::translate("QForm1", "Command", nullptr));
-        labelCurrentAction->setText(QCoreApplication::translate("QForm1", "Current Action", nullptr));
-        labelCurrentActionState->setText(QCoreApplication::translate("QForm1", "-", nullptr));
+        pushButton_2->setText(QCoreApplication::translate("QForm1", "STOP", nullptr));
         buttonClearMap->setText(QCoreApplication::translate("QForm1", "MIRROR", nullptr));
         buttonRotateMap->setText(QCoreApplication::translate("QForm1", "ROTATE", nullptr));
         buttonSetTargetXY->setText(QCoreApplication::translate("QForm1", "SET TARGET", nullptr));
-        buttonGenerateMap->setText(QCoreApplication::translate("QForm1", "GENERATE MAP", nullptr));
         buttonCalculatePath->setText(QCoreApplication::translate("QForm1", "CALCULATE PATH", nullptr));
+        labelCurrentAction->setText(QCoreApplication::translate("QForm1", "Current Action", nullptr));
+        labelCurrentActionState->setText(QCoreApplication::translate("QForm1", "-", nullptr));
+        buttonGenerateMap->setText(QCoreApplication::translate("QForm1", "GENERATE MAP", nullptr));
+        buttonStartExploration->setText(QCoreApplication::translate("QForm1", "START EXPLORATION", nullptr));
+        buttonStartRun->setText(QCoreApplication::translate("QForm1", "START RUN", nullptr));
     } // retranslateUi
 
 };

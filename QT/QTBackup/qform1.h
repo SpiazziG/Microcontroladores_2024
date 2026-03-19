@@ -148,6 +148,10 @@ private slots:
 
     void on_buttonCalculatePath_clicked();
 
+    void on_buttonStartExploration_clicked();
+
+    void on_pushButton_2_clicked();
+
 private:
     Ui::QForm1 *ui;
 
@@ -204,7 +208,7 @@ private:
     typedef enum {
         // Communication commands
         ACKNOWLEDGE         = 0x0D,
-        GET_LOCAL_IP        = 0xE0,
+        GET_LOCAL_IP        = 0xF2,
         ALIVE               = 0xF0,
         GET_FIRMWARE_INFO   = 0xF1, //FIRMWARE
         UNKNOWNCMD          = 0xFF, //UNKNOWNCOMMAND
@@ -236,7 +240,9 @@ private:
         SET_TURN_SPEED      = 0xD8,
         SET_WALL_SPEED      = 0xDA,
 
+        // 0xE_ : Robot and Map info
         // Maze State
+        SET_ROBOT_MODE          = 0xE0,
         GET_CURRENT_ACTION      = 0xEA,
         SET_MAZE_TARGET         = 0xEC,
         GET_INTERSECTION_TYPE   = 0xEE,

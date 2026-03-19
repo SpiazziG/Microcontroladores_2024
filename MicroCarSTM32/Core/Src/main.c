@@ -65,7 +65,7 @@ typedef union {
 typedef enum {
 	// Communication commands
 	ACKNOWLEDGE = 0x0D,
-	GET_LOCAL_IP = 0xE0,
+	GET_LOCAL_IP = 0xF2,
     ALIVE = 0xF0,
     GET_FIRMWARE_INFO = 0xF1,
 	UNKNOWNCMD = 0xFF,
@@ -98,6 +98,8 @@ typedef enum {
 	SET_WALL_SPEED = 0xDA,
 
 	// Maze status
+	SET_ROBOT_MODE = 0xE0,
+
 	GET_CURRENT_ACTION		= 0xEA,
 
 	SET_MAZE_TARGET			= 0xEC,
@@ -187,12 +189,17 @@ typedef struct {
 } CellData_s;
 
 typedef struct {
-	CellData_s maze[16][16];
+	CellData_s maze[8][8];
 	uint8_t currentX;
 	uint8_t currentY;
 	uint8_t targetX;
 	uint8_t targetY;
 } Map_Position_s;
+
+typedef struct {
+    uint8_t x;
+    uint8_t y;
+} Point_s;
 
 typedef struct {
 	uint32_t time_frontLineDetect;
@@ -530,17 +537,22 @@ void Do1s();
 
 ///////////////////////// PROGRAM FUNCTIONS PROTOTYPES /////////////////////////
 void Robot_StateMachine(void);
+void Robot_Stop(void);
 void Robot_ExploreMaze(void);
 void Robot_FollowWall_Control(void);
-void Robot_SmoothTurn(void);
-void Robot_GoBlind(void);
 void Robot_Turn_Control(int16_t degreesToTurn);
 void Robot_CheckCellCrossing(void);
+int8_t Robot_CalculateNextMove(void);
+
 IntersectionType_e Robot_IdentifyIntersection(void);
+
+void FloodFill_Calculate(void);
+
 void Map_AddWallToMap(uint8_t x, uint8_t y, uint8_t dir);
 void Map_UpdateCell(uint8_t leftWall, uint8_t frontWall, uint8_t rightWall);
 void Map_UpdateDirection(int8_t turnDir);
 void Map_UpdateCoordinates(void);
+
 
 void ChangeDisplayPage(DisplayPage_e page);
 
@@ -796,6 +808,20 @@ void DecodeCMD(struct UNERBUSHandle *aBus, uint8_t iStartData){
 		UNERBUS_Write(aBus, buf, 9);
 		length = 10;
 		break;
+	case SET_ROBOT_MODE:
+		uint8_t requestedMode = UNERBUS_GetUInt8(aBus);
+
+		if (requestedMode == MODE_EXPLORING_MAZE) {
+			Robot_ExploreMaze();
+		}
+		else if (requestedMode == MODE_MAZE_RUNNER) {
+			// A futuro: Robot_StartSpeedRun();
+		}
+		else if (requestedMode == MODE_IDLE) {
+			// Parada de emergencia
+			Robot_Stop();
+		}
+		break;
 	case GET_CURRENT_ACTION:
 
 		break;
@@ -1038,9 +1064,50 @@ void Robot_StateMachine() {
 	}
 }
 
-void Robot_ExploreMaze() {
+void Robot_Stop(void) {
+    // 1. Frenamos físicamente el robot
+    ENGINE_SetLeftSpeed(&myEngines, 0);
+    ENGINE_SetRightSpeed(&myEngines, 0);
 
-	return;
+    // 2. Reseteamos la máquina de estados lógicos
+    currentMode = MODE_IDLE;
+    currentAction = ACTION_IDLE;
+
+    // 3. Forzamos la interfaz a volver al menú principal
+    currentPage = DISPLAY_MENU;
+    ChangeDisplayPage(DISPLAY_MENU);
+}
+
+void Robot_ExploreMaze(void) {
+	currentMode = MODE_EXPLORING_MAZE;
+	currentPage = DISPLAY_RUN;
+	ChangeDisplayPage(DISPLAY_RUN);
+
+	// --- INICIALIZACIÓN DEL MAPA ---
+	currentPosition.currentX = 0;
+	currentPosition.currentY = 0;
+	currentDirection = EAST;
+	currentPosition.maze[0][0].visited = 1;
+
+	// Forzamos las paredes de la esquina inicial (Oeste y Sur)
+	currentPosition.maze[0][0].walls |= (1 << WEST) | (1 << SOUTH) | (1 << NORTH);
+	// -------------------------------
+	Map_UpdateCell((FILTERED_LEFT_IR > 350) ? 1 : 0,
+		    (FILTERED_FRONT_LEFT_IR > 350 || FILTERED_FRONT_RIGHT_IR > 350) ? 1 : 0,
+		    (FILTERED_RIGHT_IR > 350) ? 1 : 0);
+
+	detectedIntersection = INTERSECTION_UNKNOWN;
+	cellState = CELL_INSIDE_CELL;
+
+	PID_Reset(&myWallValues);
+	PID_Reset(&myTurnValues);
+	PID_Reset(&myStopValues);
+	MPU6050_Reset_Yaw(&myMpuValues);
+
+	referenceLeftWall = 40;
+	referenceRightWall = 40;
+
+	currentAction = ACTION_FOLLOW_WALL;
 }
 
 void Robot_FollowWall_Control(void) {
@@ -1387,43 +1454,35 @@ void Robot_CheckCellCrossing(void) {
 				// 2. Mapear paredes de la nueva celda (opcional aquí o al estabilizarse)
 				Map_UpdateCell(hasLeftWall, hasFrontWall, hasRightWall);
 
-				switch(detectedIntersection) {
-					// GIROS A LA IZQUIERDA
-					case INTERSECTION_LEFT_FRONT_OPEN:
-					case INTERSECTION_LEFT_SQUARE:
-					case INTERSECTION_CROSSROAD:
-						pivotDegreesTarget = 90;
-						Map_UpdateDirection(-1);
-						break;
-					// GIROS A LA DERECHA
-					case INTERSECTION_T_ROAD: // Forzado a izquierda para pruebas
-						pivotDegreesTarget = 90;
-						Map_UpdateDirection(-1);
-						break;
-					case INTERSECTION_RIGHT_FRONT_OPEN:
-						pivotDegreesTarget = -90;
-						Map_UpdateDirection(1);
-						break;
-					case INTERSECTION_RIGHT_SQUARE:
-						pivotDegreesTarget = -90;
-						Map_UpdateDirection(1);
-						break;
-					// CALLEJÓN SIN SALIDA (CASO ESPECIAL)
-					// Aquí quizás quieras frenar ANTES, no esperar a perder la línea
-					// Pero si lo usas, funcionará igual.
-					case INTERSECTION_DEAD_END:
-						 pivotDegreesTarget = 180;
-						 Map_UpdateDirection(2);
-//						 Robot_UpdateDirection(2);
-//						 currentAction = ACTION_TURN_PIVOT;
-//						 MPU6050_Reset_Yaw(&myMpuValues);
-//						 cellState = CELL_INSIDE_CELL;
-						 break;
-					case INTERSECTION_UNKNOWN:
-						pivotDegreesTarget = 0;
-						break;
-					default:
-						break;
+				if (currentMode == MODE_EXPLORING_MAZE) {
+					// Verificamos si ya encontramos el objetivo
+					if (currentPosition.currentX == currentPosition.targetX && currentPosition.currentY == currentPosition.targetY) {
+						// ¡Llegamos a la meta!
+						Robot_Stop();
+						// Opcional: Podés hacer que parpadee un LED o cambiar a un estado "Meta Encontrada"
+					} else {
+						// Recalcular mapa y decidir siguiente movimiento
+						FloodFill_Calculate();
+						int8_t nextTurn = Robot_CalculateNextMove();
+
+						switch(nextTurn) {
+							case 0: // Derecho
+								pivotDegreesTarget = 0;
+								break;
+							case 1: // Derecha
+								pivotDegreesTarget = -90;
+								Map_UpdateDirection(1);
+								break;
+							case -1: // Izquierda
+								pivotDegreesTarget = 90;
+								Map_UpdateDirection(-1);
+								break;
+							case 2: // Callejón sin salida (180 grados)
+								pivotDegreesTarget = 180;
+								Map_UpdateDirection(2);
+								break;
+						}
+					}
 				}
 
                 cellState = CELL_REAR_LINE;
@@ -1461,6 +1520,134 @@ void Robot_CheckCellCrossing(void) {
             cellState = CELL_INSIDE_CELL;
             break;
     }
+}
+
+void FloodFill_Calculate(void) {
+    // 1. Reiniciamos los costos a 255
+    for (uint8_t x = 0; x < 8; x++) {
+        for (uint8_t y = 0; y < 8; y++) {
+            currentPosition.maze[x][y].cost = 255;
+        }
+    }
+
+    // 2. Cola para el BFS (Ocupa 512 bytes en RAM, la Bluepill tiene de sobra)
+    Point_s queue[64];
+    uint16_t head = 0;
+    uint16_t tail = 0;
+
+    // 3. Establecemos la meta y la encolamos
+    // (Asumimos que mazeTargetX y mazeTargetY ya están declaradas como variables globales)
+    currentPosition.maze[currentPosition.targetX][currentPosition.targetY].cost = 0;
+    queue[tail].x = currentPosition.targetX;
+    queue[tail].y = currentPosition.targetY;
+    tail++;
+
+    // 4. Inundación
+    while (head < tail) {
+        uint8_t cx = queue[head].x;
+        uint8_t cy = queue[head].y;
+        head++;
+
+        uint8_t currentCost = currentPosition.maze[cx][cy].cost;
+        uint8_t walls = currentPosition.maze[cx][cy].walls;
+
+        // NORTE
+        if (!(walls & (1 << NORTH)) && cy < 7) {
+            if (currentPosition.maze[cx][cy+1].cost == 255) {
+                currentPosition.maze[cx][cy+1].cost = currentCost + 1;
+                queue[tail].x = cx;
+                queue[tail].y = cy + 1;
+                tail++;
+            }
+        }
+        // ESTE
+        if (!(walls & (1 << EAST)) && cx < 7) {
+            if (currentPosition.maze[cx+1][cy].cost == 255) {
+                currentPosition.maze[cx+1][cy].cost = currentCost + 1;
+                queue[tail].x = cx + 1;
+                queue[tail].y = cy;
+                tail++;
+            }
+        }
+        // SUR
+        if (!(walls & (1 << SOUTH)) && cy > 0) {
+            if (currentPosition.maze[cx][cy-1].cost == 255) {
+                currentPosition.maze[cx][cy-1].cost = currentCost + 1;
+                queue[tail].x = cx;
+                queue[tail].y = cy - 1;
+                tail++;
+            }
+        }
+        // OESTE
+        if (!(walls & (1 << WEST)) && cx > 0) {
+            if (currentPosition.maze[cx-1][cy].cost == 255) {
+                currentPosition.maze[cx-1][cy].cost = currentCost + 1;
+                queue[tail].x = cx - 1;
+                queue[tail].y = cy;
+                tail++;
+            }
+        }
+    }
+}
+
+int8_t Robot_CalculateNextMove(void) {
+    uint8_t cx = currentPosition.currentX;
+    uint8_t cy = currentPosition.currentY;
+    uint8_t walls = currentPosition.maze[cx][cy].walls;
+
+    uint8_t minCost = 255;
+    Map_Direction_e bestAbsoluteDir = currentDirection;
+    uint8_t foundUnvisited = 0;
+
+    // Prioridad de exploración relativa: 0=Derecho, 1=Derecha, 3=Izquierda, 2=Atrás
+    uint8_t dirOffsets[4] = {0, 1, 3, 2};
+
+    for (int i = 0; i < 4; i++) {
+        uint8_t absDir = (currentDirection + dirOffsets[i]) % 4;
+
+        // Si no hay pared en esa dirección
+        if (!(walls & (1 << absDir))) {
+            uint8_t nx = cx, ny = cy;
+            if (absDir == NORTH) ny++;
+            else if (absDir == EAST) nx++;
+            else if (absDir == SOUTH) ny--;
+            else if (absDir == WEST) nx--;
+
+            if (nx > 15 || ny > 15) continue; // Seguridad
+
+            uint8_t neighborCost = currentPosition.maze[nx][ny].cost;
+            uint8_t isUnvisited = (currentPosition.maze[nx][ny].visited == 0);
+
+            uint8_t isBetter = 0;
+
+            // Buscamos siempre el costo menor
+            if (neighborCost < minCost) {
+                isBetter = 1;
+            }
+            // En caso de EMPATE de costos, priorizamos las celdas no visitadas
+            else if (neighborCost == minCost) {
+                if (isUnvisited && !foundUnvisited) {
+                    isBetter = 1;
+                }
+            }
+
+            if (isBetter) {
+                minCost = neighborCost;
+                bestAbsoluteDir = (Map_Direction_e)absDir;
+                foundUnvisited = isUnvisited;
+            }
+        }
+    }
+
+    // Calculamos el giro relativo a los motores
+    int8_t relativeTurn = bestAbsoluteDir - currentDirection;
+    if (relativeTurn > 2) relativeTurn -= 4;
+    else if (relativeTurn < -2) relativeTurn += 4;
+
+    if (relativeTurn == -2) relativeTurn = 2; // Normalizamos el 180 grados
+
+    // Devuelve: 0 (Derecho), 1 (Derecha), -1 (Izquierda), 2 (Vuelta en U)
+    return relativeTurn;
 }
 
 void Map_AddWallToMap(uint8_t x, uint8_t y, uint8_t dir) {
@@ -1985,7 +2172,7 @@ static void ButtonNormalPress(void) {
 
 static void ButtonLongPress(void) {
 	if (currentMode != MODE_IDLE) {
-		currentMode = MODE_IDLE;
+		Robot_Stop();
 		return;
 	}
 
@@ -1993,26 +2180,7 @@ static void ButtonLongPress(void) {
 		case DISPLAY_MENU:
 			switch(currentSelection) {
 			case MENU_START:
-				currentPage = DISPLAY_RUN;
-				ChangeDisplayPage(DISPLAY_RUN);
-//				Map_UpdateCell();
-				currentPosition.currentX = 0;
-				currentPosition.currentY = 0;
-				currentDirection = EAST;
-				currentPosition.maze[0][0].visited = 1;
-				currentPosition.maze[0][0].walls |= (1 << WEST) | (1 << SOUTH) | (1 << NORTH);
-				Map_UpdateCell((FILTERED_LEFT_IR > 350) ? 1 : 0,
-					    (FILTERED_FRONT_LEFT_IR > 350 || FILTERED_FRONT_RIGHT_IR > 350) ? 1 : 0,
-					    (FILTERED_RIGHT_IR > 350) ? 1 : 0);
-
-				detectedIntersection = INTERSECTION_UNKNOWN;
-//				referenceLeftWall = FILTERED_LEFT_IR;
-//				referenceRightWall = FILTERED_RIGHT_IR;
-//				referenceLeftWall = ONE_WALL_TARGET_DISTANCE - 200;
-//				referenceRightWall = ONE_WALL_TARGET_DISTANCE - 200;
-				referenceLeftWall = 40;
-				referenceRightWall = 40;
-				currentAction = ACTION_FOLLOW_WALL;
+				Robot_ExploreMaze();
 				break;
 			case MENU_IR_DATA:
 				currentPage = DISPLAY_IR_SENSORS;
