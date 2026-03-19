@@ -99,6 +99,9 @@ typedef enum {
 
 	// Maze status
 	GET_CURRENT_ACTION		= 0xEA,
+
+	SET_MAZE_TARGET			= 0xEC,
+
 	GET_INTERSECTION_TYPE	= 0xEE,
 	GET_MAP_INFO			= 0xEF,
 } Command_e;
@@ -138,7 +141,7 @@ typedef enum {
 	ACTION_AFTER_TURN,
 	ACTION_TURN_PIVOT,
 	ACTION_TURN_SMOOTH,
-	ACTION_HANDLE_FRONT_WALL,
+	ACTION_BACK_WALL_ALIGN,
 } Robot_Action_e;
 
 typedef enum {
@@ -187,6 +190,8 @@ typedef struct {
 	CellData_s maze[16][16];
 	uint8_t currentX;
 	uint8_t currentY;
+	uint8_t targetX;
+	uint8_t targetY;
 } Map_Position_s;
 
 typedef struct {
@@ -250,7 +255,7 @@ typedef struct {
 
 // Voltage of the batteries (used for PID control of the engines)
 #define PID_VOLTAGE					800
-#define CURRENT_VOLTAGE				820
+#define CURRENT_VOLTAGE				811
 
 // Turn control macros
 #define SMOOTH_TURN_OUTER_SPEED		-65
@@ -275,17 +280,17 @@ typedef struct {
 #define LINE_DETECTION_THRESHOLD	1600 	// Para detectar la línea de la celda 			// Casa: 1400 	// Facu: 1500
 #define LATERAL_WALL_THRESHOLD		800 	// Detectar si hay pared al lado				// Casa: 500 	// Facu: 450
 
-#define WALL_ERROR_DEADZONE			50
-#define GYRO_COMPENSATION_GAIN		30 		// Ponderación del giroscopio para mantenerse recto en un cruce con una sola pared
+#define WALL_ERROR_DEADZONE			2
+#define GYRO_COMPENSATION_GAIN		4 		// Ponderación del giroscopio para mantenerse recto en un cruce con una sola pared
 
-#define DIST_RIGHT_IR			myInfraredValues.millimeterSamples[0]
-#define DIST_DIAG_RIGHT_IR		myInfraredValues.millimeterSamples[1]
-#define DIST_FRONT_RIGHT_IR		myInfraredValues.millimeterSamples[2]
-#define DIST_FRONT_UNDER_IR		myInfraredValues.millimeterSamples[3]
-#define DIST_FRONT_LEFT_IR		myInfraredValues.millimeterSamples[4]
-#define DIST_DIAG_LEFT_IR		myInfraredValues.millimeterSamples[5]
-#define DIST_LEFT_IR			myInfraredValues.millimeterSamples[6]
-#define DIST_REAR_UNDER_IR		myInfraredValues.millimeterSamples[7]
+#define DIST_RIGHT_IR				myInfraredValues.millimeterSamples[0]
+#define DIST_DIAG_RIGHT_IR			myInfraredValues.millimeterSamples[1]
+#define DIST_FRONT_RIGHT_IR			myInfraredValues.millimeterSamples[2]
+#define DIST_FRONT_UNDER_IR			myInfraredValues.millimeterSamples[3]
+#define DIST_FRONT_LEFT_IR			myInfraredValues.millimeterSamples[4]
+#define DIST_DIAG_LEFT_IR			myInfraredValues.millimeterSamples[5]
+#define DIST_LEFT_IR				myInfraredValues.millimeterSamples[6]
+#define DIST_REAR_UNDER_IR			myInfraredValues.millimeterSamples[7]
 
 #define FILTERED_RIGHT_IR			myInfraredValues.filteredSamples[0]
 #define FILTERED_DIAG_RIGHT_IR		myInfraredValues.filteredSamples[1]
@@ -343,7 +348,7 @@ static _uFlag flagsIR;
 static InfraredHandle_s myInfraredValues;
 static MPU_Handle_s myMpuValues;
 static OLED_Handle_s myOled;
-static PIDHandle_s myTurnValues, myWallValues, mySmoothTurnValues, myStopValues;
+static PIDHandle_s myTurnValues, myWallValues, mySmoothTurnValues, myStopValues, myReverseValues;
 static ENGINE_Handle_s myEngines;
 static BUTTON_Handle_s myButton1;
 static VELOCITY_Handle_s myVelocity;
@@ -384,7 +389,7 @@ Robot_Action_e currentAction;
 CellCrossingState_e cellState;
 
 Map_Position_s currentPosition;
-Map_Direction_e currentDirection = NORTH;
+Map_Direction_e currentDirection = EAST;
 
 IntersectionType_e detectedIntersection;
 //const IntersectionType_e intersectionLUT[8] = {
@@ -416,7 +421,7 @@ uint8_t showIrInMillimeters;
 int32_t wallFollowTargetYaw = 0;
 uint16_t referenceLeftWall = 0, referenceRightWall = 0;
 uint8_t exitTurn;
-uint32_t timeToCenter, centeringStartTime;
+uint32_t timeToCenter, centeringStartTime, alignStartTime;
 
 char strAux[20];
 
@@ -532,7 +537,8 @@ void Robot_GoBlind(void);
 void Robot_Turn_Control(int16_t degreesToTurn);
 void Robot_CheckCellCrossing(void);
 IntersectionType_e Robot_IdentifyIntersection(void);
-void Map_UpdateWall(void);
+void Map_AddWallToMap(uint8_t x, uint8_t y, uint8_t dir);
+void Map_UpdateCell(uint8_t leftWall, uint8_t frontWall, uint8_t rightWall);
 void Map_UpdateDirection(int8_t turnDir);
 void Map_UpdateCoordinates(void);
 
@@ -663,32 +669,32 @@ void I2C_State_Control(void){
 	}
 }
 
-//void I2C_Bus_Recovery(void) {
+void I2C_Bus_Recovery(void) {
 //	// 1. Detener cualquier transferencia DMA que haya quedado a medias
-//	    if (hi2c2.hdmatx != NULL) HAL_DMA_Abort(hi2c2.hdmatx);
-//	    if (hi2c2.hdmarx != NULL) HAL_DMA_Abort(hi2c2.hdmarx);
+//	if (hi2c2.hdmatx != NULL) HAL_DMA_Abort(hi2c2.hdmatx);
+//	if (hi2c2.hdmarx != NULL) HAL_DMA_Abort(hi2c2.hdmarx);
 //
-//	    // 2. Reseteo violento por hardware del periférico I2C2
-//	    __HAL_RCC_I2C2_FORCE_RESET();
-//	    __NOP();
-//		__NOP();
-//		__NOP();
-//		__NOP();
-//	    __HAL_RCC_I2C2_RELEASE_RESET();
+//	// 2. Reseteo violento por hardware del periférico I2C2
+//	__HAL_RCC_I2C2_FORCE_RESET();
+//	__NOP();
+//	__NOP();
+//	__NOP();
+//	__NOP();
+//	__HAL_RCC_I2C2_RELEASE_RESET();
 //
-//	    // 3. Reinicializar el periférico con tu configuración original
-//	    MX_I2C2_Init();
+//	// 3. Reinicializar el periférico con tu configuración original
+//	MX_I2C2_Init();
 //
-//	    // 4. Liberar el bus
-//	    I2C_BUS_IS_BUSY = 0;
-//	    MPU_READ_REQUEST = 0;
+//	// 4. Liberar el bus
+//	I2C_BUS_IS_BUSY = 0;
+//	MPU_READ_REQUEST = 0;
 //
-//	    // 5. Resetear la máquina de estados del OLED.
-//	    // Lo mandamos a 8 para que aborte el cuadro actual y espere a que
-//	    // Do100ms() pida un cuadro nuevo. Esto evita glitches gráficos.
-//	    myOled.updatePageState = 0;
-//	    myOled.currentPageToUpdate = 8;
-//}
+//	// 5. Resetear la máquina de estados del OLED.
+//	// Lo mandamos a 8 para que aborte el cuadro actual y espere a que
+//	// Do100ms() pida un cuadro nuevo. Esto evita glitches gráficos.
+//	myOled.updatePageState = 0;
+//	myOled.currentPageToUpdate = 8;
+}
 
 void DecodeCMD(struct UNERBUSHandle *aBus, uint8_t iStartData){
 	uint8_t id;
@@ -877,7 +883,7 @@ void Do100ms(){
 	Heartbeat();
 
 //	if (currentPage != DISPLAY_RUN) {
-			ChangeDisplayPage(currentPage);
+	ChangeDisplayPage(currentPage);
 //	}
 //	ChangeDisplayPage(currentPage);
 //    if (currentPage == DISPLAY_IR_SENSORS) {
@@ -961,52 +967,7 @@ void Robot_StateMachine() {
 		ENGINE_SetRightSpeed(&myEngines, 0);
 		break;
 	case ACTION_FOLLOW_WALL:
-		//uint8_t frontWallClose = (FILTERED_FRONT_LEFT_IR > WALL_FRONT_THRESHOLD) || (FILTERED_FRONT_RIGHT_IR > WALL_FRONT_THRESHOLD);
-
 		Robot_FollowWall_Control();
-
-//		if ((FILTERED_FRONT_LEFT_IR > WALL_FRONT_THRESHOLD) ||
-//		        (FILTERED_FRONT_RIGHT_IR > WALL_FRONT_THRESHOLD))
-//		{
-//			ENGINE_SetLeftSpeed(&myEngines, 0);
-//			ENGINE_SetRightSpeed(&myEngines, 0);
-//			currentAction = ACTION_IDLE;
-//			currentMode = MODE_IDLE;
-//			uint8_t wallLeft  = (FILTERED_LEFT_IR > OPEN_CORNER_THRESHOLD);
-//			uint8_t wallRight = (FILTERED_RIGHT_IR > OPEN_CORNER_THRESHOLD);
-//
-//			if (wallLeft && wallRight) {
-				// Pared Izq + Der + Frente = Callejón sin salida (Dead End)
-//				pivotDegreesTarget = 180;
-//
-//				currentAction = ACTION_TURN_PIVOT;
-//
-//				MPU6050_Reset_Yaw(&myMpuValues);
-//				PID_Reset(&myTurnValues); // Reseteamos PID de giro
-//				PID_Reset(&myWallValues); // Reseteamos PID de pared
-//			}
-//			else if (wallLeft) {
-//				// Pared Izq + Frente = Girar Derecha
-//				pivotDegreesTarget = 90;
-//			}
-//			else if (wallRight) {
-//				// Pared Der + Frente = Girar Izquierda
-//				pivotDegreesTarget = -90;
-//			}
-//			else {
-//				// Solo pared enfrente (es una "T" o Cruz donde chocamos la pared de fondo)
-//				// Por defecto giramos a la izquierda (o tu preferencia)
-//				pivotDegreesTarget = -90;
-//			}
-//
-//			// 4. Configurar el giro PIVOT (Porque estamos parados frente a la pared)
-//			MPU6050_Reset_Yaw(&myMpuValues);
-//			PID_Reset(&myTurnValues); // Reseteamos PID de giro
-//			PID_Reset(&myWallValues); // Reseteamos PID de pared
-//
-//			currentAction = ACTION_TURN_PIVOT;
-//		}
-
 		break;
 	case ACTION_TURN_PIVOT:
 		Robot_Turn_Control(pivotDegreesTarget);
@@ -1022,58 +983,55 @@ void Robot_StateMachine() {
 				currentAction = ACTION_TURN_PIVOT;
 
 				PID_Reset(&myTurnValues);
-				MPU6050_Reset_Yaw(&myMpuValues);
+//				MPU6050_Reset_Yaw(&myMpuValues);
 			}
 		}
 	    break;
 	case ACTION_AFTER_TURN:
 		Robot_FollowWall_Control();
 		break;
-	case ACTION_TURN_SMOOTH:
-//		{
-//            // 1. Calcular el error de ángulo (Distancia al objetivo)
-//            // (Asumimos que target es 90, -90, etc)
-//            int32_t current_yaw = myMpuValues.data.relativeYawScaled;
-//            int32_t target_yaw  = pivotDegreesTarget * YAW_SCALE;
-//            int32_t error_yaw   = target_yaw - current_yaw;
-//            int32_t error_abs   = (error_yaw < 0) ? -error_yaw : error_yaw;
-//
-//            // 2. Definir velocidades fijas para el arco (Ajustar empíricamente)
-//            // Recuerda: Tus velocidades son NEGATIVAS para ir adelante.
-//            // Una rueda va rápido (Externa) y la otra lento (Interna).
-//            int8_t speed_fast = -90; // Rueda externa (recorre más distancia)
-//            int8_t speed_slow = -20; // Rueda interna (pivote del arco)
-//
-//            // 3. Verificar si terminamos
-//            if (error_abs <= SMOOTH_EXIT_OFFSET) {
-//                // ¡LLEGAMOS!
-//                // Opción A: Frenar un poco si la siguiente recta es corta
-//                // Opción B: Pasar directo a seguir pared (más fluido)
-//
-//                currentAction = ACTION_FOLLOW_WALL;
-//                PID_Reset(&myWallValues); // Resetear PID de pared para evitar saltos
-//            }
-//            else {
-//                // 4. MANTENER EL ARCO
-//                // No usamos PID aquí. Confiamos en la geometría de las ruedas.
-//
-//                if (pivotDegreesTarget < 0) {
-//                    // --- GIRO A DERECHA (Right Turn) ---
-//                    // Rueda IZQUIERDA es la externa (Rápida)
-//                    // Rueda DERECHA es la interna (Lenta)
-//                    ENGINE_SetLeftSpeed(&myEngines, speed_fast);
-//                    ENGINE_SetRightSpeed(&myEngines, speed_slow);
-//                }
-//                else {
-//                    // --- GIRO A IZQUIERDA (Left Turn) ---
-//                    // Rueda DERECHA es la externa (Rápida)
-//                    // Rueda IZQUIERDA es la interna (Lenta)
-//                    ENGINE_SetLeftSpeed(&myEngines, speed_slow);
-//                    ENGINE_SetRightSpeed(&myEngines, speed_fast);
-//                }
-//            }
-//        }
+	case ACTION_BACK_WALL_ALIGN:
+	{
+		// 1. Leemos las paredes laterales en tiempo real
+		#define BACK_ALIGN_WALL_THR 80
+		uint8_t hasLeftWall = (DIST_LEFT_IR < BACK_ALIGN_WALL_THR) ? 1 : 0;
+		uint8_t hasRightWall = (DIST_RIGHT_IR < BACK_ALIGN_WALL_THR) ? 1 : 0;
+
+		int32_t errorWall = 0;
+
+		// 2. Calculamos el error exactamente igual que en marcha hacia adelante
+		if (hasLeftWall && hasRightWall) {
+			errorWall = DIST_RIGHT_IR - DIST_LEFT_IR;
+		} else if (hasRightWall) {
+			errorWall = 2 * (DIST_RIGHT_IR - referenceRightWall);
+		} else if (hasLeftWall) {
+			errorWall = 2 * (referenceLeftWall - DIST_LEFT_IR);
+//		} else {
+//			// Si retrocedemos en una cruz abierta, usamos el giroscopio para no torcernos
+//			errorWall = (0 - myMpuValues.data.relativeYawScaled) / YAW_SCALE * GYRO_COMPENSATION_GAIN;
+		}
+
+		// 3. Calculamos la corrección usando el PID de pared
+		PID_Compute(&myReverseValues, errorWall, 10);
+		int8_t correction = (int8_t)myReverseValues.output;
+
+		// 4. APLICAMOS LA CORRECCIÓN (¡Lógica de Dirección Invertida!)
+		// Para alejar la trompa de la pared izquierda, la rueda derecha empuja más fuerte hacia atrás.
+		ENGINE_SetLeftSpeed(&myEngines, myReverseValues.base - correction);
+		ENGINE_SetRightSpeed(&myEngines, myReverseValues.base + correction);
+
+//		ENGINE_SetLeftSpeed(&myEngines, 60);
+//		ENGINE_SetRightSpeed(&myEngines, 45);
+
+		if (HAL_GetTick() - alignStartTime >= 1450) {
+			ENGINE_SetLeftSpeed(&myEngines, 0);
+			ENGINE_SetRightSpeed(&myEngines, 0);
+
+			MPU6050_Reset_Yaw(&myMpuValues);
+			currentAction = ACTION_AFTER_TURN;
+		}
 		break;
+	}
 	default:
 		currentAction = ACTION_IDLE;
 		break;
@@ -1096,12 +1054,53 @@ void Robot_FollowWall_Control(void) {
 
 	int32_t currentYaw = myMpuValues.data.relativeYawScaled;
 
+	#define LATERAL_WALL_THRESHOLD_MM 80
 
 	// Si el robot va por el pasillo, detecta en tiempo real las paredes a los costados
 	// Si está en otra situación, se basa en la detección de la intersección para definir que paredes usar
-	if (cellState == CELL_INSIDE_CELL && currentAction == ACTION_FOLLOW_WALL) {
-		hasLeftWall = (FILTERED_LEFT_IR > LEFT_THR_RAW) ? 1 : 0;
-		hasRightWall = (FILTERED_RIGHT_IR > RIGHT_THR_RAW) ? 1 : 0;
+	if (currentAction == ACTION_AFTER_TURN) {
+		hasLeftWall = (DIST_LEFT_IR < 60) ? 1 : 0;
+		hasRightWall = (DIST_RIGHT_IR < 60) ? 1 : 0;
+
+//		uint8_t oldFrontWall = (detectedIntersection & 0b010) ? 1 : 0;
+//
+//		if (pivotDegreesTarget == 90) {
+//			// Giró a la IZQUIERDA: La vieja pared frontal ahora es la derecha.
+//			// La izquierda queda abierta (es el pasillo por donde veníamos).
+//			hasLeftWall = 0;
+//			hasRightWall = oldFrontWall;
+//		}
+//		else if (pivotDegreesTarget == -90) {
+//			// Giró a la DERECHA: La vieja pared frontal ahora es la izquierda.
+//			// La derecha queda abierta (es el pasillo por donde veníamos).
+//			hasLeftWall = oldFrontWall;
+//			hasRightWall = 0;
+//		}
+//		hasLeftWall = 0;
+//		hasRightWall = 0;
+	}
+	else if (cellState == CELL_INSIDE_CELL && (currentAction == ACTION_FOLLOW_WALL)) {
+		hasLeftWall = (DIST_LEFT_IR < LATERAL_WALL_THRESHOLD_MM) ? 1 : 0;
+		hasRightWall = (DIST_RIGHT_IR < LATERAL_WALL_THRESHOLD_MM) ? 1 : 0;
+
+		// --- FILTRO DE ANCHO DE PASILLO ---
+		if (hasLeftWall && hasRightWall) {
+			#define MAX_CORRIDOR_SUM_MM 105 // Tu suma máxima nominal (ej: 110 + 10mm de tolerancia)
+
+			uint16_t corridorSum = DIST_LEFT_IR + DIST_RIGHT_IR;
+
+			if (corridorSum > MAX_CORRIDOR_SUM_MM) {
+				// El pasillo mide más de lo físicamente posible. Una pared se está abriendo.
+				// Descartamos la lectura más grande (la pared más lejana).
+				if (DIST_LEFT_IR > DIST_RIGHT_IR) {
+					hasLeftWall = 0;  // Apagamos la pared izquierda
+				} else {
+					hasRightWall = 0; // Apagamos la pared derecha
+				}
+			}
+		}
+//		hasLeftWall = (FILTERED_LEFT_IR > LEFT_THR_RAW) ? 1 : 0;
+//		hasRightWall = (FILTERED_RIGHT_IR > RIGHT_THR_RAW) ? 1 : 0;
 	} else {
 		hasLeftWall = (detectedIntersection & 0b100) ? 1 : 0;
 		hasRightWall = (detectedIntersection & 0b001) ? 1 : 0;
@@ -1109,26 +1108,32 @@ void Robot_FollowWall_Control(void) {
 
 	if (hasLeftWall && hasRightWall) {
 		// Caso 1: Dos paredes. El error es la diferencia entre ellas.
-		errorWall = FILTERED_LEFT_IR - FILTERED_RIGHT_IR;
-		errorGyro = 0;
+		errorWall = DIST_RIGHT_IR - DIST_LEFT_IR;
 		errorTotal = errorWall;
+//		errorWall = FILTERED_LEFT_IR - FILTERED_RIGHT_IR;
+//		errorGyro = 0;
+//		errorTotal = errorWall;
 	} else if (hasRightWall) {
 		// Caso 2: Solo pared derecha. El error es la diferencia con la distancia objetivo.
 		// El signo negativo se aplicará a la corrección, no al error.
-		errorWall = referenceRightWall - FILTERED_RIGHT_IR;
+		errorWall = 2 * (DIST_RIGHT_IR - referenceRightWall);
+		errorTotal = errorWall;
+//		errorWall = referenceRightWall - FILTERED_RIGHT_IR;
 
-		errorGyro = (wallFollowTargetYaw - currentYaw) / YAW_SCALE;
+//		errorGyro = (wallFollowTargetYaw - currentYaw) / YAW_SCALE;
+//
+//		errorTotal = errorWall + (errorGyro * GYRO_COMPENSATION_GAIN);
 
-		errorTotal = errorWall + (errorGyro * GYRO_COMPENSATION_GAIN);
-
-		errorTotal = -errorTotal;
+//		errorTotal = -errorTotal;
 	} else if (hasLeftWall) {
 		// Caso 3: Solo pared izquierda. El error es la diferencia con la distancia objetivo.
-		errorWall = FILTERED_LEFT_IR - referenceLeftWall;
+		errorWall = 2 * (referenceLeftWall - DIST_LEFT_IR);
+		errorTotal = errorWall;
+//		errorWall = FILTERED_LEFT_IR - referenceLeftWall;
 
-		errorGyro = (currentYaw - wallFollowTargetYaw) / YAW_SCALE;
-
-		errorTotal = errorWall + (errorGyro * GYRO_COMPENSATION_GAIN);
+//		errorGyro = (currentYaw - wallFollowTargetYaw) / YAW_SCALE;
+//
+//		errorTotal = errorWall + (errorGyro * GYRO_COMPENSATION_GAIN);
 	} else {
 		// Caso 4: sin paredes, navegar de forma ciega
 		errorWall = 0;
@@ -1142,8 +1147,8 @@ void Robot_FollowWall_Control(void) {
 
 		// El PID para una sola pared derecha debe actuar en dirección opuesta.
 		// Si solo hay pared derecha, la corrección debe ser negativa.
-		if (!hasLeftWall && hasRightWall)
-			correction = -correction;
+//		if (!hasLeftWall && hasRightWall)
+//			correction = -correction;
 	} else {
 		// Si estamos en la zona muerta o no hay paredes, no hay corrección.
 		// Además, reseteamos el PID para evitar que el término integral acumulado
@@ -1180,7 +1185,7 @@ void Robot_FollowWall_Control(void) {
 
 				PID_Reset(&myStopValues);
 				PID_Reset(&myWallValues);
-				MPU6050_Reset_Yaw(&myMpuValues);
+//				MPU6050_Reset_Yaw(&myMpuValues);
 
 				// Cambia el estado aquí según la lógica de tu laberinto
 				currentAction = ACTION_TURN_PIVOT;
@@ -1259,7 +1264,35 @@ void Robot_Turn_Control(int16_t degreesToTurn) {
 	if (errorAbs <= TURN_THRESHOLD) {
 		ENGINE_SetLeftSpeed(&myEngines, 0);
 		ENGINE_SetRightSpeed(&myEngines, 0);
-		currentAction = ACTION_AFTER_TURN;
+
+		uint8_t pathBlocked = ((DIST_FRONT_LEFT_IR < 80) || (DIST_FRONT_RIGHT_IR < 80));
+
+		if (pathBlocked) {
+			if (degreesToTurn > 0) {
+				pivotDegreesTarget += 90;
+			} else {
+				pivotDegreesTarget -= 90;
+			}
+
+			return;
+		}
+
+		uint8_t wallBehind = 0;
+
+		if (degreesToTurn > 0) {
+			if (detectedIntersection & 0b001) wallBehind = 1;
+		} else {
+			if (detectedIntersection & 0b100) wallBehind = 1;
+		}
+
+		if (wallBehind) {
+			currentAction = ACTION_BACK_WALL_ALIGN;
+			alignStartTime = HAL_GetTick();
+		} else {
+			currentAction = ACTION_AFTER_TURN;
+		}
+
+//		currentAction = ACTION_AFTER_TURN;
 		PID_Reset(&myWallValues);
 		PID_Reset(&myTurnValues);
 		MPU6050_Reset_Yaw(&myMpuValues);
@@ -1267,7 +1300,6 @@ void Robot_Turn_Control(int16_t degreesToTurn) {
 		cellState = CELL_INSIDE_CELL;
 		wallFollowTargetYaw = 0;
 
-//		Robot_AfterTurn();
 		return;
 	}
 
@@ -1329,11 +1361,31 @@ void Robot_CheckCellCrossing(void) {
             	myVelocity.time_dt_ms = myVelocity.time_rearLineDetect - myVelocity.time_frontLineDetect;
             	myVelocity.currentVelocity_mm_s = (DISTANCE_FRONT_TO_REAR_IR * 1000) / myVelocity.time_dt_ms;
 
-            	uint8_t minFrontDist = (FILTERED_FRONT_LEFT_IR > FILTERED_FRONT_RIGHT_IR) ? (FILTERED_FRONT_LEFT_IR > FRONT_LEFT_THR_RAW) : (FILTERED_FRONT_RIGHT_IR > FRONT_RIGHT_THR_RAW);
+//            	uint8_t minFrontDist = (FILTERED_FRONT_LEFT_IR > FILTERED_FRONT_RIGHT_IR) ? (FILTERED_FRONT_LEFT_IR > FRONT_LEFT_THR_RAW) : (FILTERED_FRONT_RIGHT_IR > FRONT_RIGHT_THR_RAW);
+//
+//            	finalIntersection = earlyIntersection | (minFrontDist << 1);
 
-            	finalIntersection = earlyIntersection | (minFrontDist << 1);
+            	// 1. Evaluar pared frontal (Usando milímetros para más seguridad)
+				#define WALL_PRESENCE_THR 350 // Si es menor a 150mm, hay pared.
+				#define WALL_PRESENCE_THR_MM 100
 
-            	detectedIntersection = (IntersectionType_e)finalIntersection;
+				uint8_t hasFrontWall = (FILTERED_FRONT_LEFT_IR > WALL_PRESENCE_THR || FILTERED_FRONT_RIGHT_IR > WALL_PRESENCE_THR) ? 1 : 0;
+
+				// 2. ¡LA VERIFICACIÓN LATERAL QUE FALTABA!
+				// En este momento el robot está centrado. Leemos los sensores de 90°.
+				uint8_t hasLeftWall = (FILTERED_LEFT_IR > WALL_PRESENCE_THR) ? 1 : 0;
+				uint8_t hasRightWall = (FILTERED_RIGHT_IR > WALL_PRESENCE_THR) ? 1 : 0;
+
+				// 3. Armamos la intersección final con datos frescos y reales
+				finalIntersection = (hasLeftWall << 2) | (hasFrontWall << 1) | hasRightWall;
+
+				detectedIntersection = (IntersectionType_e)finalIntersection;
+
+                // 1. Actualizamos coordenadas basándonos en la dirección con la que LLEGAMOS
+				Map_UpdateCoordinates();
+
+				// 2. Mapear paredes de la nueva celda (opcional aquí o al estabilizarse)
+				Map_UpdateCell(hasLeftWall, hasFrontWall, hasRightWall);
 
 				switch(detectedIntersection) {
 					// GIROS A LA IZQUIERDA
@@ -1350,6 +1402,7 @@ void Robot_CheckCellCrossing(void) {
 						break;
 					case INTERSECTION_RIGHT_FRONT_OPEN:
 						pivotDegreesTarget = -90;
+						Map_UpdateDirection(1);
 						break;
 					case INTERSECTION_RIGHT_SQUARE:
 						pivotDegreesTarget = -90;
@@ -1360,6 +1413,7 @@ void Robot_CheckCellCrossing(void) {
 					// Pero si lo usas, funcionará igual.
 					case INTERSECTION_DEAD_END:
 						 pivotDegreesTarget = 180;
+						 Map_UpdateDirection(2);
 //						 Robot_UpdateDirection(2);
 //						 currentAction = ACTION_TURN_PIVOT;
 //						 MPU6050_Reset_Yaw(&myMpuValues);
@@ -1375,7 +1429,7 @@ void Robot_CheckCellCrossing(void) {
                 cellState = CELL_REAR_LINE;
 
                 if (detectedIntersection != INTERSECTION_UNKNOWN) {
-					timeToCenter = (45 * 1000) / myVelocity.currentVelocity_mm_s; //30 * 1000
+					timeToCenter = (40 * 1000) / myVelocity.currentVelocity_mm_s; //30 * 1000
 
 					currentAction = ACTION_CENTER_IN_CELL;
 
@@ -1387,11 +1441,7 @@ void Robot_CheckCellCrossing(void) {
                 		currentAction = ACTION_FOLLOW_WALL;
                 	}
                 }
-                // 1. Actualizamos coordenadas basándonos en la dirección con la que LLEGAMOS
-				Map_UpdateCoordinates();
 
-				// 2. Mapear paredes de la nueva celda (opcional aquí o al estabilizarse)
-				Map_UpdateWall();
             }
             break;
         case CELL_REAR_LINE:
@@ -1413,51 +1463,51 @@ void Robot_CheckCellCrossing(void) {
     }
 }
 
-//void Robot_AfterTurn(void) {
-//	switch(pivotDegreesTarget) {
-//	case 90:
-//
-//	break;
-//	case -90:
-//	break;
-//	case 180:
-//	case -180:
-//	break;
-//	}
-//}
+void Map_AddWallToMap(uint8_t x, uint8_t y, uint8_t dir) {
+    // 1. Pared en la celda actual
+    currentPosition.maze[x][y].walls |= (1 << dir);
 
+    // 2. Pared espejada en la celda vecina (para que el Flood Fill no intente cruzar)
+    if (dir == 0 && y < 15) currentPosition.maze[x][y+1].walls |= (1 << 2); // Norte -> Vecino Sur
+    if (dir == 1 && x < 15) currentPosition.maze[x+1][y].walls |= (1 << 3); // Este -> Vecino Oeste
+    if (dir == 2 && y > 0)  currentPosition.maze[x][y-1].walls |= (1 << 0); // Sur -> Vecino Norte
+    if (dir == 3 && x > 0)  currentPosition.maze[x-1][y].walls |= (1 << 1); // Oeste -> Vecino Este
+}
 
-void Map_UpdateWall(void) {
+void Map_UpdateCell(uint8_t leftWall, uint8_t frontWall, uint8_t rightWall) {
 	uint8_t dir;
 	uint8_t buf[5];
 
-	if (FILTERED_RIGHT_IR > LATERAL_WALL_THRESHOLD) {
+	uint8_t x = currentPosition.currentX;
+	uint8_t y = currentPosition.currentY;
+
+	if (rightWall) {
 		dir = (currentDirection + 1) % 4;
-		currentPosition.maze[currentPosition.currentX][currentPosition.currentY].walls |= (1 << dir);
+		Map_AddWallToMap(x, y, dir);
 	}
 
-	if (FILTERED_LEFT_IR > LATERAL_WALL_THRESHOLD) {
+	if (leftWall) {
 		dir = (currentDirection + 3) % 4;
-		currentPosition.maze[currentPosition.currentX][currentPosition.currentY].walls |= (1 << dir);
+		Map_AddWallToMap(x, y, dir);
 	}
 
-	if ((FILTERED_FRONT_LEFT_IR > LATERAL_WALL_THRESHOLD) || (FILTERED_FRONT_RIGHT_IR > LATERAL_WALL_THRESHOLD)) {
+	if ((frontWall)) {
 		dir = (currentDirection + 0) % 4;
-		currentPosition.maze[currentPosition.currentX][currentPosition.currentY].walls |= (1 << dir);
+		Map_AddWallToMap(x, y, dir);
 	}
 
-	currentPosition.maze[currentPosition.currentX][currentPosition.currentY].visited = 1;
+	currentPosition.maze[x][y].visited = 1;
 
-	buf[0] = currentPosition.currentX;
-	buf[1] = currentPosition.currentY;
-	buf[2] = currentPosition.maze[currentPosition.currentX][currentPosition.currentY].walls;
+	buf[0] = x;
+	buf[1] = y;
+	buf[2] = currentPosition.maze[x][y].walls;
 	buf[3] = currentDirection;
 
     UNERBUS_WriteByte(&unerbusESP01, buf[0]);
     UNERBUS_WriteByte(&unerbusESP01, buf[1]);
     UNERBUS_WriteByte(&unerbusESP01, buf[2]);
     UNERBUS_WriteByte(&unerbusESP01, buf[3]);
-    UNERBUS_Send(&unerbusESP01, GET_MAP_INFO, 4);
+    UNERBUS_Send(&unerbusESP01, GET_MAP_INFO, 5);
 }
 
 void Map_UpdateDirection(int8_t turnDir) {
@@ -1478,14 +1528,14 @@ void Map_UpdateDirection(int8_t turnDir) {
 void Map_UpdateCoordinates(void) {
 	switch(currentDirection){
 		case NORTH:
-			if(currentPosition.currentY > 0) currentPosition.currentY++; //y--;
+			if(currentPosition.currentY < 15) currentPosition.currentY++; //y--;
 			// Asumiendo (0,0) arriba-izquierda. Si (0,0) es abajo, sería Y++.
 			break;
 		case EAST:
 			if(currentPosition.currentX < 15) currentPosition.currentX++;
 			break;
 		case SOUTH:
-			if(currentPosition.currentY < 15) currentPosition.currentY++;
+			if(currentPosition.currentY > 0) currentPosition.currentY--;
 			break;
 		case WEST:
 			if(currentPosition.currentX > 0) currentPosition.currentX--;
@@ -1566,8 +1616,8 @@ void ChangeDisplayPage(DisplayPage_e page){
 			case ACTION_TURN_SMOOTH:
 				sprintf(str, "SMOOTH");
 				break;
-			case ACTION_HANDLE_FRONT_WALL:
-				sprintf(str, "HAND. F. WALL");
+			case ACTION_BACK_WALL_ALIGN:
+				sprintf(str, "ALIGN");
 				break;
 			}
 			OLED_WriteString(&myOled, str, Font_7x10, White);
@@ -1753,7 +1803,6 @@ void ChangeDisplayPage(DisplayPage_e page){
 				OLED_DrawSensorWidget(&myOled, "7", DIST_LEFT_IR, 2, 0);
 				OLED_DrawSensorWidget(&myOled, "6", DIST_DIAG_LEFT_IR, 2, 1);
 				OLED_DrawSensorWidget(&myOled, "5", DIST_FRONT_LEFT_IR, 2, 2);
-
 			} else {
 				// Left Column
 				OLED_DrawSensorWidget(&myOled, "1", FILTERED_RIGHT_IR, 0, 0);
@@ -1769,20 +1818,6 @@ void ChangeDisplayPage(DisplayPage_e page){
 				OLED_DrawSensorWidget(&myOled, "6", FILTERED_DIAG_LEFT_IR, 2, 1);
 				OLED_DrawSensorWidget(&myOled, "5", FILTERED_FRONT_LEFT_IR, 2, 2);
 			}
-//			// Left Column
-//			OLED_DrawSensorWidget(&myOled, "1", FILTERED_RIGHT_IR, 0, 0);
-//			OLED_DrawSensorWidget(&myOled, "2", FILTERED_DIAG_RIGHT_IR, 0, 1);
-//			OLED_DrawSensorWidget(&myOled, "3", FILTERED_FRONT_RIGHT_IR, 0, 2);
-//
-//			// Center Column
-//			OLED_DrawSensorWidget(&myOled, "8", FILTERED_REAR_UNDER_IR, 1, 0);
-//			OLED_DrawSensorWidget(&myOled, "4", FILTERED_FRONT_UNDER_IR, 1, 2);
-//
-//			// Right Column
-//			OLED_DrawSensorWidget(&myOled, "7", FILTERED_LEFT_IR, 2, 0);
-//			OLED_DrawSensorWidget(&myOled, "6", FILTERED_DIAG_LEFT_IR, 2, 1);
-//			OLED_DrawSensorWidget(&myOled, "5", FILTERED_FRONT_LEFT_IR, 2, 2);
-
 			break;
 		case DISPLAY_MPU:
 			currentTitle = menuItems[MENU_MPU_DATA];
@@ -1902,27 +1937,27 @@ void Heartbeat() {
 }
 
 static void ButtonNormalPress(void) {
-//	if (currentAction == ACTION_IDLE) {
-//		// --- INICIAR TEST DE GIRO ---
-//
-//		// A. Reseteamos todo para tener condiciones iniciales limpias
-//		MPU6050_Reset_Yaw(&myMpuValues);
-//		PID_Reset(&myTurnValues);
-//
-//		// B. Definimos el objetivo (90 grados)
-//		// Puedes cambiar esto a -90 si quieres probar hacia el otro lado
-//		pivotDegreesTarget = 90;
-//
-//		// C. Disparamos la acción
-//		currentAction = ACTION_TURN_PIVOT;
-//
-//	} else {
-//		// --- PARADA DE EMERGENCIA ---
-//		// Si apretas el botón mientras gira, se detiene.
-//		ENGINE_SetLeftSpeed(&myEngines, 0);
-//		ENGINE_SetRightSpeed(&myEngines, 0);
-//		currentAction = ACTION_IDLE;
-//	}
+	if (currentAction == ACTION_IDLE) {
+		// --- INICIAR TEST DE GIRO ---
+
+		// A. Reseteamos todo para tener condiciones iniciales limpias
+		MPU6050_Reset_Yaw(&myMpuValues);
+		PID_Reset(&myTurnValues);
+
+		// B. Definimos el objetivo (90 grados)
+		// Puedes cambiar esto a -90 si quieres probar hacia el otro lado
+		pivotDegreesTarget = 90;
+
+		// C. Disparamos la acción
+		currentAction = ACTION_TURN_PIVOT;
+
+	} else {
+		// --- PARADA DE EMERGENCIA ---
+		// Si apretas el botón mientras gira, se detiene.
+		ENGINE_SetLeftSpeed(&myEngines, 0);
+		ENGINE_SetRightSpeed(&myEngines, 0);
+		currentAction = ACTION_IDLE;
+	}
 
 	if(currentMode == MODE_IDLE && currentPage == DISPLAY_MENU){
 		currentSelection++;
@@ -1960,12 +1995,23 @@ static void ButtonLongPress(void) {
 			case MENU_START:
 				currentPage = DISPLAY_RUN;
 				ChangeDisplayPage(DISPLAY_RUN);
-				Map_UpdateWall();
+//				Map_UpdateCell();
+				currentPosition.currentX = 0;
+				currentPosition.currentY = 0;
+				currentDirection = EAST;
+				currentPosition.maze[0][0].visited = 1;
+				currentPosition.maze[0][0].walls |= (1 << WEST) | (1 << SOUTH) | (1 << NORTH);
+				Map_UpdateCell((FILTERED_LEFT_IR > 350) ? 1 : 0,
+					    (FILTERED_FRONT_LEFT_IR > 350 || FILTERED_FRONT_RIGHT_IR > 350) ? 1 : 0,
+					    (FILTERED_RIGHT_IR > 350) ? 1 : 0);
+
 				detectedIntersection = INTERSECTION_UNKNOWN;
 //				referenceLeftWall = FILTERED_LEFT_IR;
 //				referenceRightWall = FILTERED_RIGHT_IR;
-				referenceLeftWall = ONE_WALL_TARGET_DISTANCE - 200;
-				referenceRightWall = ONE_WALL_TARGET_DISTANCE - 200;
+//				referenceLeftWall = ONE_WALL_TARGET_DISTANCE - 200;
+//				referenceRightWall = ONE_WALL_TARGET_DISTANCE - 200;
+				referenceLeftWall = 40;
+				referenceRightWall = 40;
 				currentAction = ACTION_FOLLOW_WALL;
 				break;
 			case MENU_IR_DATA:
@@ -2096,7 +2142,7 @@ int main(void)
   currentSelection = 0;
   scrollOffset = 0;
 
-  HAL_Delay(1200) ;
+  HAL_Delay(1200);
 
   // MPU6050 Initialization
   if (MPU6050_Init(&myMpuValues, MPU6050_ADDR, &hi2c2) != MPU6050_OK) {
@@ -2138,13 +2184,17 @@ int main(void)
   // PID Initialization
   PID_Init(&mySmoothTurnValues, 10, 0, 10, -90, 90);
   mySmoothTurnValues.base = SMOOTH_TURN_BASE_SPEED;
-  PID_Init(&myTurnValues, 45, 0, 500, -65, 65);
+  PID_Init(&myTurnValues, 45, 0, 10, -65, 65);
 //  PID_Init(&myTurnValues, 45, 0, 2500, -65, 65);
-  PID_Init(&myWallValues, 10, 0, 1500, -55, 55); // P = 1 // 45
+//  PID_Init(&myWallValues, 10, 0, 1500, -55, 55); // P = 1 // 45
+  PID_Init(&myWallValues, 70, 0, 5500, -45, 45);
   myTurnValues.base = TURN_MIN_PWM;
-  myWallValues.base = 50;
+  myWallValues.base = 45;
 
-  PID_Init(&myStopValues, 1000, 0, 5000, -80, 80);
+  PID_Init(&myReverseValues, 70, 0, 6000, -45, 45);
+  myReverseValues.base = 45;
+  PID_Init(&myStopValues, 1700, 0, 6000, -80, 35);
+  myStopValues.base = 35;
   // IR Sensors Initialization
   Infrared_Init(&myInfraredValues);
 

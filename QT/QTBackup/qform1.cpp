@@ -183,8 +183,8 @@ void QForm1::OnQTimer1(){
                 SendCMD(buf, 1);
                 break;
             case 2:
-                buf[0] = GET_MPU_DATA;
-                SendCMD(buf, 1);
+                // buf[0] = GET_MPU_DATA;
+                // SendCMD(buf, 1);
                 break;
             case 3:
                 buf[0] = GET_INTERSECTION_TYPE;
@@ -608,43 +608,43 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         break;
     case GET_PID_TURN_GAINS:
         w.u16[0] = ((uint16_t)rxBuf[2] << 8 | rxBuf[1]);
-        ui->lineEditTurnKP->setText(QString::number(w.f/100.0, 'f', 2));
+        ui->lineEditTurnKP->setText(QString::number(w.u16[0]/100.0f, 'f', 2));
 
         w.u16[0] = ((uint16_t)rxBuf[4] << 8 | rxBuf[3]);
-        ui->lineEditTurnKI->setText(QString::number(w.f/100.0, 'f', 2));
+        ui->lineEditTurnKI->setText(QString::number(w.u16[0]/100.0f, 'f', 2));
 
         w.u16[0] = ((uint16_t)rxBuf[6] << 8 | rxBuf[5]);
-        ui->lineEditTurnKD->setText(QString::number(w.f/100.0, 'f', 2));
+        ui->lineEditTurnKD->setText(QString::number(w.u16[0]/100.0f, 'f', 2));
 
         w.i32 = 0;
         w.i8[0] = static_cast <int8_t> (rxBuf[7]);
-        ui->lineEditTurnMin->setText(QString::number(w.i8[0], 'd', 2));
+        ui->lineEditTurnMin->setText(QString::number(w.i8[0]));
 
         w.i8[0] = static_cast <int8_t> (rxBuf[8]);
-        ui->lineEditTurnMax->setText(QString::number(w.i8[0], 'd', 2));
+        ui->lineEditTurnMax->setText(QString::number(w.i8[0]));
 
         w.i8[0] = static_cast <int8_t> (rxBuf[9]);
-        ui->lineEditTurnBase->setText(QString::number(w.i8[0], 'd', 2));
+        ui->lineEditTurnBase->setText(QString::number(w.i8[0]));
         break;
     case GET_PID_WALL_GAINS:
         w.u16[0] = ((uint16_t)rxBuf[2] << 8 | rxBuf[1]);
-        ui->lineEditWallKP->setText(QString::number(w.f/100.0, 'f', 2));
+        ui->lineEditWallKP->setText(QString::number(w.u16[0]/100.0f, 'f', 2));
 
         w.u16[0] = ((uint16_t)rxBuf[4] << 8 | rxBuf[3]);
-        ui->lineEditWallKI->setText(QString::number(w.f/100.0, 'f', 2));
+        ui->lineEditWallKI->setText(QString::number(w.u16[0]/100.0f, 'f', 2));
 
         w.u16[0] = ((uint16_t)rxBuf[6] << 8 | rxBuf[5]);
-        ui->lineEditWallKD->setText(QString::number(w.f/100.0, 'f', 2));
+        ui->lineEditWallKD->setText(QString::number(w.u16[0]/100.0f, 'f', 2));
 
         w.i32 = 0;
         w.i8[0] = static_cast <int8_t> (rxBuf[7]);
-        ui->lineEditWallMin->setText(QString::number(w.i8[0], 'd', 2));
+        ui->lineEditWallMin->setText(QString::number(w.i8[0]));
 
         w.i8[0] = static_cast <int8_t> (rxBuf[8]);
-        ui->lineEditWallMax->setText(QString::number(w.i8[0], 'd', 2));
+        ui->lineEditWallMax->setText(QString::number(w.i8[0]));
 
         w.i8[0] = static_cast <int8_t> (rxBuf[9]);
-        ui->lineEditWallBase->setText(QString::number(w.i8[0], 'd', 2));
+        ui->lineEditWallBase->setText(QString::number(w.i8[0]));
         break;
     case GET_INTERSECTION_TYPE:
     {
@@ -803,7 +803,7 @@ void QForm1::on_OpenPortButton_clicked(){
     }
 }
 
-void QForm1::on_buttonClear_clicked(){
+void QForm1::on_buttonClearMap_clicked(){
     ui->plainTextEdit->clear();
     DrawBackground();
 
@@ -997,6 +997,8 @@ void QForm1::DrawBackground(){
     tapePen.setColor(QColor(60, 60, 60));
     tapePen.setWidth(3);
 
+    painter.setPen(tapePen);
+
     for (int x = minX; x <= maxX; x++) {
         for (int y = minY; y <= maxY; y++) {
             if (!mapData.maze[x][y].visited) continue;
@@ -1006,46 +1008,84 @@ void QForm1::DrawBackground(){
             // Invertimos Y localmente para dibujar de abajo hacia arriba
             int py = totalDrawH - ((y - minY + 1) * cellSize);
 
-            // 2. Dibujar paredes
+            // --- CALCULAR MAX COSTO PARA EL GRADIENTE ---
+            int maxCost = 1; // Le ponemos 1 para evitar divisiones por cero por las dudas
+            for (int mx = minX; mx <= maxX; mx++) {
+                for (int my = minY; my <= maxY; my++) {
+                    if (mapData.maze[mx][my].visited && mapData.maze[mx][my].cost != 255) {
+                        if (mapData.maze[mx][my].cost > maxCost) {
+                            maxCost = mapData.maze[mx][my].cost;
+                        }
+                    }
+                }
+            }
 
+            // --- DIBUJAR EL COSTO (FLOOD FILL) ---
+            if (mapData.maze[x][y].cost != 255) {
+                int cost = mapData.maze[x][y].cost;
+                // Mapeamos el costo al color.
+                // Multiplicamos por 4 para que el cambio de color sea más rápido.
+                // qMax evita que el número sea menor a 0 (que rompería el color rojo).
+                int hue = 120 - ((cost * 120) / maxCost);
+                hue = qBound(0, hue, 120); // Seguridad para que nunca salga del rango 0-120
+                // Setear el color usando la rueda HSV (hue, saturación al 100%, brillo al 100%)
+                // painter.setPen(QColor::fromHsv(hue, 255, 255));
+
+                QRect cellRect(px, py, cellSize, cellSize);
+
+                // --- FIX PARA LA BANDERA A CUADROS ---
+                if (x == mapData.targetX && y == mapData.targetY) {
+                    // Dibujamos un circulito negro semi-transparente de fondo para que el 0 resalte
+                    painter.setBrush(QColor(0, 0, 0, 180));
+                    painter.setPen(Qt::NoPen);
+                    int r = cellSize / 2.5; // Tamaño del fondo oscuro
+                    painter.drawEllipse(px + cellSize/2 - r/2, py + cellSize/2 - r/2, r, r);
+                }
+
+                // Setear el color calculado y dibujar el número
+                painter.setPen(QColor::fromHsv(hue, 255, 255));
+                painter.setFont(QFont("Arial", 10, QFont::Bold));
+
+                painter.drawText(cellRect, Qt::AlignCenter, QString::number(cost));
+            }
+
+            if (x == mapData.targetX && y == mapData.targetY) {
+                int squares = 5; // Cambiá este número si querés los cuadros más chicos o grandes
+                float sqSize = (float)cellSize / squares;
+
+                for (int i = 0; i < squares; i++) {
+                    for (int j = 0; j < squares; j++) {
+                        // Alternamos los colores sumando índices (par/impar)
+                        QColor color = ((i + j) % 2 == 0) ? Qt::white : Qt::black;
+                        painter.fillRect(px + (i * sqSize), py + (j * sqSize), sqSize, sqSize, color);
+                    }
+                }
+                // Pinta la celda de un rojo semi-transparente
+                // painter.fillRect(px, py, cellSize, cellSize, QColor(255, 0, 0, 100));
+            }
+
+            // 2. Dibujar paredes
+            uint8_t walls = mapData.maze[x][y].walls;
+            if (!(walls & (1 << 0))) painter.drawLine(px, py, px + cellSize, py); // Norte
+            if (!(walls & (1 << 1))) painter.drawLine(px + cellSize, py, px + cellSize, py + cellSize); // Este
+            if (!(walls & (1 << 2))) painter.drawLine(px, py + cellSize, px + cellSize, py + cellSize); // Sur
+            if (!(walls & (1 << 3))) painter.drawLine(px, py, px, py + cellSize); // Oeste
+        }
+    }
+
+    painter.setPen(pen);
+    for (int x = minX; x <= maxX; x++) {
+        for (int y = minY; y <= maxY; y++) {
+            if (!mapData.maze[x][y].visited) continue;
+
+            int px = (x - minX) * cellSize;
+            int py = totalDrawH - ((y - minY + 1) * cellSize);
             uint8_t walls = mapData.maze[x][y].walls;
 
-            // --- NORTE ---
-            if (walls & (1 << 0)) {
-                painter.setPen(pen);
-                painter.drawLine(px, py, px + cellSize, py);
-            } else {
-                // Si no hay pared -> Dibujar Cinta de suelo
-                painter.setPen(tapePen);
-                painter.drawLine(px, py, px + cellSize, py);
-            }
-
-            // --- ESTE ---
-            if (walls & (1 << 1)) {
-                painter.setPen(pen);
-                painter.drawLine(px + cellSize, py, px + cellSize, py + cellSize);
-            } else {
-                painter.setPen(tapePen);
-                painter.drawLine(px + cellSize, py, px + cellSize, py + cellSize);
-            }
-
-            // --- SUR ---
-            if (walls & (1 << 2)) {
-                painter.setPen(pen);
-                painter.drawLine(px, py + cellSize, px + cellSize, py + cellSize);
-            } else {
-                painter.setPen(tapePen);
-                painter.drawLine(px, py + cellSize, px + cellSize, py + cellSize);
-            }
-
-            // --- OESTE ---
-            if (walls & (1 << 3)) {
-                painter.setPen(pen);
-                painter.drawLine(px, py, px, py + cellSize);
-            } else {
-                painter.setPen(tapePen);
-                painter.drawLine(px, py, px, py + cellSize);
-            }
+            if (walls & (1 << 0)) painter.drawLine(px, py, px + cellSize, py); // Norte
+            if (walls & (1 << 1)) painter.drawLine(px + cellSize, py, px + cellSize, py + cellSize); // Este
+            if (walls & (1 << 2)) painter.drawLine(px, py + cellSize, px + cellSize, py + cellSize); // Sur
+            if (walls & (1 << 3)) painter.drawLine(px, py, px, py + cellSize); // Oeste
 
             // --- ROBOT ---
             if (x == mapData.currentX && y == mapData.currentY) {
@@ -1084,25 +1124,6 @@ void QForm1::DrawBackground(){
         }
     }
 
-    // RADAR
-    // painter.translate(ui->widgetRadar->width()/2, ui->widgetRadar->height()/2);
-    // painter.drawEllipse(-widgetSize.width/2, -widgetSize.height/2, widgetSize.width, widgetSize.height);
-    // painter.drawEllipse(-widgetSize.width/4, -widgetSize.height/4, widgetSize.width/2, widgetSize.height/2);
-    // painter.drawEllipse(-widgetSize.width/8, -widgetSize.height/8, widgetSize.width/4, widgetSize.height/4);
-    // painter.drawEllipse(-3*widgetSize.width/8, -3*widgetSize.height/8, 3*widgetSize.width/4, 3*widgetSize.height/4);
-
-    // painter.drawLine(-widgetSize.width/2, 0, widgetSize.width/2, 0);
-    // painter.drawLine(0, -widgetSize.height/2, 0, widgetSize.height/2);
-    /*
-    for(int i=0; i<8; i++){
-        //painter.drawLine(x1 y1 x2 y2)
-        painter.drawLine(-widgetSize.width/2, 0, widgetSize.width/2, 0);
-        painter.drawLine(-widgetSize.width/2, -widgetSize.height/2, widgetSize.width/2, widgetSize.height/2);
-        //painter.drawLine(-widgetSize.width, -widgetSize.height, widgetSize.width, widgetSize.height);
-        //painter.drawLine(0, -ui->widget->width(), 0, ui->widget->height());
-        painter.rotate(45);
-    }
-    */
     QPaintBox1->update();
 }
 
@@ -1348,9 +1369,21 @@ void QForm1::on_setTurnPIDButton_clicked(){
     uint16_t kp, ki, kd;
     buf[0] = SET_PID_TURN_GAINS;
 
-    kp = static_cast<uint16_t> (ui->lineEditTurnKP->text().toFloat() * 100.0f);
-    ki = static_cast<uint16_t> (ui->lineEditTurnKI->text().toFloat() * 100.0f);
-    kd = static_cast<uint16_t> (ui->lineEditTurnKD->text().toFloat() * 100.0f);
+    QString strKp = ui->lineEditTurnKP->text().replace(",", ".");
+    uint32_t rawKp = strKp.toFloat() * 100.0f; // Usar uint32 temporalmente para atrapar overflows
+    if(rawKp > 65535) rawKp = 65535;
+
+    QString strKi = ui->lineEditTurnKI->text().replace(",", ".");
+    uint32_t rawKi = strKi.toFloat() * 100.0f; // Usar uint32 temporalmente para atrapar overflows
+    if(rawKi > 65535) rawKi = 65535;
+
+    QString strKd = ui->lineEditTurnKD->text().replace(",", ".");
+    uint32_t rawKd = strKd.toFloat() * 100.0f; // Usar uint32 temporalmente para atrapar overflows
+    if(rawKd > 65535) rawKd = 65535;
+
+    kp = static_cast<uint16_t> (rawKp);
+    ki = static_cast<uint16_t> (rawKi);
+    kd = static_cast<uint16_t> (rawKd);
 
     buf[1] = (uint8_t)(kp & 0xFF);
     buf[2] = (uint8_t)((kp >> 8) & 0xFF);
@@ -1373,9 +1406,21 @@ void QForm1::on_setWallPIDButton_clicked(){
     uint16_t kp, ki, kd;
     buf[0] = SET_PID_WALL_GAINS;
 
-    kp = static_cast<uint16_t> (ui->lineEditWallKP->text().toFloat() * 100.0f);
-    ki = static_cast<uint16_t> (ui->lineEditWallKI->text().toFloat() * 100.0f);
-    kd = static_cast<uint16_t> (ui->lineEditWallKD->text().toFloat() * 100.0f);
+    QString strKp = ui->lineEditWallKP->text().replace(",", ".");
+    uint32_t rawKp = strKp.toFloat() * 100.0f; // Usar uint32 temporalmente para atrapar overflows
+    if(rawKp > 65535) rawKp = 65535;
+
+    QString strKi = ui->lineEditWallKI->text().replace(",", ".");
+    uint32_t rawKi = strKi.toFloat() * 100.0f; // Usar uint32 temporalmente para atrapar overflows
+    if(rawKi > 65535) rawKi = 65535;
+
+    QString strKd = ui->lineEditWallKD->text().replace(",", ".");
+    uint32_t rawKd = strKd.toFloat() * 100.0f; // Usar uint32 temporalmente para atrapar overflows
+    if(rawKd > 65535) rawKd = 65535;
+
+    kp = static_cast<uint16_t> (rawKp);
+    ki = static_cast<uint16_t> (rawKi);
+    kd = static_cast<uint16_t> (rawKd);
 
     buf[1] = (uint8_t)(kp & 0xFF);
     buf[2] = (uint8_t)((kp >> 8) & 0xFF);
@@ -1494,7 +1539,7 @@ void QForm1::on_readWallPIDButton_clicked(){
 }
 
 
-void QForm1::on_pushButton_clicked()
+void QForm1::on_buttonRotateMap_clicked()
 {
     rotationAngle += 90;
     if (rotationAngle >= 360) rotationAngle = 0;
@@ -1521,5 +1566,169 @@ void QForm1::on_setBatteryVoltageButton_clicked()
 void QForm1::on_changeThresholdUnitButton_toggled(bool checked)
 {
 
+}
+
+
+void QForm1::on_buttonSetTargetXY_clicked() {
+    uint8_t buf[3];
+
+    // Obtenemos los valores de los SpinBoxes de la interfaz
+    mapData.targetX = ui->spinBoxTargetX->value();
+    mapData.targetY = ui->spinBoxTargetY->value();
+
+    // Armamos el paquete UDP
+    buf[0] = 0xEC; // Comando: SET_MAZE_TARGET
+    buf[1] = mapData.targetX;
+    buf[2] = mapData.targetY;
+
+    SendCMD(buf, 3); // Enviamos los 3 bytes (Comando + X + Y)
+
+    // Forzamos que se redibuje la pantalla para ver la meta pintada
+    DrawBackground();
+}
+
+void QForm1::setWall(int x, int y, int dir) {
+    // Si nos pasamos de los límites, ignoramos
+    if (x < 0 || x > 15 || y < 0 || y > 15) return;
+
+    // 1. Pared en la celda actual
+    mapData.maze[x][y].walls |= (1 << dir);
+
+    // 2. Pared compartida en la celda vecina
+    if (dir == 0 && y < 15) mapData.maze[x][y+1].walls |= (1 << 2); // N -> Vecino S
+    if (dir == 1 && x < 15) mapData.maze[x+1][y].walls |= (1 << 3); // E -> Vecino O
+    if (dir == 2 && y > 0)  mapData.maze[x][y-1].walls |= (1 << 0); // S -> Vecino N
+    if (dir == 3 && x > 0)  mapData.maze[x-1][y].walls |= (1 << 1); // O -> Vecino E
+}
+void QForm1::on_buttonGenerateMap_clicked()
+{
+    // 1. Limpiamos cualquier laberinto previo en la memoria
+    for(int x = 0; x < 16; x++) {
+        for(int y = 0; y < 16; y++) {
+            mapData.maze[x][y].walls = 0;
+            mapData.maze[x][y].visited = 0;
+            mapData.maze[x][y].cost = 255; // Preparamos el costo para el Flood Fill
+        }
+    }
+
+    // Definimos el tamaño del laberinto de prueba (Ej: 5x5)
+    int mazeW = 5;
+    int mazeH = 5;
+
+    // 2. Armamos el piso y el perímetro exterior cerrado
+    for (int x = 0; x < mazeW; x++) {
+        for (int y = 0; y < mazeH; y++) {
+            mapData.maze[x][y].visited = 1; // Lo marcamos como visitado para que Qt lo dibuje
+
+            if (x == 0) setWall(x, y, 3); // Borde Oeste
+            if (x == mazeW - 1) setWall(x, y, 1); // Borde Este
+            if (y == 0) setWall(x, y, 2); // Borde Sur
+            if (y == mazeH - 1) setWall(x, y, 0); // Borde Norte
+        }
+    }
+
+    // 3. Agregamos las paredes internas para armar un camino (Diseño libre)
+    // Usamos: 0=Norte, 1=Este, 2=Sur, 3=Oeste
+    setWall(0, 0, 0); // Bloqueamos ir al norte desde la salida
+    setWall(1, 0, 1);
+    setWall(4, 0, 0);
+    setWall(1, 1, 0);
+    setWall(2, 1, 0);
+    setWall(3, 1, 1);
+    setWall(0, 2, 0);
+    setWall(0, 2, 1);
+    setWall(0, 3, 0);
+    setWall(1, 3, 1);
+    setWall(3, 2, 0);
+    setWall(3, 4, 0);
+    setWall(3, 4, 1);
+    setWall(3, 4, 3);
+    // setWall(2, 2, 2);
+    // setWall(3, 1, 3);
+    // setWall(3, 3, 2);
+    // setWall(4, 2, 3);
+    // (Podés agregar todos los SetWall que quieras acá para hacerlo más difícil)
+
+    // 4. Seteamos al robot en la salida y definimos la meta
+    mapData.currentX = 0;
+    mapData.currentY = 0;
+    mapData.currentDirection = 1; // Mirando al Este (Derecha)
+
+    mapData.targetX = mazeW - 1; // Esquina superior derecha
+    mapData.targetY = mazeH - 1;
+
+    // 5. Forzamos el redibujado
+    DrawBackground();
+}
+
+void QForm1::calculateFloodFill() {
+    // 1. Reiniciamos todos los costos a 255 (infinito / no calculado)
+    for(int x = 0; x < 16; x++) {
+        for(int y = 0; y < 16; y++) {
+            mapData.maze[x][y].cost = 255;
+        }
+    }
+
+    // 2. Creamos una cola simple para el algoritmo BFS.
+    // Como el laberinto máximo es de 16x16, 256 posiciones de memoria son suficientes.
+    struct Point { int x, y; };
+    Point queue[256];
+    int head = 0; // Índice de lectura
+    int tail = 0; // Índice de escritura
+
+    // 3. Establecemos la meta, le damos costo 0 y la metemos en la cola
+    mapData.maze[mapData.targetX][mapData.targetY].cost = 0;
+    queue[tail++] = {mapData.targetX, mapData.targetY};
+
+    // 4. Comenzamos la "inundación"
+    while (head < tail) {
+        Point p = queue[head++]; // Sacamos la primera celda de la cola
+        int cx = p.x;
+        int cy = p.y;
+
+        int currentCost = mapData.maze[cx][cy].cost;
+        uint8_t walls = mapData.maze[cx][cy].walls;
+
+        // Revisar vecino NORTE (dir = 0)
+        // Si no hay pared al Norte y no nos salimos del mapa
+        if (!(walls & (1 << 0)) && cy < 15) {
+            if (mapData.maze[cx][cy+1].cost == 255) { // Si el vecino no fue visitado por el agua
+                mapData.maze[cx][cy+1].cost = currentCost + 1; // Su costo es 1 paso más
+                queue[tail++] = {cx, cy+1}; // Lo encolamos para evaluar a SUS vecinos luego
+            }
+        }
+
+        // Revisar vecino ESTE (dir = 1)
+        if (!(walls & (1 << 1)) && cx < 15) {
+            if (mapData.maze[cx+1][cy].cost == 255) {
+                mapData.maze[cx+1][cy].cost = currentCost + 1;
+                queue[tail++] = {cx+1, cy};
+            }
+        }
+
+        // Revisar vecino SUR (dir = 2)
+        if (!(walls & (1 << 2)) && cy > 0) {
+            if (mapData.maze[cx][cy-1].cost == 255) {
+                mapData.maze[cx][cy-1].cost = currentCost + 1;
+                queue[tail++] = {cx, cy-1};
+            }
+        }
+
+        // Revisar vecino OESTE (dir = 3)
+        if (!(walls & (1 << 3)) && cx > 0) {
+            if (mapData.maze[cx-1][cy].cost == 255) {
+                mapData.maze[cx-1][cy].cost = currentCost + 1;
+                queue[tail++] = {cx-1, cy};
+            }
+        }
+    }
+
+    // Forzamos que la interfaz se redibuje para mostrar los números
+    DrawBackground();
+}
+
+void QForm1::on_buttonCalculatePath_clicked()
+{
+    calculateFloodFill();
 }
 

@@ -69,7 +69,7 @@ OLED_Status_e OLED_Init(OLED_Handle_s *handle, uint8_t i2c_addr, void* i2c_ctx) 
 
     if (OLED_WriteCommand(handle, OLED_OFF) != OLED_OK) return OLED_ERROR;  	// Display off
     if (OLED_WriteCommand(handle, MEMORY_MODE) != OLED_OK) return OLED_ERROR;   // Set Memory Addressing Mode
-    if (OLED_WriteCommand(handle, 0x00) != OLED_OK) return OLED_ERROR;			// 00,Horizontal Addressing Mode;01,Vertical Addressing Mode;10,Page Addressing Mode (RESET);11,Invalid
+    if (OLED_WriteCommand(handle, 0x02) != OLED_OK) return OLED_ERROR;			// 00,Horizontal Addressing Mode;01,Vertical Addressing Mode;10,Page Addressing Mode (RESET);11,Invalid
     if (OLED_WriteCommand(handle, 0xB0) != OLED_OK) return OLED_ERROR;			// Set Page Start Address for Page Addressing Mode,0-7
     if (OLED_WriteCommand(handle, 0xC8) != OLED_OK) return OLED_ERROR;			// Set COM Output Scan Direction
     if (OLED_WriteCommand(handle, SET_LOW_COLUMN) != OLED_OK) return OLED_ERROR;// Set low column address

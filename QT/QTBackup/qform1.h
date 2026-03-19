@@ -67,7 +67,7 @@ private slots:
 
     void on_OpenPortButton_clicked();
 
-    void on_buttonClear_clicked();
+    void on_buttonClearMap_clicked();
 
     void on_SendCommandButton_clicked();
 
@@ -131,9 +131,22 @@ private slots:
 
     void on_viewTabButton_clicked();
 
-    void on_pushButton_clicked();
+    void on_buttonRotateMap_clicked();
 
     void on_setBatteryVoltageButton_clicked();
+
+    void on_changeThresholdUnitButton_toggled(bool checked);
+
+    void on_buttonSetTargetXY_clicked();
+
+    void setWall(int x, int y, int dir);
+
+
+    void on_buttonGenerateMap_clicked();
+
+    void calculateFloodFill();
+
+    void on_buttonCalculatePath_clicked();
 
 private:
     Ui::QForm1 *ui;
@@ -225,6 +238,7 @@ private:
 
         // Maze State
         GET_CURRENT_ACTION      = 0xEA,
+        SET_MAZE_TARGET         = 0xEC,
         GET_INTERSECTION_TYPE   = 0xEE,
         GET_MAP_INFO            = 0xEF,
     } Command_e;
@@ -247,6 +261,8 @@ private:
         uint8_t currentDirection;
         uint8_t currentX;
         uint8_t currentY;
+        uint8_t targetX;
+        uint8_t targetY;
     } Map_Position_s;
 
     Map_Position_s mapData;

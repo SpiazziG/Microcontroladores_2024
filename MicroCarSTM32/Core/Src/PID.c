@@ -56,7 +56,7 @@ void PID_Compute_Gyro(PIDHandle_s *pid, int32_t error, int32_t gyro_rate) {
 
     // Como tu error es (Actual - Setpoint), la derivada del error es
     // directamente la lectura del giroscopio (velocidad angular).
-    int32_t d_term = - (pid->Kd * gyro_rate * 10) / 655;
+    int32_t d_term = (pid->Kd * gyro_rate * 10) / 655;
 
     // Suma PID con escala para no usar flotantes
     pid->output = (p_term + i_term + d_term) / 100;
