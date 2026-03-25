@@ -220,27 +220,24 @@ public:
     QGridLayout *gridLayout_10;
     QWidget *widget;
     QGridLayout *gridLayout_17;
-    QPushButton *pushButton_2;
+    QFrame *frameRadar;
+    QGridLayout *gridLayout_15;
+    QWidget *widgetRadar;
+    QSpacerItem *verticalSpacer_4;
     QFrame *frameDisplayIntersection;
     QGridLayout *gridLayout_20;
     QQuickWidget *qmlDisplayWidget;
-    QFrame *frameRadar;
-    QGridLayout *gridLayout_15;
-    QSpinBox *spinBoxTargetY;
-    QPushButton *buttonClearMap;
-    QPushButton *buttonRotateMap;
-    QWidget *widgetRadar;
+    QFrame *frameControl;
+    QGridLayout *gridLayout_19;
     QSpinBox *spinBoxTargetX;
+    QSpinBox *spinBoxTargetY;
+    QPushButton *buttonStartExploration;
     QPushButton *buttonSetTargetXY;
-    QPushButton *buttonCalculatePath;
+    QPushButton *pushButton_2;
     QFrame *frameCurrentAction;
     QGridLayout *gridLayout_21;
     QLabel *labelCurrentAction;
     QLabel *labelCurrentActionState;
-    QPushButton *buttonGenerateMap;
-    QPushButton *buttonStartExploration;
-    QSpacerItem *verticalSpacer_4;
-    QPushButton *buttonStartRun;
     QStatusBar *statusbar;
 
     void setupUi(QMainWindow *QForm1)
@@ -2251,14 +2248,36 @@ public:
         gridLayout_17 = new QGridLayout(widget);
         gridLayout_17->setObjectName("gridLayout_17");
         gridLayout_17->setContentsMargins(0, 0, 0, 0);
-        pushButton_2 = new QPushButton(widget);
-        pushButton_2->setObjectName("pushButton_2");
-        pushButton_2->setStyleSheet(QString::fromUtf8("font: 10pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"background-color: rgb(57, 63, 68);\n"
-"color: rgb(227, 227, 229);"));
+        frameRadar = new QFrame(widget);
+        frameRadar->setObjectName("frameRadar");
+        sizePolicy5.setHeightForWidth(frameRadar->sizePolicy().hasHeightForWidth());
+        frameRadar->setSizePolicy(sizePolicy5);
+        frameRadar->setMinimumSize(QSize(370, 300));
+        frameRadar->setStyleSheet(QString::fromUtf8("QWidget#frameRadar{\n"
+"border: 2px solid rgb(150, 150, 150);\n"
+"border-radius: 5px;\n"
+"}"));
+        frameRadar->setFrameShape(QFrame::Panel);
+        frameRadar->setFrameShadow(QFrame::Plain);
+        gridLayout_15 = new QGridLayout(frameRadar);
+        gridLayout_15->setObjectName("gridLayout_15");
+        gridLayout_15->setContentsMargins(0, 0, 0, 0);
+        widgetRadar = new QWidget(frameRadar);
+        widgetRadar->setObjectName("widgetRadar");
+        widgetRadar->setEnabled(true);
+        sizePolicy.setHeightForWidth(widgetRadar->sizePolicy().hasHeightForWidth());
+        widgetRadar->setSizePolicy(sizePolicy);
+        widgetRadar->setMinimumSize(QSize(305, 200));
+        widgetRadar->setStyleSheet(QString::fromUtf8("border-radius: 5px;"));
 
-        gridLayout_17->addWidget(pushButton_2, 5, 0, 1, 1);
+        gridLayout_15->addWidget(widgetRadar, 0, 1, 1, 2);
+
+
+        gridLayout_17->addWidget(frameRadar, 1, 0, 1, 1);
+
+        verticalSpacer_4 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout_17->addItem(verticalSpacer_4, 7, 0, 1, 1);
 
         frameDisplayIntersection = new QFrame(widget);
         frameDisplayIntersection->setObjectName("frameDisplayIntersection");
@@ -2286,23 +2305,31 @@ public:
         gridLayout_20->addWidget(qmlDisplayWidget, 0, 0, 1, 1);
 
 
-        gridLayout_17->addWidget(frameDisplayIntersection, 1, 1, 1, 1);
+        gridLayout_17->addWidget(frameDisplayIntersection, 1, 2, 1, 1);
 
-        frameRadar = new QFrame(widget);
-        frameRadar->setObjectName("frameRadar");
-        sizePolicy5.setHeightForWidth(frameRadar->sizePolicy().hasHeightForWidth());
-        frameRadar->setSizePolicy(sizePolicy5);
-        frameRadar->setMinimumSize(QSize(370, 300));
-        frameRadar->setStyleSheet(QString::fromUtf8("QWidget#frameRadar{\n"
+        frameControl = new QFrame(widget);
+        frameControl->setObjectName("frameControl");
+        frameControl->setStyleSheet(QString::fromUtf8("QWidget#frameControl{\n"
 "border: 2px solid rgb(150, 150, 150);\n"
+"background-color: rgb(57, 63, 68);\n"
 "border-radius: 5px;\n"
 "}"));
-        frameRadar->setFrameShape(QFrame::Panel);
-        frameRadar->setFrameShadow(QFrame::Plain);
-        gridLayout_15 = new QGridLayout(frameRadar);
-        gridLayout_15->setObjectName("gridLayout_15");
-        gridLayout_15->setContentsMargins(0, 0, 0, 0);
-        spinBoxTargetY = new QSpinBox(frameRadar);
+        frameControl->setFrameShape(QFrame::StyledPanel);
+        frameControl->setFrameShadow(QFrame::Raised);
+        gridLayout_19 = new QGridLayout(frameControl);
+        gridLayout_19->setObjectName("gridLayout_19");
+        spinBoxTargetX = new QSpinBox(frameControl);
+        spinBoxTargetX->setObjectName("spinBoxTargetX");
+        spinBoxTargetX->setStyleSheet(QString::fromUtf8("font: 11pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+        spinBoxTargetX->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        spinBoxTargetX->setButtonSymbols(QAbstractSpinBox::UpDownArrows);
+
+        gridLayout_19->addWidget(spinBoxTargetX, 0, 0, 1, 1);
+
+        spinBoxTargetY = new QSpinBox(frameControl);
         spinBoxTargetY->setObjectName("spinBoxTargetY");
         spinBoxTargetY->setStyleSheet(QString::fromUtf8("font: 11pt \"Century Gothic\";\n"
 "font-weight: bold;\n"
@@ -2310,70 +2337,37 @@ public:
 "color: rgb(227, 227, 229);"));
         spinBoxTargetY->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
-        gridLayout_15->addWidget(spinBoxTargetY, 3, 2, 1, 1);
+        gridLayout_19->addWidget(spinBoxTargetY, 0, 1, 1, 1);
 
-        buttonClearMap = new QPushButton(frameRadar);
-        buttonClearMap->setObjectName("buttonClearMap");
-        QSizePolicy sizePolicy10(QSizePolicy::Minimum, QSizePolicy::Maximum);
-        sizePolicy10.setHorizontalStretch(0);
-        sizePolicy10.setVerticalStretch(0);
-        sizePolicy10.setHeightForWidth(buttonClearMap->sizePolicy().hasHeightForWidth());
-        buttonClearMap->setSizePolicy(sizePolicy10);
-        buttonClearMap->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
-"font: 10pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"background-color: rgb(57, 63, 68);\n"
-"color: rgb(227, 227, 229);"));
-        buttonClearMap->setFlat(false);
-
-        gridLayout_15->addWidget(buttonClearMap, 2, 1, 1, 1);
-
-        buttonRotateMap = new QPushButton(frameRadar);
-        buttonRotateMap->setObjectName("buttonRotateMap");
-        buttonRotateMap->setStyleSheet(QString::fromUtf8("font: 10pt \"Siemens Sans\";\n"
-"font: 10pt \"Century Gothic\";\n"
+        buttonStartExploration = new QPushButton(frameControl);
+        buttonStartExploration->setObjectName("buttonStartExploration");
+        buttonStartExploration->setStyleSheet(QString::fromUtf8("font: 10pt \"Century Gothic\";\n"
 "font-weight: bold;\n"
 "background-color: rgb(57, 63, 68);\n"
 "color: rgb(227, 227, 229);"));
 
-        gridLayout_15->addWidget(buttonRotateMap, 2, 2, 1, 1);
+        gridLayout_19->addWidget(buttonStartExploration, 1, 0, 1, 2);
 
-        widgetRadar = new QWidget(frameRadar);
-        widgetRadar->setObjectName("widgetRadar");
-        widgetRadar->setEnabled(true);
-        sizePolicy.setHeightForWidth(widgetRadar->sizePolicy().hasHeightForWidth());
-        widgetRadar->setSizePolicy(sizePolicy);
-        widgetRadar->setMinimumSize(QSize(305, 200));
-        widgetRadar->setStyleSheet(QString::fromUtf8("border-radius: 5px;"));
-
-        gridLayout_15->addWidget(widgetRadar, 0, 1, 1, 2);
-
-        spinBoxTargetX = new QSpinBox(frameRadar);
-        spinBoxTargetX->setObjectName("spinBoxTargetX");
-        spinBoxTargetX->setStyleSheet(QString::fromUtf8("font: 11pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"background-color: rgb(57, 63, 68);\n"
-"color: rgb(227, 227, 229);"));
-        spinBoxTargetX->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
-
-        gridLayout_15->addWidget(spinBoxTargetX, 3, 1, 1, 1);
-
-        buttonSetTargetXY = new QPushButton(frameRadar);
+        buttonSetTargetXY = new QPushButton(frameControl);
         buttonSetTargetXY->setObjectName("buttonSetTargetXY");
         buttonSetTargetXY->setStyleSheet(QString::fromUtf8("font: 10pt \"Century Gothic\";\n"
 "font-weight: bold;\n"
 "background-color: rgb(57, 63, 68);\n"
 "color: rgb(227, 227, 229);"));
 
-        gridLayout_15->addWidget(buttonSetTargetXY, 4, 1, 1, 2);
+        gridLayout_19->addWidget(buttonSetTargetXY, 2, 0, 1, 2);
+
+        pushButton_2 = new QPushButton(frameControl);
+        pushButton_2->setObjectName("pushButton_2");
+        pushButton_2->setStyleSheet(QString::fromUtf8("font: 10pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"background-color: rgb(57, 63, 68);\n"
+"color: rgb(227, 227, 229);"));
+
+        gridLayout_19->addWidget(pushButton_2, 3, 0, 1, 2);
 
 
-        gridLayout_17->addWidget(frameRadar, 1, 0, 1, 1);
-
-        buttonCalculatePath = new QPushButton(widget);
-        buttonCalculatePath->setObjectName("buttonCalculatePath");
-
-        gridLayout_17->addWidget(buttonCalculatePath, 8, 0, 1, 1);
+        gridLayout_17->addWidget(frameControl, 3, 0, 3, 1);
 
         frameCurrentAction = new QFrame(widget);
         frameCurrentAction->setObjectName("frameCurrentAction");
@@ -2409,34 +2403,7 @@ public:
         gridLayout_21->addWidget(labelCurrentActionState, 0, 1, 1, 1);
 
 
-        gridLayout_17->addWidget(frameCurrentAction, 3, 1, 1, 1);
-
-        buttonGenerateMap = new QPushButton(widget);
-        buttonGenerateMap->setObjectName("buttonGenerateMap");
-
-        gridLayout_17->addWidget(buttonGenerateMap, 7, 0, 1, 1);
-
-        buttonStartExploration = new QPushButton(widget);
-        buttonStartExploration->setObjectName("buttonStartExploration");
-        buttonStartExploration->setStyleSheet(QString::fromUtf8("font: 10pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"background-color: rgb(57, 63, 68);\n"
-"color: rgb(227, 227, 229);"));
-
-        gridLayout_17->addWidget(buttonStartExploration, 3, 0, 1, 1);
-
-        verticalSpacer_4 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-
-        gridLayout_17->addItem(verticalSpacer_4, 9, 0, 1, 1);
-
-        buttonStartRun = new QPushButton(widget);
-        buttonStartRun->setObjectName("buttonStartRun");
-        buttonStartRun->setStyleSheet(QString::fromUtf8("font: 10pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"background-color: rgb(57, 63, 68);\n"
-"color: rgb(227, 227, 229);"));
-
-        gridLayout_17->addWidget(buttonStartRun, 4, 0, 1, 1);
+        gridLayout_17->addWidget(frameCurrentAction, 3, 2, 1, 1);
 
 
         gridLayout_10->addWidget(widget, 0, 0, 1, 1);
@@ -2578,16 +2545,12 @@ public:
         SendCommandButton->setText(QCoreApplication::translate("QForm1", "SEND", nullptr));
         aliveButton->setText(QCoreApplication::translate("QForm1", "ALIVE", nullptr));
         labelCommand->setText(QCoreApplication::translate("QForm1", "Command", nullptr));
-        pushButton_2->setText(QCoreApplication::translate("QForm1", "STOP", nullptr));
-        buttonClearMap->setText(QCoreApplication::translate("QForm1", "MIRROR", nullptr));
-        buttonRotateMap->setText(QCoreApplication::translate("QForm1", "ROTATE", nullptr));
+        spinBoxTargetX->setSpecialValueText(QString());
+        buttonStartExploration->setText(QCoreApplication::translate("QForm1", "START EXPLORATION", nullptr));
         buttonSetTargetXY->setText(QCoreApplication::translate("QForm1", "SET TARGET", nullptr));
-        buttonCalculatePath->setText(QCoreApplication::translate("QForm1", "CALCULATE PATH", nullptr));
+        pushButton_2->setText(QCoreApplication::translate("QForm1", "STOP", nullptr));
         labelCurrentAction->setText(QCoreApplication::translate("QForm1", "Current Action", nullptr));
         labelCurrentActionState->setText(QCoreApplication::translate("QForm1", "-", nullptr));
-        buttonGenerateMap->setText(QCoreApplication::translate("QForm1", "GENERATE MAP", nullptr));
-        buttonStartExploration->setText(QCoreApplication::translate("QForm1", "START EXPLORATION", nullptr));
-        buttonStartRun->setText(QCoreApplication::translate("QForm1", "START RUN", nullptr));
     } // retranslateUi
 
 };

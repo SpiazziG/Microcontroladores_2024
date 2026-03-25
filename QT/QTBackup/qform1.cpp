@@ -174,7 +174,7 @@ void QForm1::OnQTimer1(){
 
     if(time100ms == 0){
         time100ms = 10;
-        switch (telemetryState) {
+/*        switch (telemetryState) {
             case 0:
                 Heartbeat();
                 break;
@@ -190,7 +190,7 @@ void QForm1::OnQTimer1(){
                 buf[0] = GET_INTERSECTION_TYPE;
                 SendCMD(buf, 1);
                 break;
-        }
+        }*/
         telemetryState++;
 
         if (telemetryState > 3) {
@@ -697,7 +697,9 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         mapData.currentY = rxBuf[2];
         mapData.maze[mapData.currentX][mapData.currentY].walls = rxBuf[3];
         mapData.currentDirection = rxBuf[4];
+
         mapData.maze[mapData.currentX][mapData.currentY].visited = 1;
+        calculateFloodFill();
         break;
     //case SERVO_CONFIG:
         /*
@@ -1726,8 +1728,7 @@ void QForm1::calculateFloodFill() {
     DrawBackground();
 }
 
-void QForm1::on_buttonCalculatePath_clicked()
-{
+void QForm1::on_buttonCalculatePath_clicked(){
     calculateFloodFill();
 }
 
