@@ -699,6 +699,20 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         mapData.currentDirection = rxBuf[4];
 
         mapData.maze[mapData.currentX][mapData.currentY].visited = 1;
+
+        ui->labelCurrentPositionXValue->setText(QString("%1").arg(mapData.currentX));
+        ui->labelCurrentPositionYValue->setText(QString("%1").arg(mapData.currentY));
+
+        QString dirText;
+        switch(mapData.currentDirection) {
+        case 0: dirText = "NORTH"; break;
+        case 1: dirText = "EAST";  break;
+        case 2: dirText = "SOUTH"; break;
+        case 3: dirText = "WEST";  break;
+        default: dirText = "UNKNOWN";  break;
+        }
+        ui->labelCurrentDirectionValue->setText(dirText);
+
         calculateFloodFill();
         break;
     //case SERVO_CONFIG:
@@ -862,7 +876,6 @@ void QForm1::on_SendCommandButton_clicked(){
 }
 
 void QForm1::EngineTest(uint8_t Eng1, uint8_t Eng2){
-    //_work w;
     uint8_t buf[3];
 
     buf[0] = SET_MOTOR_TEST;
@@ -870,12 +883,6 @@ void QForm1::EngineTest(uint8_t Eng1, uint8_t Eng2){
     buf[1] = Eng1;
     buf[2] = Eng2;
     SendCMD(buf, 3);
-    /*
-    w.i32 = Eng2;
-    for(uint8_t i=0; i<4; i++)
-        buf[i+5] = w.i8[i];
-    SendCMD(buf, 9);
-    */
 }
 
 void QForm1::InitPaintBox(){
@@ -1440,6 +1447,43 @@ void QForm1::on_setWallPIDButton_clicked(){
     SendCMD(buf, 10);
 }
 
+void QForm1::on_setStopPIDButton_clicked(){
+    uint8_t buf[10];
+    uint16_t kp, ki, kd;
+    buf[0] = SET_PID_STOP_GAINS;
+
+    QString strKp = ui->lineEditStopKP->text().replace(",", ".");
+    uint32_t rawKp = strKp.toFloat() * 100.0f; // Usar uint32 temporalmente para atrapar overflows
+    if(rawKp > 65535) rawKp = 65535;
+
+    QString strKi = ui->lineEditStopKI->text().replace(",", ".");
+    uint32_t rawKi = strKi.toFloat() * 100.0f; // Usar uint32 temporalmente para atrapar overflows
+    if(rawKi > 65535) rawKi = 65535;
+
+    QString strKd = ui->lineEditStopKD->text().replace(",", ".");
+    uint32_t rawKd = strKd.toFloat() * 100.0f; // Usar uint32 temporalmente para atrapar overflows
+    if(rawKd > 65535) rawKd = 65535;
+
+    kp = static_cast<uint16_t> (rawKp);
+    ki = static_cast<uint16_t> (rawKi);
+    kd = static_cast<uint16_t> (rawKd);
+
+    buf[1] = (uint8_t)(kp & 0xFF);
+    buf[2] = (uint8_t)((kp >> 8) & 0xFF);
+
+    buf[3] = (uint8_t)(ki & 0xFF);
+    buf[4] = (uint8_t)((ki >> 8) & 0xFF);
+
+    buf[5] = (uint8_t)(kd & 0xFF);
+    buf[6] = (uint8_t)((kd >> 8) & 0xFF);
+
+    buf[7] = static_cast<int8_t>(ui->lineEditStopMin->text().toShort());
+    buf[8] = static_cast<int8_t>(ui->lineEditStopMax->text().toShort());
+    buf[9] = static_cast<int8_t>(ui->lineEditStopBase->text().toShort());
+
+    SendCMD(buf, 10);
+}
+
 void QForm1::on_pwmConfigButton_clicked(){
     uint8_t buf[4];
     uint16_t aux;
@@ -1456,7 +1500,6 @@ void QForm1::on_pwmConfigButton_clicked(){
 
     SendCMD(buf, 4);
 }
-
 
 void QForm1::on_pwmPrescalerConfig_textChanged(const QString &arg1){
     updateResultingFrequency();
@@ -1531,7 +1574,6 @@ void QForm1::on_readTurnPIDButton_clicked(){
     SendCMD(buf, 1);
 }
 
-
 void QForm1::on_readWallPIDButton_clicked(){
     uint8_t buf[1];
 
@@ -1540,13 +1582,18 @@ void QForm1::on_readWallPIDButton_clicked(){
     SendCMD(buf, 1);
 }
 
+void QForm1::on_readStopPIDButton_clicked(){
+    uint8_t buf[1];
 
-void QForm1::on_buttonRotateMap_clicked()
-{
+    buf[0] = GET_PID_STOP_GAINS;
+
+    SendCMD(buf, 1);
+}
+
+void QForm1::on_buttonRotateMap_clicked(){
     rotationAngle += 90;
     if (rotationAngle >= 360) rotationAngle = 0;
 }
-
 
 void QForm1::on_setBatteryVoltageButton_clicked()
 {
@@ -1564,12 +1611,9 @@ void QForm1::on_setBatteryVoltageButton_clicked()
     SendCMD(buf, 3);
 }
 
-
-void QForm1::on_changeThresholdUnitButton_toggled(bool checked)
-{
+void QForm1::on_changeThresholdUnitButton_toggled(bool checked){
 
 }
-
 
 void QForm1::on_buttonSetTargetXY_clicked() {
     uint8_t buf[3];
@@ -1602,65 +1646,65 @@ void QForm1::setWall(int x, int y, int dir) {
     if (dir == 2 && y > 0)  mapData.maze[x][y-1].walls |= (1 << 0); // S -> Vecino N
     if (dir == 3 && x > 0)  mapData.maze[x-1][y].walls |= (1 << 1); // O -> Vecino E
 }
-void QForm1::on_buttonGenerateMap_clicked()
-{
-    // 1. Limpiamos cualquier laberinto previo en la memoria
-    for(int x = 0; x < 16; x++) {
-        for(int y = 0; y < 16; y++) {
-            mapData.maze[x][y].walls = 0;
-            mapData.maze[x][y].visited = 0;
-            mapData.maze[x][y].cost = 255; // Preparamos el costo para el Flood Fill
-        }
-    }
 
-    // Definimos el tamaño del laberinto de prueba (Ej: 5x5)
-    int mazeW = 4;
-    int mazeH = 5;
+// void QForm1::on_buttonGenerateMap_clicked(){
+//     // 1. Limpiamos cualquier laberinto previo en la memoria
+//     for(int x = 0; x < 16; x++) {
+//         for(int y = 0; y < 16; y++) {
+//             mapData.maze[x][y].walls = 0;
+//             mapData.maze[x][y].visited = 0;
+//             mapData.maze[x][y].cost = 255; // Preparamos el costo para el Flood Fill
+//         }
+//     }
 
-    // 2. Armamos el piso y el perímetro exterior cerrado
-    for (int x = 0; x < mazeW; x++) {
-        for (int y = 0; y < mazeH; y++) {
-            mapData.maze[x][y].visited = 1; // Lo marcamos como visitado para que Qt lo dibuje
+//     // Definimos el tamaño del laberinto de prueba (Ej: 5x5)
+//     int mazeW = 4;
+//     int mazeH = 5;
 
-            if (x == 0) setWall(x, y, 3); // Borde Oeste
-            if (x == mazeW - 1) setWall(x, y, 1); // Borde Este
-            if (y == 0) setWall(x, y, 2); // Borde Sur
-            if (y == mazeH - 1) setWall(x, y, 0); // Borde Norte
-        }
-    }
+//     // 2. Armamos el piso y el perímetro exterior cerrado
+//     for (int x = 0; x < mazeW; x++) {
+//         for (int y = 0; y < mazeH; y++) {
+//             mapData.maze[x][y].visited = 1; // Lo marcamos como visitado para que Qt lo dibuje
 
-    // 3. Agregamos las paredes internas para armar un camino (Diseño libre)
-    // Usamos: 0=Norte, 1=Este, 2=Sur, 3=Oeste
-    setWall(0, 0, 0); // Bloqueamos ir al norte desde la salida
-    setWall(2, 0, 0);
-    setWall(1, 1, 0);
-    setWall(1, 1, 1);
-    setWall(2, 2, 1);
-    setWall(3, 2, 0);
-    setWall(1, 3, 0);
-    setWall(1, 3, 1);
-    setWall(1, 3, 3);
-    setWall(2, 3, 0);
-    // setWall(0, 2, 0);
-    // setWall(0, 2, 1);
-    // setWall(0, 3, 0);
-    // setWall(1, 3, 1);
-    // setWall(3, 2, 0);
-    // setWall(3, 4, 0);
-    // setWall(3, 4, 1);
-    // (Podés agregar todos los SetWall que quieras acá para hacerlo más difícil)
+//             if (x == 0) setWall(x, y, 3); // Borde Oeste
+//             if (x == mazeW - 1) setWall(x, y, 1); // Borde Este
+//             if (y == 0) setWall(x, y, 2); // Borde Sur
+//             if (y == mazeH - 1) setWall(x, y, 0); // Borde Norte
+//         }
+//     }
 
-    // 4. Seteamos al robot en la salida y definimos la meta
-    mapData.currentX = 0;
-    mapData.currentY = 0;
-    mapData.currentDirection = 1; // Mirando al Este (Derecha)
+//     // 3. Agregamos las paredes internas para armar un camino (Diseño libre)
+//     // Usamos: 0=Norte, 1=Este, 2=Sur, 3=Oeste
+//     setWall(0, 0, 0); // Bloqueamos ir al norte desde la salida
+//     setWall(2, 0, 0);
+//     setWall(1, 1, 0);
+//     setWall(1, 1, 1);
+//     setWall(2, 2, 1);
+//     setWall(3, 2, 0);
+//     setWall(1, 3, 0);
+//     setWall(1, 3, 1);
+//     setWall(1, 3, 3);
+//     setWall(2, 3, 0);
+//     // setWall(0, 2, 0);
+//     // setWall(0, 2, 1);
+//     // setWall(0, 3, 0);
+//     // setWall(1, 3, 1);
+//     // setWall(3, 2, 0);
+//     // setWall(3, 4, 0);
+//     // setWall(3, 4, 1);
+//     // (Podés agregar todos los SetWall que quieras acá para hacerlo más difícil)
 
-    mapData.targetX = mazeW - 1; // Esquina superior derecha
-    mapData.targetY = mazeH - 1;
+//     // 4. Seteamos al robot en la salida y definimos la meta
+//     mapData.currentX = 0;
+//     mapData.currentY = 0;
+//     mapData.currentDirection = 1; // Mirando al Este (Derecha)
 
-    // 5. Forzamos el redibujado
-    DrawBackground();
-}
+//     mapData.targetX = mazeW - 1; // Esquina superior derecha
+//     mapData.targetY = mazeH - 1;
+
+//     // 5. Forzamos el redibujado
+//     DrawBackground();
+// }
 
 void QForm1::calculateFloodFill() {
     // 1. Reiniciamos todos los costos a 255 (infinito / no calculado)
@@ -1728,11 +1772,6 @@ void QForm1::calculateFloodFill() {
     DrawBackground();
 }
 
-void QForm1::on_buttonCalculatePath_clicked(){
-    calculateFloodFill();
-}
-
-
 void QForm1::on_buttonStartExploration_clicked(){
     uint8_t buf[2];
     buf[0] = SET_ROBOT_MODE;
@@ -1740,11 +1779,17 @@ void QForm1::on_buttonStartExploration_clicked(){
     SendCMD(buf, 2);
 }
 
-
-void QForm1::on_pushButton_2_clicked(){
+void QForm1::on_buttonStopRobot_clicked(){
     uint8_t buf[2];
     buf[0] = SET_ROBOT_MODE;
     buf[1] = 0; // IDLE
+    SendCMD(buf, 2);
+}
+
+void QForm1::on_buttonStartRun_clicked(){
+    uint8_t buf[2];
+    buf[0] = SET_ROBOT_MODE;
+    buf[1] = 1; // MAZE RUNNER
     SendCMD(buf, 2);
 }
 

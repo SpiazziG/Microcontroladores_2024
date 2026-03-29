@@ -141,16 +141,21 @@ private slots:
 
     void setWall(int x, int y, int dir);
 
-
-    void on_buttonGenerateMap_clicked();
+    // void on_buttonGenerateMap_clicked();
 
     void calculateFloodFill();
 
-    void on_buttonCalculatePath_clicked();
+    // void on_buttonCalculatePath_clicked();
 
     void on_buttonStartExploration_clicked();
 
-    void on_pushButton_2_clicked();
+    void on_buttonStopRobot_clicked();
+
+    void on_setStopPIDButton_clicked();
+
+    void on_readStopPIDButton_clicked();
+
+    void on_buttonStartRun_clicked();
 
 private:
     Ui::QForm1 *ui;
@@ -235,6 +240,10 @@ private:
         // Wall PID
         SET_PID_WALL_GAINS  = 0xD2,
         GET_PID_WALL_GAINS  = 0xD3,
+
+        // Stop PID
+        SET_PID_STOP_GAINS = 0xD6,
+        GET_PID_STOP_GAINS = 0xD7,
 
         // Movement parameters
         SET_TURN_SPEED      = 0xD8,

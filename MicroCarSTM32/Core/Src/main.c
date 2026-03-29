@@ -93,6 +93,10 @@ typedef enum {
 	SET_PID_WALL_GAINS = 0xD2,
 	GET_PID_WALL_GAINS = 0xD3,
 
+	// Stop PID
+	SET_PID_STOP_GAINS = 0xD6,
+	GET_PID_STOP_GAINS = 0xD7,
+
 	// Movement parameters
 	SET_TURN_SPEED = 0xD8,
 	SET_WALL_SPEED = 0xDA,
@@ -103,6 +107,7 @@ typedef enum {
 	GET_CURRENT_ACTION		= 0xEA,
 
 	SET_MAZE_TARGET			= 0xEC,
+	SET_MAZE_START			= 0xED,
 
 	GET_INTERSECTION_TYPE	= 0xEE,
 	GET_MAP_INFO			= 0xEF,
@@ -117,6 +122,8 @@ typedef enum {
 	DISPLAY_SOFTWARE,
 	DISPLAY_RUN,
 	DISPLAY_CLEAR,
+	DISPLAY_CONFIG_START,
+	DISPLAY_CONFIG_TARGET,
 } DisplayPage_e;
 
 typedef enum {
@@ -389,6 +396,7 @@ const char* menuItems[] = {
 const int8_t totalMenuItems = 6;
 int8_t currentSelection;
 int8_t scrollOffset;
+uint8_t runConfigStep = 0;
 //////////////////////////////// OTHER VARIABLES ///////////////////////////////
 // Robot control and algorithm variables
 Robot_Mode_e currentMode;
@@ -794,6 +802,31 @@ void DecodeCMD(struct UNERBUSHandle *aBus, uint8_t iStartData){
 		UNERBUS_Write(aBus, buf, 9);
 		length = 10;
 		break;
+	case SET_PID_STOP_GAINS:
+		myStopValues.Kp = UNERBUS_GetUInt16(aBus);
+		myStopValues.Ki = UNERBUS_GetUInt16(aBus);
+		myStopValues.Kd = UNERBUS_GetUInt16(aBus);
+		myStopValues.outputMin = UNERBUS_GetInt8(aBus);
+		myStopValues.outputMax = UNERBUS_GetInt8(aBus);
+		myStopValues.base = UNERBUS_GetInt8(aBus);
+		break;
+	case GET_PID_STOP_GAINS:
+		buf[0] = myStopValues.Kp & 0xFF;
+		buf[1] = (myStopValues.Kp >> 8) & 0xFF;
+
+		buf[2] = myStopValues.Ki & 0xFF;
+		buf[3] = (myStopValues.Ki >> 8) & 0xFF;
+
+		buf[4] = myStopValues.Kd & 0xFF;
+		buf[5] = (myStopValues.Kd >> 8) & 0xFF;
+
+		buf[6] = myStopValues.outputMin;
+		buf[7] = myStopValues.outputMax;
+		buf[8] = myStopValues.base;
+
+		UNERBUS_Write(aBus, buf, 9);
+		length = 10;
+		break;
 	case SET_ROBOT_MODE:
 		uint8_t requestedMode = UNERBUS_GetUInt8(aBus);
 
@@ -811,6 +844,11 @@ void DecodeCMD(struct UNERBUSHandle *aBus, uint8_t iStartData){
 	case SET_MAZE_TARGET:
 		currentPosition.targetX = UNERBUS_GetUInt8(aBus);
 		currentPosition.targetY = UNERBUS_GetUInt8(aBus);
+		break;
+	case SET_MAZE_START:
+		currentPosition.currentX = UNERBUS_GetUInt8(aBus);
+		currentPosition.currentY = UNERBUS_GetUInt8(aBus);
+		currentDirection = (Map_Direction_e)UNERBUS_GetUInt8(aBus);
 		break;
 	case GET_CURRENT_ACTION:
 
@@ -1035,16 +1073,13 @@ void Robot_ExploreMaze(void) {
 	ChangeDisplayPage(DISPLAY_RUN);
 
 	// --- INICIALIZACIÓN DEL MAPA ---
-	currentPosition.currentX = 0;
-	currentPosition.currentY = 0;
-	currentDirection = EAST;
+//	currentPosition.currentX = 0;
+//	currentPosition.currentY = 0;
+//	currentDirection = EAST;
 	currentPosition.maze[0][0].visited = 1;
 
-//	currentPosition.targetX = 2;
-//	currentPosition.targetY = 3;
-
 	// Forzamos las paredes de la esquina inicial (Oeste y Sur)
-	currentPosition.maze[0][0].walls |= (1 << WEST) | (1 << SOUTH) | (1 << NORTH);
+//	currentPosition.maze[0][0].walls |= (1 << WEST) | (1 << SOUTH) | (1 << NORTH);
 	// -------------------------------
 	Map_UpdateCell((FILTERED_LEFT_IR > 350) ? 1 : 0,
 		    (FILTERED_FRONT_LEFT_IR > 350 || FILTERED_FRONT_RIGHT_IR > 350) ? 1 : 0,
@@ -1058,8 +1093,8 @@ void Robot_ExploreMaze(void) {
 	PID_Reset(&myStopValues);
 	MPU6050_Reset_Yaw(&myMpuValues);
 
-	referenceLeftWall = 40;
-	referenceRightWall = 40;
+	referenceLeftWall = 42;
+	referenceRightWall = 42;
 
 	currentAction = ACTION_FOLLOW_WALL;
 }
@@ -2107,6 +2142,54 @@ void ChangeDisplayPage(DisplayPage_e page){
 		    OLED_SetCursor(&myOled, 0, y);
 		    OLED_WriteString(&myOled, "Time:  " __TIME__, Font_7x10, White);
 			break;
+		case DISPLAY_CONFIG_START:
+			currentTitle = "Set Start";
+			OLED_Fill(&myOled, Black);
+
+			char* dirStr;
+			if (currentDirection == NORTH) dirStr = "NORTH";
+			else if (currentDirection == EAST) dirStr = "EAST";
+			else if (currentDirection == SOUTH) dirStr = "SOUTH";
+			else dirStr = "WEST";
+
+			for (int i = 0; i < 3; i++) {
+				int y_pos = MENU_START_Y + (i * MENU_ITEM_HEIGHT);
+
+				if (i == 0) sprintf(str, "Start X: %d", currentPosition.currentX);
+				else if (i == 1) sprintf(str, "Start Y: %d", currentPosition.currentY);
+				else if (i == 2) sprintf(str, "Dir: %s", dirStr);
+
+				if (runConfigStep == i) {
+					// Mismas dimensiones exactas que en el menú principal
+					OLED_DrawFilledRect(&myOled, 15, y_pos - 1, 98, MENU_ITEM_HEIGHT - 1, White);
+					OLED_SetCursor(&myOled, 15, y_pos);
+					OLED_WriteString(&myOled, str, Font_7x10, Black);
+				} else {
+					OLED_SetCursor(&myOled, 15, y_pos);
+					OLED_WriteString(&myOled, str, Font_7x10, White);
+				}
+			}
+			break;
+		case DISPLAY_CONFIG_TARGET:
+			currentTitle = "Set Target";
+			OLED_Fill(&myOled, Black);
+
+			for (int i = 0; i < 2; i++) {
+				int y_pos = MENU_START_Y + (i * MENU_ITEM_HEIGHT);
+
+				if (i == 0) sprintf(str, "Target X: %d", currentPosition.targetX);
+				else if (i == 1) sprintf(str, "Target Y: %d", currentPosition.targetY);
+
+				if (runConfigStep == i) {
+					OLED_DrawFilledRect(&myOled, 15, y_pos - 1, 98, MENU_ITEM_HEIGHT - 1, White);
+					OLED_SetCursor(&myOled, 15, y_pos);
+					OLED_WriteString(&myOled, str, Font_7x10, Black);
+				} else {
+					OLED_SetCursor(&myOled, 15, y_pos);
+					OLED_WriteString(&myOled, str, Font_7x10, White);
+				}
+			}
+			break;
 	}
 
 	if (page != DISPLAY_RUN)
@@ -2144,6 +2227,21 @@ static void ButtonNormalPress(void) {
 	} else if (currentPage == DISPLAY_IR_SENSORS) {
 		showIrInMillimeters = !showIrInMillimeters; // Alterna entre 0 y 1
 	}
+	else if (currentPage == DISPLAY_CONFIG_START) {
+		if (runConfigStep == 0) {
+			currentPosition.currentX = (currentPosition.currentX + 1) % 8;
+		} else if (runConfigStep == 1) {
+			currentPosition.currentY = (currentPosition.currentY + 1) % 8;
+		} else if (runConfigStep == 2) {
+			currentDirection = (currentDirection + 1) % 4;
+		}
+	} else if (currentPage == DISPLAY_CONFIG_TARGET) {
+		if (runConfigStep == 0) {
+			currentPosition.targetX = (currentPosition.targetX + 1) % 8;
+		} else if (runConfigStep == 1) {
+			currentPosition.targetY = (currentPosition.targetY + 1) % 8;
+		}
+	}
 	return;
 }
 
@@ -2157,7 +2255,9 @@ static void ButtonLongPress(void) {
 		case DISPLAY_MENU:
 			switch(currentSelection) {
 			case MENU_START:
-				Robot_ExploreMaze();
+//				Robot_ExploreMaze();
+				currentPage = DISPLAY_CONFIG_START;
+				runConfigStep = 0;
 				break;
 			case MENU_IR_DATA:
 				currentPage = DISPLAY_IR_SENSORS;
@@ -2179,6 +2279,19 @@ static void ButtonLongPress(void) {
 				currentPage = DISPLAY_SOFTWARE;
 				ChangeDisplayPage(DISPLAY_SOFTWARE);
 				break;
+			}
+			break;
+		case DISPLAY_CONFIG_START:
+			runConfigStep++;
+			if (runConfigStep > 2) {
+				runConfigStep = 0;
+				currentPage = DISPLAY_CONFIG_TARGET;
+			}
+			break;
+		case DISPLAY_CONFIG_TARGET:
+			runConfigStep++;
+			if (runConfigStep > 1) {
+				Robot_ExploreMaze();
 			}
 			break;
 		default:
