@@ -131,7 +131,7 @@ private slots:
 
     void on_viewTabButton_clicked();
 
-    void on_buttonRotateMap_clicked();
+    // void on_buttonRotateMap_clicked();
 
     void on_setBatteryVoltageButton_clicked();
 
@@ -141,7 +141,7 @@ private slots:
 
     void setWall(int x, int y, int dir);
 
-    // void on_buttonGenerateMap_clicked();
+    void on_buttonGenerateMap_clicked();
 
     void calculateFloodFill();
 
@@ -156,6 +156,29 @@ private slots:
     void on_readStopPIDButton_clicked();
 
     void on_buttonStartRun_clicked();
+
+    void on_buttonSetStart_clicked();
+
+    void on_button3dup_clicked();
+
+    void on_button3dright_clicked();
+
+    void on_button3drotate_clicked();
+
+    void onQmlTargetChanged();
+
+    void onQmlStartChanged();
+
+    void on_pushButton_clicked();
+
+    void on_checkBoxAccelerometer_toggled(bool checked);
+
+    void on_checkBoxGyro_toggled(bool checked);
+
+    void reconstructShortestPath();
+
+protected:
+    void keyPressEvent(QKeyEvent *event) override;
 
 private:
     Ui::QForm1 *ui;
@@ -254,6 +277,7 @@ private:
         SET_ROBOT_MODE          = 0xE0,
         GET_CURRENT_ACTION      = 0xEA,
         SET_MAZE_TARGET         = 0xEC,
+        SET_MAZE_START          = 0xED,
         GET_INTERSECTION_TYPE   = 0xEE,
         GET_MAP_INFO            = 0xEF,
     } Command_e;

@@ -895,5 +895,30 @@
         <file>3d/Tabla/qmldir</file>
         <file>3d/Tabla/Tabla.qml</file>
         <file>3d/assets/studio_small_09_1k.hdr</file>
+        <file>3d/Laberinto8x8/meshes/madera_mesh.mesh</file>
+        <file>3d/Laberinto8x8/meshes/s_lido1_mesh.mesh</file>
+        <file>3d/Laberinto8x8/source scene/Laberinto8x8.glb</file>
+        <file>3d/Laberinto8x8/_importdata.json</file>
+        <file>3d/Laberinto8x8/CMakeLists.txt</file>
+        <file>3d/Laberinto8x8/Laberinto8x8.hints</file>
+        <file>3d/Laberinto8x8/Laberinto8x8.qml</file>
+        <file>3d/Laberinto8x8/qmldir</file>
+        <file>3d/Laberinto8x6/meshes/s_lido1_mesh.mesh</file>
+        <file>3d/Laberinto8x6/meshes/s_lido1_mesh8.mesh</file>
+        <file>3d/Laberinto8x6/source scene/Laberinto8x6.glb</file>
+        <file>3d/Laberinto8x6/_importdata.json</file>
+        <file>3d/Laberinto8x6/CMakeLists.txt</file>
+        <file>3d/Laberinto8x6/Laberinto8x6.hints</file>
+        <file>3d/Laberinto8x6/Laberinto8x6.qml</file>
+        <file>3d/Laberinto8x6/qmldir</file>
+        <file>3d/TablaMadera/meshes/madera_mesh.mesh</file>
+        <file>3d/TablaMadera/source scene/TablaMadera.glb</file>
+        <file>3d/TablaMadera/_importdata.json</file>
+        <file>3d/TablaMadera/CMakeLists.txt</file>
+        <file>3d/TablaMadera/qmldir</file>
+        <file>3d/TablaMadera/TablaMadera.hints</file>
+        <file>3d/TablaMadera/TablaMadera.qml</file>
+        <file>loadingScreen/GS.png</file>
+        <file>loadingScreen/GS_SplashScreen.png</file>
     </qresource>
 </RCC>

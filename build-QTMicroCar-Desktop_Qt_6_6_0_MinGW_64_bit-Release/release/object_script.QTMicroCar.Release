@@ -6,7 +6,10 @@ release/3d_road3D_qml.o
 release/3d_Screen01.ui_qml.o
 release/3d_Car_Car_qml.o
 release/3d_Piso_Piso_qml.o
+release/3d_TablaMadera_TablaMadera_qml.o
 release/3d_Tabla_Tabla_qml.o
+release/3d_Laberinto8x6_Laberinto8x6_qml.o
+release/3d_Laberinto8x8_Laberinto8x8_qml.o
 release/img_Screen01.ui_qml.o
 release/qmlcache_loader.o
 release/qrc_resources_qmlcache.o

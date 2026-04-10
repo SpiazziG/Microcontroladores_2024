@@ -56,8 +56,8 @@ Rectangle {
 
                 castsShadow: true
 
-                    // Opcional: Suavizar la sombra para que no sea un bloque negro perfecto
-                    shadowFactor: 20 // Un valor menor hace sombras más suaves/transparentes
+                // Opcional: Suavizar la sombra para que no sea un bloque negro perfecto
+                shadowFactor: 20 // Un valor menor hace sombras más suaves/transparentes
             }
 
             PerspectiveCamera {

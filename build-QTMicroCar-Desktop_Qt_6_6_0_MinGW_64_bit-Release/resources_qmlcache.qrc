@@ -896,5 +896,30 @@
         <file alias="3d/Tabla/qmldir">../QT/QTBackup/3d/Tabla/qmldir</file>
         <file alias="3d/Tabla/Tabla.qml">../QT/QTBackup/3d/Tabla/Tabla.qml</file>
         <file alias="3d/assets/studio_small_09_1k.hdr">../QT/QTBackup/3d/assets/studio_small_09_1k.hdr</file>
+        <file alias="3d/Laberinto8x8/meshes/madera_mesh.mesh">../QT/QTBackup/3d/Laberinto8x8/meshes/madera_mesh.mesh</file>
+        <file alias="3d/Laberinto8x8/meshes/s_lido1_mesh.mesh">../QT/QTBackup/3d/Laberinto8x8/meshes/s_lido1_mesh.mesh</file>
+        <file alias="3d/Laberinto8x8/source scene/Laberinto8x8.glb">../QT/QTBackup/3d/Laberinto8x8/source scene/Laberinto8x8.glb</file>
+        <file alias="3d/Laberinto8x8/_importdata.json">../QT/QTBackup/3d/Laberinto8x8/_importdata.json</file>
+        <file alias="3d/Laberinto8x8/CMakeLists.txt">../QT/QTBackup/3d/Laberinto8x8/CMakeLists.txt</file>
+        <file alias="3d/Laberinto8x8/Laberinto8x8.hints">../QT/QTBackup/3d/Laberinto8x8/Laberinto8x8.hints</file>
+        <file alias="3d/Laberinto8x8/Laberinto8x8.qml">../QT/QTBackup/3d/Laberinto8x8/Laberinto8x8.qml</file>
+        <file alias="3d/Laberinto8x8/qmldir">../QT/QTBackup/3d/Laberinto8x8/qmldir</file>
+        <file alias="3d/Laberinto8x6/meshes/s_lido1_mesh.mesh">../QT/QTBackup/3d/Laberinto8x6/meshes/s_lido1_mesh.mesh</file>
+        <file alias="3d/Laberinto8x6/meshes/s_lido1_mesh8.mesh">../QT/QTBackup/3d/Laberinto8x6/meshes/s_lido1_mesh8.mesh</file>
+        <file alias="3d/Laberinto8x6/source scene/Laberinto8x6.glb">../QT/QTBackup/3d/Laberinto8x6/source scene/Laberinto8x6.glb</file>
+        <file alias="3d/Laberinto8x6/_importdata.json">../QT/QTBackup/3d/Laberinto8x6/_importdata.json</file>
+        <file alias="3d/Laberinto8x6/CMakeLists.txt">../QT/QTBackup/3d/Laberinto8x6/CMakeLists.txt</file>
+        <file alias="3d/Laberinto8x6/Laberinto8x6.hints">../QT/QTBackup/3d/Laberinto8x6/Laberinto8x6.hints</file>
+        <file alias="3d/Laberinto8x6/Laberinto8x6.qml">../QT/QTBackup/3d/Laberinto8x6/Laberinto8x6.qml</file>
+        <file alias="3d/Laberinto8x6/qmldir">../QT/QTBackup/3d/Laberinto8x6/qmldir</file>
+        <file alias="3d/TablaMadera/meshes/madera_mesh.mesh">../QT/QTBackup/3d/TablaMadera/meshes/madera_mesh.mesh</file>
+        <file alias="3d/TablaMadera/source scene/TablaMadera.glb">../QT/QTBackup/3d/TablaMadera/source scene/TablaMadera.glb</file>
+        <file alias="3d/TablaMadera/_importdata.json">../QT/QTBackup/3d/TablaMadera/_importdata.json</file>
+        <file alias="3d/TablaMadera/CMakeLists.txt">../QT/QTBackup/3d/TablaMadera/CMakeLists.txt</file>
+        <file alias="3d/TablaMadera/qmldir">../QT/QTBackup/3d/TablaMadera/qmldir</file>
+        <file alias="3d/TablaMadera/TablaMadera.hints">../QT/QTBackup/3d/TablaMadera/TablaMadera.hints</file>
+        <file alias="3d/TablaMadera/TablaMadera.qml">../QT/QTBackup/3d/TablaMadera/TablaMadera.qml</file>
+        <file alias="loadingScreen/GS.png">../QT/QTBackup/loadingScreen/GS.png</file>
+        <file alias="loadingScreen/GS_SplashScreen.png">../QT/QTBackup/loadingScreen/GS_SplashScreen.png</file>
     </qresource>
 </RCC>

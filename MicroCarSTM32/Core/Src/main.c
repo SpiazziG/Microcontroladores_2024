@@ -149,7 +149,6 @@ typedef enum {
 	ACTION_CENTER_IN_CELL,
 	ACTION_AFTER_TURN,
 	ACTION_TURN_PIVOT,
-	ACTION_TURN_SMOOTH,
 	ACTION_BACK_WALL_ALIGN,
 } Robot_Action_e;
 
@@ -1715,7 +1714,7 @@ void DrawRobotEyes(OLED_Handle_s *handle, IntersectionType_e intersection, Robot
 
 	// 3. Expresiones según el estado (Solo aplican si NO está parpadeando)
 	if (!isBlinking) {
-		if (action == ACTION_TURN_PIVOT || action == ACTION_TURN_SMOOTH) {
+		if (action == ACTION_TURN_PIVOT) {
 			// Acción: Girando -> Mira hacia el lado del giro por anticipación
 			if (turnTarget > 0) { // Girando a la izquierda
 				x_L = 1; x_R = 41;
@@ -1850,9 +1849,6 @@ void ChangeDisplayPage(DisplayPage_e page){
 				break;
 			case ACTION_TURN_PIVOT:
 				sprintf(str, "PIVOT");
-				break;
-			case ACTION_TURN_SMOOTH:
-				sprintf(str, "SMOOTH");
 				break;
 			case ACTION_BACK_WALL_ALIGN:
 				sprintf(str, "ALIGN");

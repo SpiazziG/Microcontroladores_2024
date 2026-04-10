@@ -6,7 +6,10 @@ debug/3d_road3D_qml.o
 debug/3d_Screen01.ui_qml.o
 debug/3d_Car_Car_qml.o
 debug/3d_Piso_Piso_qml.o
+debug/3d_TablaMadera_TablaMadera_qml.o
 debug/3d_Tabla_Tabla_qml.o
+debug/3d_Laberinto8x6_Laberinto8x6_qml.o
+debug/3d_Laberinto8x8_Laberinto8x8_qml.o
 debug/img_Screen01.ui_qml.o
 debug/qmlcache_loader.o
 debug/qrc_resources_qmlcache.o

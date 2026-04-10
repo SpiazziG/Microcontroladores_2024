@@ -10,6 +10,8 @@ QForm1::QForm1(QWidget *parent)
     dialog = new Dialog(this);
     ui->comboBoxCommunication->installEventFilter(this);
 
+    setWindowIcon(QIcon(":/loadingScreen/GS.png"));
+
     {
         // Nombramos el widget como "qmlDisplayWidget" en el paso 3
         QQuickWidget* qmlWidget = ui->qmlDisplayWidget;
@@ -25,10 +27,28 @@ QForm1::QForm1(QWidget *parent)
 
                 connect(m_qmlRootObject, SIGNAL(animationFinished()), this, SLOT(onAnimationDone()));
 
+                // --- NUEVAS CONEXIONES DEL RATÓN 3D ---
+                // Meta (Target)
+                connect(m_qmlRootObject, SIGNAL(robotTargetXChanged()), this, SLOT(onQmlTargetChanged()));
+                connect(m_qmlRootObject, SIGNAL(robotTargetYChanged()), this, SLOT(onQmlTargetChanged()));
+
+                // Inicio / Posición (Start)
+                connect(m_qmlRootObject, SIGNAL(robotLogXChanged()), this, SLOT(onQmlStartChanged()));
+                connect(m_qmlRootObject, SIGNAL(robotLogYChanged()), this, SLOT(onQmlStartChanged()));
+
+                // Rotación del robot (Rueda del ratón)
+                connect(m_qmlRootObject, SIGNAL(robotDirChanged()), this, SLOT(onQmlStartChanged()));
+
+                // --- CONEXIONES DE LOS BOTONES DEL FLYOUT ---
+                connect(m_qmlRootObject, SIGNAL(reqSetStart()), this, SLOT(on_buttonSetStart_clicked()));
+                connect(m_qmlRootObject, SIGNAL(reqSetTarget()), this, SLOT(on_buttonSetTargetXY_clicked()));
+                connect(m_qmlRootObject, SIGNAL(reqStartRun()), this, SLOT(on_buttonStartRun_clicked()));
+                connect(m_qmlRootObject, SIGNAL(reqStartExploration()), this, SLOT(on_buttonStartExploration_clicked()));
+                connect(m_qmlRootObject, SIGNAL(reqStopRobot()), this, SLOT(on_buttonStopRobot_clicked()));
                 // Opcional: puedes hacer una prueba inicial aquí
-                qInfo() << "QML cargado con éxito. Intentando una actualización inicial...";
-                this->updateFrontSensor(true); // Prueba para ver si funciona
-                this->updateCarPosition(0.5);
+                // qInfo() << "QML cargado con éxito. Intentando una actualización inicial...";
+                // this->updateFrontSensor(true); // Prueba para ver si funciona
+                // this->updateCarPosition(0.5);
             } else if (status == QQuickWidget::Error) {
                 // Si hubo un error cargando el QML, lo mostramos.
                 qWarning() << "Error al cargar QML:" << qmlWidget->errors();
@@ -153,6 +173,19 @@ bool QForm1::eventFilter(QObject *watched, QEvent *event){
     }
 }
 
+void QForm1::keyPressEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_F11) {
+        if (this->isFullScreen()) {
+            this->showNormal();  // Vuelve al modo ventana con bordes
+        } else {
+            this->showFullScreen(); // Activa pantalla completa sin bordes
+        }
+    } else {
+        // Importante: permite que otras teclas sigan funcionando normalmente
+        QMainWindow::keyPressEvent(event);
+    }
+}
+
 void QForm1::OnQTimer1(){
     static uint8_t time100ms = 10;
     static uint8_t time20ms = 2;
@@ -174,25 +207,39 @@ void QForm1::OnQTimer1(){
 
     if(time100ms == 0){
         time100ms = 10;
-/*        switch (telemetryState) {
-            case 0:
-                Heartbeat();
-                break;
-            case 1:
+        switch (telemetryState) {
+        case 0:
+            // El Heartbeat suele ser vital para mantener viva la conexión.
+            // Te recomiendo dejarlo siempre activo, sin CheckBox.
+            Heartbeat();
+            break;
+
+        case 1:
+            // Solo pide datos si la casilla está tildada
+            if (ui->checkBoxIR->isChecked()) {
                 buf[0] = GET_IR_SENSORS;
                 SendCMD(buf, 1);
-                break;
-            case 2:
-                // buf[0] = GET_MPU_DATA;
-                // SendCMD(buf, 1);
-                break;
-            case 3:
+            }
+            break;
+
+        case 2:
+            if (ui->checkBoxAccelerometer->isChecked() || ui->checkBoxGyro->isChecked()) {
+                buf[0] = GET_MPU_DATA;
+                SendCMD(buf, 1);
+            }
+            break;
+
+        case 3:
+            if (ui->checkBoxEngines->isChecked()) {
                 buf[0] = GET_INTERSECTION_TYPE;
                 SendCMD(buf, 1);
-                break;
-        }*/
+            }
+            break;
+        }
+
         telemetryState++;
 
+        // Aumentamos el límite para que pase por los 4 estados (del 0 al 3)
         if (telemetryState > 3) {
             telemetryState = 0;
         }
@@ -466,15 +513,55 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         leftIR = (rxBuf[14] << 8) | rxBuf[13];
 
         // For 12 bits measures
-        for (int i = 0; i < 8; ++i){
+        // for (int i = 0; i < 8; ++i){
+        //     baseIndex = 1 + (i * 2);
+        //     w.u8[0] = rxBuf[baseIndex];
+        //     w.u8[1] = rxBuf[baseIndex + 1];
+
+        //     QString labelName = QString("labelValueIR%1").arg(i + 1);
+        //     QLabel* label = this->findChild<QLabel*>(labelName);
+        //     if(label)
+        //         label->setText(QString("%1").arg(w.i32, 4, 10, QChar(' ')));
+        // }
+
+        for (int i = 0; i < 8; ++i) {
             baseIndex = 1 + (i * 2);
             w.u8[0] = rxBuf[baseIndex];
             w.u8[1] = rxBuf[baseIndex + 1];
+            int value = w.i32; // El valor de 0 a 4095
 
             QString labelName = QString("labelValueIR%1").arg(i + 1);
             QLabel* label = this->findChild<QLabel*>(labelName);
-            if(label)
-                label->setText(QString("%1").arg(w.i32, 4, 10, QChar(' ')));
+
+            if (label) {
+                label->setText(QString("%1").arg(value, 4, 10, QChar(' ')));
+
+                QString colorStyle;
+
+                // Lógica para sensores de LÍNEA (Índices 3 y 7, que son IR4 e IR8 en la UI)
+                if (i == 3 || i == 7) {
+                    // Mapeo a escala de grises (0-255)
+                    int gray = (value * 255) / 4095;
+                    // Si es blanco (4095), el texto debe ser negro para que se vea, y viceversa
+                    int textColor = (gray < 128) ? 0 : 255;
+                    colorStyle = QString("color: rgb(%1,%1,%1); font: 13pt 'Century Gothic'; font-weight: bold; background-color: transparent;").arg(textColor);
+                }
+
+                // Lógica para sensores de PROXIMIDAD (Resto)
+                else {
+                    int r, g;
+                    if (value < 2048) {
+                        r = (value * 255) / 2048;
+                        g = 255;
+                    } else {
+                        r = 255;
+                        g = 255 - ((value - 2048) * 255) / 2047;
+                    }
+                    colorStyle = QString("color: rgb(%1, %2, 0); font: 13pt 'Century Gothic'; font-weight: bold; background-color: transparent;").arg(r).arg(g);
+                }
+
+                label->setStyleSheet(colorStyle);
+            }
         }
 
         centerDifference = rightIR - leftIR;
@@ -646,6 +733,26 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         w.i8[0] = static_cast <int8_t> (rxBuf[9]);
         ui->lineEditWallBase->setText(QString::number(w.i8[0]));
         break;
+    case GET_PID_STOP_GAINS:
+        w.u16[0] = ((uint16_t)rxBuf[2] << 8 | rxBuf[1]);
+        ui->lineEditStopKP->setText(QString::number(w.u16[0]/100.0f, 'f', 2));
+
+        w.u16[0] = ((uint16_t)rxBuf[4] << 8 | rxBuf[3]);
+        ui->lineEditStopKI->setText(QString::number(w.u16[0]/100.0f, 'f', 2));
+
+        w.u16[0] = ((uint16_t)rxBuf[6] << 8 | rxBuf[5]);
+        ui->lineEditStopKD->setText(QString::number(w.u16[0]/100.0f, 'f', 2));
+
+        w.i32 = 0;
+        w.i8[0] = static_cast <int8_t> (rxBuf[7]);
+        ui->lineEditStopMin->setText(QString::number(w.i8[0]));
+
+        w.i8[0] = static_cast <int8_t> (rxBuf[8]);
+        ui->lineEditStopMax->setText(QString::number(w.i8[0]));
+
+        w.i8[0] = static_cast <int8_t> (rxBuf[9]);
+        ui->lineEditStopBase->setText(QString::number(w.i8[0]));
+        break;
     case GET_INTERSECTION_TYPE:
     {
         uint8_t intersectionIndex = rxBuf[1];
@@ -700,8 +807,8 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
 
         mapData.maze[mapData.currentX][mapData.currentY].visited = 1;
 
-        ui->labelCurrentPositionXValue->setText(QString("%1").arg(mapData.currentX));
-        ui->labelCurrentPositionYValue->setText(QString("%1").arg(mapData.currentY));
+        // ui->labelCurrentPositionXValue->setText(QString("%1").arg(mapData.currentX));
+        // ui->labelCurrentPositionYValue->setText(QString("%1").arg(mapData.currentY));
 
         QString dirText;
         switch(mapData.currentDirection) {
@@ -714,6 +821,22 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         ui->labelCurrentDirectionValue->setText(dirText);
 
         calculateFloodFill();
+
+        // --- CONEXIÓN CON EL 3D ---
+        if (m_qmlRootObject) { // Tu puntero raíz que carga road3D.qml
+
+            // 1. Actualizamos posición y dirección.
+            // Esto mueve el 'robotPivot' automáticamente por los bindings que hiciste
+            m_qmlRootObject->setProperty("robotLogX", mapData.currentX);
+            m_qmlRootObject->setProperty("robotLogY", mapData.currentY);
+            m_qmlRootObject->setProperty("robotDir", mapData.currentDirection);
+
+            // 2. Ejecutamos la función de JavaScript en el QML para crear las paredes
+            QMetaObject::invokeMethod(m_qmlRootObject, "updateCellWalls",
+                          Q_ARG(QVariant, mapData.currentX),
+                          Q_ARG(QVariant, mapData.currentY),
+                          Q_ARG(QVariant, mapData.maze[mapData.currentX][mapData.currentY].walls));
+        }
         break;
     //case SERVO_CONFIG:
         /*
@@ -1590,10 +1713,10 @@ void QForm1::on_readStopPIDButton_clicked(){
     SendCMD(buf, 1);
 }
 
-void QForm1::on_buttonRotateMap_clicked(){
-    rotationAngle += 90;
-    if (rotationAngle >= 360) rotationAngle = 0;
-}
+// void QForm1::on_buttonRotateMap_clicked(){
+//     rotationAngle += 90;
+//     if (rotationAngle >= 360) rotationAngle = 0;
+// }
 
 void QForm1::on_setBatteryVoltageButton_clicked()
 {
@@ -1647,7 +1770,31 @@ void QForm1::setWall(int x, int y, int dir) {
     if (dir == 3 && x > 0)  mapData.maze[x-1][y].walls |= (1 << 1); // O -> Vecino E
 }
 
-// void QForm1::on_buttonGenerateMap_clicked(){
+void QForm1::on_buttonGenerateMap_clicked(){
+    // 1. Obtenemos dónde está el robot y hacia dónde mira
+    int cx = mapData.currentX;
+    int cy = mapData.currentY;
+    int dir = mapData.currentDirection;
+
+    mapData.maze[cx][cy].visited = 1;
+    // 2. Calculamos el bit de la pared frontal basado en su dirección
+    // dir: 0=Norte, 1=Este, 2=Sur, 3=Oeste
+    uint8_t wallBit = (1 << dir);
+
+    // 3. Agregamos la pared a la lógica de la matriz (usando OR a nivel de bits para no borrar las que ya están)
+    mapData.maze[cx][cy].walls |= wallBit;
+
+    // 4. Actualizamos el radar 2D tradicional
+    DrawBackground();
+
+    // 5. Invocamos al QML para que dibuje la pared 3D con su nuevo Fade In
+    if (m_qmlRootObject) {
+        QMetaObject::invokeMethod(m_qmlRootObject, "updateCellWalls",
+                                  Q_ARG(QVariant, cx),
+                                  Q_ARG(QVariant, cy),
+                                  Q_ARG(QVariant, mapData.maze[cx][cy].walls));
+    }
+
 //     // 1. Limpiamos cualquier laberinto previo en la memoria
 //     for(int x = 0; x < 16; x++) {
 //         for(int y = 0; y < 16; y++) {
@@ -1704,12 +1851,12 @@ void QForm1::setWall(int x, int y, int dir) {
 
 //     // 5. Forzamos el redibujado
 //     DrawBackground();
-// }
+}
 
 void QForm1::calculateFloodFill() {
     // 1. Reiniciamos todos los costos a 255 (infinito / no calculado)
-    for(int x = 0; x < 16; x++) {
-        for(int y = 0; y < 16; y++) {
+    for(int x = 0; x < 8; x++) {
+        for(int y = 0; y < 6; y++) {
             mapData.maze[x][y].cost = 255;
         }
     }
@@ -1717,7 +1864,7 @@ void QForm1::calculateFloodFill() {
     // 2. Creamos una cola simple para el algoritmo BFS.
     // Como el laberinto máximo es de 16x16, 256 posiciones de memoria son suficientes.
     struct Point { int x, y; };
-    Point queue[256];
+    Point queue[64];
     int head = 0; // Índice de lectura
     int tail = 0; // Índice de escritura
 
@@ -1770,6 +1917,34 @@ void QForm1::calculateFloodFill() {
 
     // Forzamos que la interfaz se redibuje para mostrar los números
     DrawBackground();
+
+    // --- NUEVO: ENVIAR PESOS AL MAPA 3D ---
+    if (m_qmlRootObject) {
+        // 1. Encontrar el costo máximo actual (solo en tu zona de 8x6)
+        int maxCost = 1;
+        for(int x = 0; x < 8; x++) {
+            for(int y = 0; y < 6; y++) {
+                if (mapData.maze[x][y].cost != 255 && mapData.maze[x][y].cost > maxCost) {
+                    maxCost = mapData.maze[x][y].cost;
+                }
+            }
+        }
+
+        // 2. Le avisamos al QML cuál es el techo para su gradiente de color
+        m_qmlRootObject->setProperty("maxMazeCost", maxCost);
+
+        for(int x = 0; x < 8; x++) {
+            for(int y = 0; y < 6; y++) {
+                // Solo enviamos las celdas cuyo costo haya sido calculado (distinto de infinito/255)
+                if (mapData.maze[x][y].cost != 255) {
+                    QMetaObject::invokeMethod(m_qmlRootObject, "updateCellWeight",
+                                              Q_ARG(QVariant, x),
+                                              Q_ARG(QVariant, y),
+                                              Q_ARG(QVariant, mapData.maze[x][y].cost));
+                }
+            }
+        }
+    }
 }
 
 void QForm1::on_buttonStartExploration_clicked(){
@@ -1793,3 +1968,225 @@ void QForm1::on_buttonStartRun_clicked(){
     SendCMD(buf, 2);
 }
 
+
+void QForm1::on_buttonSetStart_clicked(){
+    uint8_t buf[4];
+
+    // Obtenemos los valores de los SpinBoxes de la interfaz
+    mapData.currentX = ui->spinBoxStartX->value();
+    mapData.currentY = ui->spinBoxStartY->value();
+    mapData.currentDirection = ui->comboBoxStartDir->currentIndex();
+
+    // Armamos el paquete UDP
+    buf[0] = 0xED; // Comando: SET_MAZE_START
+    buf[1] = mapData.currentX;
+    buf[2] = mapData.currentY;
+    buf[3] = mapData.currentDirection;
+
+    SendCMD(buf, 4); // Enviamos los 3 bytes (Comando + X + Y)
+
+    if (m_qmlRootObject) {
+        // Teletransportamos al robot a la nueva coordenada y lo rotamos
+        m_qmlRootObject->setProperty("robotLogX", mapData.currentX);
+        m_qmlRootObject->setProperty("robotLogY", mapData.currentY);
+        m_qmlRootObject->setProperty("robotDir", mapData.currentDirection);
+
+        // Opcional: Si esa nueva celda inicial ya tiene paredes conocidas en tu matriz, las dibujamos
+        QMetaObject::invokeMethod(m_qmlRootObject, "updateCellWalls",
+                      Q_ARG(QVariant, mapData.currentX),
+                      Q_ARG(QVariant, mapData.currentY),
+                      Q_ARG(QVariant, mapData.maze[mapData.currentX][mapData.currentY].walls));
+    }
+
+    DrawBackground();
+}
+
+
+void QForm1::on_button3dup_clicked(){
+    mapData.currentY++;
+    mapData.currentY %= 6;
+
+    // --- CONEXIÓN CON EL 3D ---
+    if (m_qmlRootObject) { // Tu puntero raíz que carga road3D.qml
+
+        // 1. Actualizamos posición y dirección.
+        // Esto mueve el 'robotPivot' automáticamente por los bindings que hiciste
+        m_qmlRootObject->setProperty("robotLogX", mapData.currentX);
+        m_qmlRootObject->setProperty("robotLogY", mapData.currentY);
+        m_qmlRootObject->setProperty("robotDir", mapData.currentDirection);
+
+        // 2. Ejecutamos la función de JavaScript en el QML para crear las paredes
+        QMetaObject::invokeMethod(m_qmlRootObject, "updateCellWalls",
+                      Q_ARG(QVariant, mapData.currentX),
+                      Q_ARG(QVariant, mapData.currentY),
+                      Q_ARG(QVariant, mapData.maze[mapData.currentX][mapData.currentY].walls));
+    }
+}
+
+
+void QForm1::on_button3dright_clicked(){
+    mapData.currentX++;
+    mapData.currentX %= 8;
+
+    // --- CONEXIÓN CON EL 3D ---
+    if (m_qmlRootObject) { // Tu puntero raíz que carga road3D.qml
+
+        // 1. Actualizamos posición y dirección.
+        // Esto mueve el 'robotPivot' automáticamente por los bindings que hiciste
+        m_qmlRootObject->setProperty("robotLogX", mapData.currentX);
+        m_qmlRootObject->setProperty("robotLogY", mapData.currentY);
+        m_qmlRootObject->setProperty("robotDir", mapData.currentDirection);
+
+        // 2. Ejecutamos la función de JavaScript en el QML para crear las paredes
+        QMetaObject::invokeMethod(m_qmlRootObject, "updateCellWalls",
+                      Q_ARG(QVariant, mapData.currentX),
+                      Q_ARG(QVariant, mapData.currentY),
+                      Q_ARG(QVariant, mapData.maze[mapData.currentX][mapData.currentY].walls));
+    }
+}
+
+
+void QForm1::on_button3drotate_clicked(){
+    calculateFloodFill();
+    // mapData.maze[mapData.currentX][mapData.currentY].walls = ;
+    mapData.currentDirection++;
+    mapData.currentDirection %= 4;
+
+    // mapData.maze[mapData.currentX][mapData.currentY].visited = 1;
+
+    if (m_qmlRootObject) { // Tu puntero raíz que carga road3D.qml
+
+        // 1. Actualizamos posición y dirección.
+        // Esto mueve el 'robotPivot' automáticamente por los bindings que hiciste
+        m_qmlRootObject->setProperty("robotLogX", mapData.currentX);
+        m_qmlRootObject->setProperty("robotLogY", mapData.currentY);
+        m_qmlRootObject->setProperty("robotDir", mapData.currentDirection);
+
+        // 2. Ejecutamos la función de JavaScript en el QML para crear las paredes
+        QMetaObject::invokeMethod(m_qmlRootObject, "updateCellWalls",
+                      Q_ARG(QVariant, mapData.currentX),
+                      Q_ARG(QVariant, mapData.currentY),
+                      Q_ARG(QVariant, mapData.maze[mapData.currentX][mapData.currentY].walls));
+    }
+}
+
+void QForm1::onQmlTargetChanged() {
+    if (!m_qmlRootObject) return;
+
+    // 1. Leemos los valores que el QML guardó tras tu clic izquierdo
+    int targetX = m_qmlRootObject->property("robotTargetX").toInt();
+    int targetY = m_qmlRootObject->property("robotTargetY").toInt();
+
+    // 2. Bloqueamos señales, actualizamos UI, desbloqueamos
+    ui->spinBoxTargetX->blockSignals(true);
+    ui->spinBoxTargetY->blockSignals(true);
+
+    ui->spinBoxTargetX->setValue(targetX);
+    ui->spinBoxTargetY->setValue(targetY);
+
+    ui->spinBoxTargetX->blockSignals(false);
+    ui->spinBoxTargetY->blockSignals(false);
+}
+
+void QForm1::onQmlStartChanged() {
+    if (!m_qmlRootObject) return;
+
+    // 1. Leemos los valores tras tu clic derecho (posición) y clic central (rotación)
+    int startX = m_qmlRootObject->property("robotLogX").toInt();
+    int startY = m_qmlRootObject->property("robotLogY").toInt();
+    int dir = m_qmlRootObject->property("robotDir").toInt();
+
+    // 2. Bloqueamos, actualizamos, desbloqueamos
+    ui->spinBoxStartX->blockSignals(true);
+    ui->spinBoxStartY->blockSignals(true);
+    ui->comboBoxStartDir->blockSignals(true);
+
+    ui->spinBoxStartX->setValue(startX);
+    ui->spinBoxStartY->setValue(startY);
+    ui->comboBoxStartDir->setCurrentIndex(dir);
+
+    ui->spinBoxStartX->blockSignals(false);
+    ui->spinBoxStartY->blockSignals(false);
+    ui->comboBoxStartDir->blockSignals(false);
+}
+
+void QForm1::on_pushButton_clicked()
+{
+    ui->stackedWidget->setCurrentIndex(5);
+}
+
+void QForm1::on_checkBoxAccelerometer_toggled(bool checked)
+{
+    ui->checkBoxGyro->setChecked(checked);
+}
+
+
+void QForm1::on_checkBoxGyro_toggled(bool checked){
+    ui->checkBoxAccelerometer->setChecked(checked);
+}
+
+void QForm1::reconstructShortestPath() {
+    if (!m_qmlRootObject) return;
+
+    QVariantList pathPoints;
+    int currX = mapData.currentX;
+    int currY = mapData.currentY;
+
+    // Evitamos bucles infinitos si no hay camino
+    int maxSteps = 48;
+    int steps = 0;
+
+    while ((currX != mapData.targetX || currY != mapData.targetY) && steps < maxSteps) {
+        // Guardamos el punto actual
+        QVariantMap point;
+        point["x"] = currX;
+        point["y"] = currY;
+        pathPoints.append(point);
+
+        // Lógica de vecindad: buscar el menor peso entre los vecinos sin muros
+        int bestWeight = mapData.maze[currX][currY].cost;
+        int nextX = currX;
+        int nextY = currY;
+
+        // --- REVISAR NORTE ---
+        if (!(mapData.maze[currX][currY].walls & (1 << 0)) && currY > 0) {
+            if (mapData.maze[currX][currY+1].cost < bestWeight) {
+                bestWeight = mapData.maze[currX][currY+1].cost;
+                nextX = currX; nextY = currY + 1;
+            }
+        }
+
+        // --- REVISAR ESTE --- (Bit 1, X aumenta)
+        if (!(mapData.maze[currX][currY].walls & (1 << 1)) && currX < 7) {
+            if (mapData.maze[currX+1][currY].cost < bestWeight) {
+                bestWeight = mapData.maze[currX+1][currY].cost;
+                nextX = currX + 1; nextY = currY;
+            }
+        }
+
+        // --- REVISAR SUR --- (Bit 2, Y aumenta)
+        if (!(mapData.maze[currX][currY].walls & (1 << 2)) && currY < 5) {
+            if (mapData.maze[currX][currY-1].cost < bestWeight) {
+                bestWeight = mapData.maze[currX][currY-1].cost;
+                nextX = currX; nextY = currY - 1;
+            }
+        }
+
+        // --- REVISAR OESTE --- (Bit 3, X disminuye)
+        if (!(mapData.maze[currX][currY].walls & (1 << 3)) && currX > 0) {
+            if (mapData.maze[currX-1][currY].cost < bestWeight) {
+                bestWeight = mapData.maze[currX-1][currY].cost;
+                nextX = currX - 1; nextY = currY;
+            }
+        }
+
+        if (nextX == currX && nextY == currY) break; // Bloqueado o llegó
+
+        currX = nextX;
+        currY = nextY;
+        steps++;
+    }
+
+    // Enviamos el array al QML
+    QMetaObject::invokeMethod(m_qmlRootObject, "updatePath", Q_ARG(QVariant, QVariant::fromValue(pathPoints)));
+}
