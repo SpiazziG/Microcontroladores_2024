@@ -1,5 +1,6 @@
 release/dialog.o
 release/main.o
+release/qcustomplot.o
 release/qform1.o
 release/qpaintbox.o
 release/3d_road3D_qml.o
@@ -14,5 +15,6 @@ release/img_Screen01.ui_qml.o
 release/qmlcache_loader.o
 release/qrc_resources_qmlcache.o
 release/moc_dialog.o
+release/moc_qcustomplot.o
 release/moc_qform1.o
 release/moc_qpaintbox.o

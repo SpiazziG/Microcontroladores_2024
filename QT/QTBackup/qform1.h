@@ -19,6 +19,9 @@
 #include <QDebug>
 #include <QPixmap>
 #include <QCursor>
+#include <QElapsedTimer>
+#include <QVector>
+#include <QPointF>
 
 typedef union{
     uint8_t     u8[4];
@@ -177,6 +180,12 @@ private slots:
 
     void reconstructShortestPath();
 
+    void on_buttonFindBlackCells_clicked();
+
+    void on_buttonInfrared_clicked();
+
+    void on_resetMaze_requested();
+
 protected:
     void keyPressEvent(QKeyEvent *event) override;
 
@@ -233,6 +242,9 @@ private:
 
     Dialog *dialog;
 
+    QElapsedTimer m_telemetryTimer;
+    QVector<QPointF> m_historyIR[8];
+
     typedef enum {
         // Communication commands
         ACKNOWLEDGE         = 0x0D,
@@ -275,6 +287,7 @@ private:
         // 0xE_ : Robot and Map info
         // Maze State
         SET_ROBOT_MODE          = 0xE0,
+        GET_SPECIAL_CELL        = 0xE5,
         GET_CURRENT_ACTION      = 0xEA,
         SET_MAZE_TARGET         = 0xEC,
         SET_MAZE_START          = 0xED,

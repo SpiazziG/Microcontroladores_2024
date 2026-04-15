@@ -42,9 +42,13 @@ QForm1::QForm1(QWidget *parent)
                 // --- CONEXIONES DE LOS BOTONES DEL FLYOUT ---
                 connect(m_qmlRootObject, SIGNAL(reqSetStart()), this, SLOT(on_buttonSetStart_clicked()));
                 connect(m_qmlRootObject, SIGNAL(reqSetTarget()), this, SLOT(on_buttonSetTargetXY_clicked()));
-                connect(m_qmlRootObject, SIGNAL(reqStartRun()), this, SLOT(on_buttonStartRun_clicked()));
+                // connect(m_qmlRootObject, SIGNAL(reqStartRun()), this, SLOT(on_buttonStartRun_clicked()));
                 connect(m_qmlRootObject, SIGNAL(reqStartExploration()), this, SLOT(on_buttonStartExploration_clicked()));
                 connect(m_qmlRootObject, SIGNAL(reqStopRobot()), this, SLOT(on_buttonStopRobot_clicked()));
+                connect(m_qmlRootObject, SIGNAL(reqFindBlackCells()), this, SLOT(on_buttonFindBlackCells_clicked()));
+
+                connect(m_qmlRootObject, SIGNAL(reqResetMaze()), this, SLOT(on_resetMaze_requested()));
+                connect(m_qmlRootObject, SIGNAL(reqToggleFullScreen()), this, SLOT(on_toggleFullScreen_requested()));
                 // Opcional: puedes hacer una prueba inicial aquí
                 // qInfo() << "QML cargado con éxito. Intentando una actualización inicial...";
                 // this->updateFrontSensor(true); // Prueba para ver si funciona
@@ -109,13 +113,23 @@ QForm1::QForm1(QWidget *parent)
 
     header=0;
     connect(QSerialPort1,&QSerialPort::readyRead, this,&QForm1::OnRxChar);
-    connect(dialog, &Dialog::powEng, this, &QForm1::EngineTest);
-    connect(this, &QForm1::maxMinValues, dialog, &Dialog::displayMaxMin);
+    // connect(dialog, &Dialog::powEng, this, &QForm1::EngineTest);
+    // connect(this, &QForm1::maxMinValues, dialog, &Dialog::displayMaxMin);
+
+    connect(dialog, &Dialog::requestResetTimer, this, [this](){
+        m_telemetryTimer.restart();
+
+        // También limpiamos el historial maestro que guarda QForm1
+        for(int i=0; i<8; i++) m_historyIR[i].clear();
+    });
 
     QPaintBox1 = new QPaintBox(ui->widgetRadar->width(), ui->widgetRadar->height()+10, ui->widgetRadar);
+
     QTimer1 = new QTimer(this);
     connect(QTimer1, &QTimer::timeout, this, &QForm1::OnQTimer1);
     QTimer1->start(10);
+
+    m_telemetryTimer.start();
 
     ui->labelHour->setText(QTime::currentTime().toString("hh:mm:ss"));
     ui->stackedWidget->setCurrentIndex(0);
@@ -152,7 +166,7 @@ void QForm1::Initialize(){
     mapData.currentY = 0;
 
     mapData.maze[0][0].visited = 1;
-    mapData.maze[0][0].walls = 0x0E;
+    mapData.maze[0][0].walls = 0;
 }
 
 bool QForm1::eventFilter(QObject *watched, QEvent *event){
@@ -240,8 +254,8 @@ void QForm1::OnQTimer1(){
         telemetryState++;
 
         // Aumentamos el límite para que pase por los 4 estados (del 0 al 3)
-        if (telemetryState > 3) {
-            telemetryState = 0;
+        if (telemetryState > 1) {
+            telemetryState = 1;
         }
     } else {
         time100ms--;
@@ -502,12 +516,15 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         ui->plainTextEdit->appendPlainText("NO CMD");
         break;
     case GET_IR_SENSORS:
+    {
         w.u32 = 0;
         uint8_t baseIndex;
         int16_t leftIR, rightIR;
         int16_t centerDifference;
         double normalizedMovement;
         double newCarPos;
+
+        double currentTime = m_telemetryTimer.elapsed() / 1000.0;
 
         rightIR = (rxBuf[2] << 8) | rxBuf[1];
         leftIR = (rxBuf[14] << 8) | rxBuf[13];
@@ -529,6 +546,14 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
             w.u8[0] = rxBuf[baseIndex];
             w.u8[1] = rxBuf[baseIndex + 1];
             int value = w.i32; // El valor de 0 a 4095
+
+            m_historyIR[i].append(QPointF(currentTime, value));
+
+            if (dialog->isVisible()) {
+                // ESTE NOMBRE DEBE COINCIDIR EXACTAMENTE CON EL CHECKBOX
+                QString signalName = QString("IR Sensor %1").arg(i + 1);
+                dialog->addLiveTelemetry(signalName, currentTime, value);
+            }
 
             QString labelName = QString("labelValueIR%1").arg(i + 1);
             QLabel* label = this->findChild<QLabel*>(labelName);
@@ -588,7 +613,12 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         //     if(label)
         //         label->setText(QString("%1").arg(w.i32, 4, 10, QChar(' ')));
         // }
+
+        if (dialog->isVisible()) {
+            dialog->refreshPlot();
+        }
         break;
+    }
     case GET_MPU_DATA:
         static float pitchgy, rollgy, pitchac, rollac;
         w.i32 = 0;
@@ -797,6 +827,16 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         //     ui->labelLeftIntersectionState->setText("←");
         //     ui->labelLeftIntersectionState->setStyleSheet("color: rgb(50, 205, 50); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
         // }
+    }
+        break;
+    case GET_SPECIAL_CELL:
+    {
+        uint8_t xRecibida = rxBuf[1];
+        uint8_t yRecibida = rxBuf[2];
+
+        QMetaObject::invokeMethod(m_qmlRootObject, "addBlackCell",
+                                  Q_ARG(QVariant, xRecibida),
+                                  Q_ARG(QVariant, yRecibida));
     }
         break;
     case GET_MAP_INFO:
@@ -1962,12 +2002,11 @@ void QForm1::on_buttonStopRobot_clicked(){
 }
 
 void QForm1::on_buttonStartRun_clicked(){
-    uint8_t buf[2];
-    buf[0] = SET_ROBOT_MODE;
-    buf[1] = 1; // MAZE RUNNER
-    SendCMD(buf, 2);
+    // uint8_t buf[2];
+    // buf[0] = SET_ROBOT_MODE;
+    // buf[1] = 1; // MAZE RUNNER
+    // SendCMD(buf, 2);
 }
-
 
 void QForm1::on_buttonSetStart_clicked(){
     uint8_t buf[4];
@@ -2126,67 +2165,128 @@ void QForm1::on_checkBoxGyro_toggled(bool checked){
 }
 
 void QForm1::reconstructShortestPath() {
-    if (!m_qmlRootObject) return;
+    // if (!m_qmlRootObject) return;
 
-    QVariantList pathPoints;
-    int currX = mapData.currentX;
-    int currY = mapData.currentY;
+    // QVariantList pathPoints;
+    // int currX = mapData.currentX;
+    // int currY = mapData.currentY;
 
-    // Evitamos bucles infinitos si no hay camino
-    int maxSteps = 48;
-    int steps = 0;
+    // // Evitamos bucles infinitos si no hay camino
+    // int maxSteps = 48;
+    // int steps = 0;
 
-    while ((currX != mapData.targetX || currY != mapData.targetY) && steps < maxSteps) {
-        // Guardamos el punto actual
-        QVariantMap point;
-        point["x"] = currX;
-        point["y"] = currY;
-        pathPoints.append(point);
+    // while ((currX != mapData.targetX || currY != mapData.targetY) && steps < maxSteps) {
+    //     // Guardamos el punto actual
+    //     QVariantMap point;
+    //     point["x"] = currX;
+    //     point["y"] = currY;
+    //     pathPoints.append(point);
 
-        // Lógica de vecindad: buscar el menor peso entre los vecinos sin muros
-        int bestWeight = mapData.maze[currX][currY].cost;
-        int nextX = currX;
-        int nextY = currY;
+    //     // Lógica de vecindad: buscar el menor peso entre los vecinos sin muros
+    //     int bestWeight = mapData.maze[currX][currY].cost;
+    //     int nextX = currX;
+    //     int nextY = currY;
 
-        // --- REVISAR NORTE ---
-        if (!(mapData.maze[currX][currY].walls & (1 << 0)) && currY > 0) {
-            if (mapData.maze[currX][currY+1].cost < bestWeight) {
-                bestWeight = mapData.maze[currX][currY+1].cost;
-                nextX = currX; nextY = currY + 1;
-            }
-        }
+    //     // --- REVISAR NORTE ---
+    //     if (!(mapData.maze[currX][currY].walls & (1 << 0)) && currY > 0) {
+    //         if (mapData.maze[currX][currY+1].cost < bestWeight) {
+    //             bestWeight = mapData.maze[currX][currY+1].cost;
+    //             nextX = currX; nextY = currY + 1;
+    //         }
+    //     }
 
-        // --- REVISAR ESTE --- (Bit 1, X aumenta)
-        if (!(mapData.maze[currX][currY].walls & (1 << 1)) && currX < 7) {
-            if (mapData.maze[currX+1][currY].cost < bestWeight) {
-                bestWeight = mapData.maze[currX+1][currY].cost;
-                nextX = currX + 1; nextY = currY;
-            }
-        }
+    //     // --- REVISAR ESTE --- (Bit 1, X aumenta)
+    //     if (!(mapData.maze[currX][currY].walls & (1 << 1)) && currX < 7) {
+    //         if (mapData.maze[currX+1][currY].cost < bestWeight) {
+    //             bestWeight = mapData.maze[currX+1][currY].cost;
+    //             nextX = currX + 1; nextY = currY;
+    //         }
+    //     }
 
-        // --- REVISAR SUR --- (Bit 2, Y aumenta)
-        if (!(mapData.maze[currX][currY].walls & (1 << 2)) && currY < 5) {
-            if (mapData.maze[currX][currY-1].cost < bestWeight) {
-                bestWeight = mapData.maze[currX][currY-1].cost;
-                nextX = currX; nextY = currY - 1;
-            }
-        }
+    //     // --- REVISAR SUR --- (Bit 2, Y aumenta)
+    //     if (!(mapData.maze[currX][currY].walls & (1 << 2)) && currY < 5) {
+    //         if (mapData.maze[currX][currY-1].cost < bestWeight) {
+    //             bestWeight = mapData.maze[currX][currY-1].cost;
+    //             nextX = currX; nextY = currY - 1;
+    //         }
+    //     }
 
-        // --- REVISAR OESTE --- (Bit 3, X disminuye)
-        if (!(mapData.maze[currX][currY].walls & (1 << 3)) && currX > 0) {
-            if (mapData.maze[currX-1][currY].cost < bestWeight) {
-                bestWeight = mapData.maze[currX-1][currY].cost;
-                nextX = currX - 1; nextY = currY;
-            }
-        }
+    //     // --- REVISAR OESTE --- (Bit 3, X disminuye)
+    //     if (!(mapData.maze[currX][currY].walls & (1 << 3)) && currX > 0) {
+    //         if (mapData.maze[currX-1][currY].cost < bestWeight) {
+    //             bestWeight = mapData.maze[currX-1][currY].cost;
+    //             nextX = currX - 1; nextY = currY;
+    //         }
+    //     }
 
-        if (nextX == currX && nextY == currY) break; // Bloqueado o llegó
+    //     if (nextX == currX && nextY == currY) break; // Bloqueado o llegó
 
-        currX = nextX;
-        currY = nextY;
-        steps++;
+    //     currX = nextX;
+    //     currY = nextY;
+    //     steps++;
+    // }
+
+    // // Enviamos el array al QML
+    // QMetaObject::invokeMethod(m_qmlRootObject, "updatePath", Q_ARG(QVariant, QVariant::fromValue(pathPoints)));
+}
+
+void QForm1::on_buttonFindBlackCells_clicked(){
+    uint8_t buf[2];
+    buf[0] = SET_ROBOT_MODE;
+    buf[1] = 1; // MODO 1: Exploración de celdas negras
+    SendCMD(buf, 2);
+
+    // Opcional: Actualizamos el texto de estado en QML
+    // (Podrías agregar un "FINDING CELLS" a tu switch en QML y poner ese número aquí)
+}
+
+void QForm1::on_buttonInfrared_clicked(){
+    // 1. Prepare the data map
+    QMap<QString, QVector<QPointF>> irChartData;
+
+    // Pass the 8 vectors, naming each signal
+    for(int i = 0; i < 8; i++) {
+        QString signalName = QString("IR Sensor %1").arg(i + 1);
+        irChartData.insert(signalName, m_historyIR[i]);
     }
 
-    // Enviamos el array al QML
-    QMetaObject::invokeMethod(m_qmlRootObject, "updatePath", Q_ARG(QVariant, QVariant::fromValue(pathPoints)));
+    // 2. Open your EXISTING member Dialog
+    dialog->setWindowTitle("Infrared Sensors Analysis");
+
+    // Inject the data and show
+    dialog->setSignalData(irChartData);
+    dialog->show();
+}
+
+void QForm1::on_resetMaze_requested() {
+    // 1. LIMPIEZA LÓGICA (C++)
+    // Asumiendo que mapData.maze es un array de structs, lo ponemos a 0
+    // Opcional: Puedes hacer un doble bucle for si necesitas setear el cost a 255
+    for(int x = 0; x < 16; x++) {
+        for(int y = 0; y < 16; y++) {
+            mapData.maze[x][y].walls = 0; // Sin muros
+            mapData.maze[x][y].cost = 255; // Sin explorar
+        }
+    }
+
+    mapData.targetX = 0;
+    mapData.targetY = 0;
+
+    // 2. LIMPIEZA VISUAL (QML)
+    // Llamamos a la función "escoba" que creamos en QML
+    if (m_qmlRootObject) {
+        QMetaObject::invokeMethod(m_qmlRootObject, "clearMazeData");
+    }
+
+    // 3. COMUNICACIÓN FÍSICA (Opcional)
+    // Si necesitas avisarle al robot real que borre su memoria RAM:
+    /*
+    uint8_t buf[2];
+    buf[0] = COMMAND_RESET_MEMORY; // El byte que uses en tu protocolo
+    buf[1] = 0;
+    SendCMD(buf, 2);
+    */
+
+    // Forzamos un redibujado de la vista 2D por si acaso
+    // DrawBackground();
 }

@@ -1,5 +1,6 @@
 debug/dialog.o
 debug/main.o
+debug/qcustomplot.o
 debug/qform1.o
 debug/qpaintbox.o
 debug/3d_road3D_qml.o
@@ -14,5 +15,6 @@ debug/img_Screen01.ui_qml.o
 debug/qmlcache_loader.o
 debug/qrc_resources_qmlcache.o
 debug/moc_dialog.o
+debug/moc_qcustomplot.o
 debug/moc_qform1.o
 debug/moc_qpaintbox.o

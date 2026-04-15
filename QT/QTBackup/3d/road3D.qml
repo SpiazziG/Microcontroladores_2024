@@ -29,9 +29,12 @@ Rectangle {
 
     signal reqSetStart()
     signal reqSetTarget()
-    signal reqStartRun()
+    signal reqFindBlackCells()
     signal reqStartExploration()
     signal reqStopRobot()
+
+    signal reqResetMaze()
+    // signal reqToggleFullScreen()
 
     property int activeCameraIndex: 0 // 0: Orbit, 1: Follow, 2: POV
 
@@ -47,6 +50,28 @@ Rectangle {
 
     property int robotAction: 0      // 0: IDLE, 1: FOLLOW_WALL, etc.
     property int runTimeSeconds: 0
+
+    ListModel { id: blackCellsModel }
+
+    function clearMazeData() {
+        mazeWallsModel.clear();
+        cellWeightsModel.clear();
+        pathTraceModel.clear();
+        blackCellsModel.clear();
+
+        // Escondemos la meta visualmente
+        maze3D.robotTargetX = -1;
+        maze3D.robotTargetY = -1;
+    }
+
+    function addBlackCell(x, y) {
+        var uniqueId = "blk_" + x + "_" + y;
+        // Evitamos pintar dos veces la misma celda
+        for (var i = 0; i < blackCellsModel.count; i++) {
+            if (blackCellsModel.get(i).uid === uniqueId) return;
+        }
+        blackCellsModel.append({ "uid": uniqueId, "px": x, "py": y });
+    }
 
     function formatTime(totalSeconds) {
         var m = Math.floor(totalSeconds / 60);
@@ -68,6 +93,13 @@ Rectangle {
         }
     }
 
+    // Shortcut {
+    //     sequence: "F"
+    //     onActivated: {
+    //         maze3D.reqToggleFullScreen();
+    //     }
+    // }
+
     // --- ATAJO DE TECLADO: RESTABLECER CÁMARAS ('R') ---
     Shortcut {
         sequence: "R" // Funciona con 'r' o 'R'
@@ -81,6 +113,14 @@ Rectangle {
             // 2. Restablecemos la cámara de persecución
             followCameraPivot.eulerRotation = Qt.vector3d(-35, 90, 0);
             followCamera.position = Qt.vector3d(0, 0, 85);
+        }
+    }
+
+    Shortcut {
+        sequence: "F5"
+        onActivated: {
+            // console.log("F5 presionado: Solicitando reinicio de laberinto...");
+            maze3D.reqResetMaze();
         }
     }
 
@@ -527,6 +567,24 @@ Rectangle {
                         position: Qt.vector3d(0, 0, 0)
                         // position: Qt.vector3d(0, 0.48, -0.34) // ¡Tus valores!
                         scale: Qt.vector3d(100, 100, 100)
+                    }
+                }
+            }
+
+            // D. Celdas Pintadas de Negro
+            Repeater3D {
+                model: blackCellsModel
+                delegate: Model {
+                    source: "#Rectangle" // Un plano simple
+                    x: -71.75 + (model.px * 20.5)
+                    z: 51.25 - (model.py * 20.5)
+                    y: 0.15 // A ras del suelo, un poco por debajo de los números
+                    eulerRotation.x: -90 // Acostado sobre el piso
+                    scale: Qt.vector3d(0.205, 0.205, 0.205) // Tamaño exacto de tu celda
+
+                    materials: PrincipledMaterial {
+                        baseColor: "#050505" // Un negro casi puro
+                        roughness: 0.9 // Muy rugoso para que no refleje la luz como un espejo
                     }
                 }
             }
@@ -1010,14 +1068,26 @@ Rectangle {
                         MouseArea { anchors.fill: parent; onClicked: maze3D.reqSetTarget() }
                     }
 
-                    // 3. START RUN
+                    // 4. FIND BLACK CELLS (Modo Búsqueda de Celdas)
                     Rectangle {
                         width: parent.width; height: 32; radius: 3
-                        color: btnStartRunHover.hovered ? "#00965C" : "#393F44"
-                        Text { anchors.centerIn: parent; text: "START RUN"; color: "white"; font.family: "Century Gothic"; font.pixelSize: 11; font.bold: true }
-                        HoverHandler { id: btnStartRunHover }
-                        MouseArea { anchors.fill: parent; onClicked: maze3D.reqStartRun() }
+                        color: btnFindBlackHover.hovered ? "#00965C" : "#393F44"
+                        Text {
+                            anchors.centerIn: parent; text: "FIND BLACK CELLS"
+                            color: "white"; font.family: "Century Gothic"; font.pixelSize: 10; font.bold: true
+                        }
+                        HoverHandler { id: btnFindBlackHover }
+                        MouseArea { anchors.fill: parent; onClicked: maze3D.reqFindBlackCells() }
                     }
+
+                    // // 3. START RUN
+                    // Rectangle {
+                    //     width: parent.width; height: 32; radius: 3
+                    //     color: btnStartRunHover.hovered ? "#00965C" : "#393F44"
+                    //     Text { anchors.centerIn: parent; text: "START RUN"; color: "white"; font.family: "Century Gothic"; font.pixelSize: 11; font.bold: true }
+                    //     HoverHandler { id: btnStartRunHover }
+                    //     MouseArea { anchors.fill: parent; onClicked: maze3D.reqStartRun() }
+                    // }
 
                     // 4. START EXPLORATION
                     Rectangle {

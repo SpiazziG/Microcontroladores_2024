@@ -834,6 +834,46 @@ color: rgb(255, 165, 0);</string>
              </property>
             </widget>
            </item>
+           <item row="0" column="2">
+            <widget class="QCheckBox" name="checkBoxAccelerometer">
+             <property name="layoutDirection">
+              <enum>Qt::RightToLeft</enum>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">/* 1. El texto y el margen que ya tenías */
+QCheckBox {
+    font: 13pt &quot;Century Gothic&quot;;
+    font-weight: bold;
+    color: rgb(222, 223, 225);
+    background-color: transparent;
+    margin-right: 8px;
+}
+
+/* 2. El recuadro vacío (apagado) */
+QCheckBox::indicator {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #393F44; /* El gris de tus bordes */
+    border-radius: 3px;
+    background-color: #22262a; /* El color de tu powerBar */
+}
+
+/* 3. El recuadro cuando pasas el mouse por encima (hover) */
+QCheckBox::indicator:hover {
+    border: 2px solid #00FA9A; /* Se ilumina en verde menta */
+}
+
+/* 4. El recuadro cuando está activado (tildado) */
+QCheckBox::indicator:checked {
+    background-color: #00FA9A; /* Se llena de verde menta */
+    border: 2px solid #00FA9A;
+}</string>
+             </property>
+             <property name="text">
+              <string>Read</string>
+             </property>
+            </widget>
+           </item>
            <item row="6" column="0" colspan="3">
             <widget class="QLabel" name="labelPosition">
              <property name="sizePolicy">
@@ -1081,482 +1121,6 @@ background-color: transparent;</string>
              </property>
              <property name="indent">
               <number>10</number>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QCheckBox" name="checkBoxAccelerometer">
-             <property name="layoutDirection">
-              <enum>Qt::RightToLeft</enum>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">/* 1. El texto y el margen que ya tenías */
-QCheckBox {
-    font: 13pt &quot;Century Gothic&quot;;
-    font-weight: bold;
-    color: rgb(222, 223, 225);
-    background-color: transparent;
-    margin-right: 8px;
-}
-
-/* 2. El recuadro vacío (apagado) */
-QCheckBox::indicator {
-    width: 14px;
-    height: 14px;
-    border: 2px solid #393F44; /* El gris de tus bordes */
-    border-radius: 3px;
-    background-color: #22262a; /* El color de tu powerBar */
-}
-
-/* 3. El recuadro cuando pasas el mouse por encima (hover) */
-QCheckBox::indicator:hover {
-    border: 2px solid #00FA9A; /* Se ilumina en verde menta */
-}
-
-/* 4. El recuadro cuando está activado (tildado) */
-QCheckBox::indicator:checked {
-    background-color: #00FA9A; /* Se llena de verde menta */
-    border: 2px solid #00FA9A;
-}</string>
-             </property>
-             <property name="text">
-              <string>Read</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="2" column="3">
-         <widget class="QFrame" name="frameInfrared">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QWidget#frameInfrared{
-border: 2px solid rgb(150, 150, 150);
-background-color: rgb(57, 63, 68);
-border-radius: 5px;
-}</string>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::NoFrame</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Plain</enum>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_6">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item row="5" column="2">
-            <widget class="QLabel" name="labelValueIR8">
-             <property name="styleSheet">
-              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
-font: 13pt &quot;Century Gothic&quot;;
-font-weight: bold;
-color: rgb(222, 223, 225);
-background-color: transparent;</string>
-             </property>
-             <property name="text">
-              <string>0</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="2">
-            <widget class="QLabel" name="labelNameIR8">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
-font: 13pt &quot;Century Gothic&quot;;
-font-weight: bold;
-color: rgb(96, 100, 103);
-background-color: transparent;</string>
-             </property>
-             <property name="text">
-              <string>8</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="labelNameIR7">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
-font: 13pt &quot;Century Gothic&quot;;
-font-weight: bold;
-color: rgb(96, 100, 103);
-background-color: transparent;</string>
-             </property>
-             <property name="text">
-              <string>7</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="labelValueIR7">
-             <property name="styleSheet">
-              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
-font: 13pt &quot;Century Gothic&quot;;
-font-weight: bold;
-color: rgb(222, 223, 225);
-background-color: transparent;</string>
-             </property>
-             <property name="text">
-              <string>0</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="labelNameIR6">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
-font: 13pt &quot;Century Gothic&quot;;
-font-weight: bold;
-color: rgb(96, 100, 103);
-background-color: transparent;</string>
-             </property>
-             <property name="text">
-              <string>6</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="labelValueIR6">
-             <property name="styleSheet">
-              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
-font: 13pt &quot;Century Gothic&quot;;
-font-weight: bold;
-color: rgb(222, 223, 225);
-background-color: transparent;</string>
-             </property>
-             <property name="text">
-              <string>0</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLabel" name="labelNameIR5">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
-font: 13pt &quot;Century Gothic&quot;;
-font-weight: bold;
-color: rgb(96, 100, 103);
-background-color: transparent;</string>
-             </property>
-             <property name="text">
-              <string>5</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QLabel" name="labelValueIR5">
-             <property name="styleSheet">
-              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
-font: 13pt &quot;Century Gothic&quot;;
-font-weight: bold;
-color: rgb(222, 223, 225);
-background-color: transparent;</string>
-             </property>
-             <property name="text">
-              <string>0</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QLabel" name="labelNameIR4">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
-font: 13pt &quot;Century Gothic&quot;;
-font-weight: bold;
-color: rgb(96, 100, 103);
-background: transparent;</string>
-             </property>
-             <property name="text">
-              <string>4</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="QLabel" name="labelNameIR3">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
-font: 13pt &quot;Century Gothic&quot;;
-font-weight: bold;
-color: rgb(96, 100, 103);
-background: transparent;</string>
-             </property>
-             <property name="text">
-              <string>3</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="3">
-            <widget class="QLabel" name="labelValueIR3">
-             <property name="styleSheet">
-              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
-font: 13pt &quot;Century Gothic&quot;;
-font-weight: bold;
-color: rgb(222, 223, 225);
-background-color: transparent;</string>
-             </property>
-             <property name="text">
-              <string>0</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="2">
-            <widget class="QLabel" name="labelValueIR4">
-             <property name="styleSheet">
-              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
-font: 13pt &quot;Century Gothic&quot;;
-font-weight: bold;
-color: rgb(222, 223, 225);
-background-color: transparent;</string>
-             </property>
-             <property name="text">
-              <string>0</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="4">
-            <widget class="QLabel" name="labelValueIR1">
-             <property name="styleSheet">
-              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
-font: 13pt &quot;Century Gothic&quot;;
-font-weight: bold;
-color: rgb(222, 223, 225);
-background-color: transparent;</string>
-             </property>
-             <property name="text">
-              <string>0</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="4">
-            <widget class="QLabel" name="labelNameIR1">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
-font: 13pt &quot;Century Gothic&quot;;
-font-weight: bold;
-color: rgb(96, 100, 103);
-background: transparent;</string>
-             </property>
-             <property name="text">
-              <string>1</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="4">
-            <widget class="QLabel" name="labelNameIR2">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
-font: 13pt &quot;Century Gothic&quot;;
-font-weight: bold;
-color: rgb(96, 100, 103);
-background: transparent;</string>
-             </property>
-             <property name="text">
-              <string>2</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="4">
-            <widget class="QLabel" name="labelValueIR2">
-             <property name="styleSheet">
-              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
-font: 13pt &quot;Century Gothic&quot;;
-font-weight: bold;
-color: rgb(222, 223, 225);
-background-color: transparent;</string>
-             </property>
-             <property name="text">
-              <string>0</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0" colspan="3">
-            <widget class="QLabel" name="labelInfrared">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>25</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>25</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
-font: 13pt &quot;Century Gothic&quot;;
-font-weight: bold;
-color: rgb(222, 223, 225);
-background-color: transparent;
-margin-top: 2px;</string>
-             </property>
-             <property name="text">
-              <string>Infrared</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-             </property>
-             <property name="indent">
-              <number>10</number>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="3" colspan="2">
-            <widget class="QCheckBox" name="checkBoxIR">
-             <property name="layoutDirection">
-              <enum>Qt::RightToLeft</enum>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">/* 1. El texto y el margen que ya tenías */
-QCheckBox {
-    font: 13pt &quot;Century Gothic&quot;;
-    font-weight: bold;
-    color: rgb(222, 223, 225);
-    background-color: transparent;
-    margin-right: 8px;
-}
-
-/* 2. El recuadro vacío (apagado) */
-QCheckBox::indicator {
-    width: 14px;
-    height: 14px;
-    border: 2px solid #393F44; /* El gris de tus bordes */
-    border-radius: 3px;
-    background-color: #22262a; /* El color de tu powerBar */
-}
-
-/* 3. El recuadro cuando pasas el mouse por encima (hover) */
-QCheckBox::indicator:hover {
-    border: 2px solid #00FA9A; /* Se ilumina en verde menta */
-}
-
-/* 4. El recuadro cuando está activado (tildado) */
-QCheckBox::indicator:checked {
-    background-color: #00FA9A; /* Se llena de verde menta */
-    border: 2px solid #00FA9A;
-}</string>
-             </property>
-             <property name="text">
-              <string>Read</string>
              </property>
             </widget>
            </item>
@@ -1894,6 +1458,47 @@ border-radius: 5px;
            <property name="bottomMargin">
             <number>0</number>
            </property>
+           <item row="1" column="1">
+            <widget class="QCheckBox" name="checkBoxEngines">
+             <property name="layoutDirection">
+              <enum>Qt::RightToLeft</enum>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">/* 1. El texto y el margen que ya tenías */
+QCheckBox {
+    font: 13pt &quot;Century Gothic&quot;;
+    font-weight: bold;
+    color: rgb(222, 223, 225);
+    background-color: transparent;
+    margin-right: 8px;
+	margin-top: 2px;
+}
+
+/* 2. El recuadro vacío (apagado) */
+QCheckBox::indicator {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #393F44; /* El gris de tus bordes */
+    border-radius: 3px;
+    background-color: #22262a; /* El color de tu powerBar */
+}
+
+/* 3. El recuadro cuando pasas el mouse por encima (hover) */
+QCheckBox::indicator:hover {
+    border: 2px solid #00FA9A; /* Se ilumina en verde menta */
+}
+
+/* 4. El recuadro cuando está activado (tildado) */
+QCheckBox::indicator:checked {
+    background-color: #00FA9A; /* Se llena de verde menta */
+    border: 2px solid #00FA9A;
+}</string>
+             </property>
+             <property name="text">
+              <string>Read</string>
+             </property>
+            </widget>
+           </item>
            <item row="3" column="0">
             <widget class="QLabel" name="leftEngineLabel">
              <property name="sizePolicy">
@@ -2068,8 +1673,365 @@ margin-top: 2px;</string>
              </property>
             </widget>
            </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="2" column="3">
+         <widget class="QFrame" name="frameInfrared">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QWidget#frameInfrared{
+border: 2px solid rgb(150, 150, 150);
+background-color: rgb(57, 63, 68);
+border-radius: 5px;
+}</string>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Plain</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_6">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
            <item row="1" column="1">
-            <widget class="QCheckBox" name="checkBoxEngines">
+            <widget class="QLabel" name="labelNameIR5">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
+font: 13pt &quot;Century Gothic&quot;;
+font-weight: bold;
+color: rgb(96, 100, 103);
+background-color: transparent;</string>
+             </property>
+             <property name="text">
+              <string>5</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="3">
+            <widget class="QLabel" name="labelValueIR3">
+             <property name="styleSheet">
+              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
+font: 13pt &quot;Century Gothic&quot;;
+font-weight: bold;
+color: rgb(222, 223, 225);
+background-color: transparent;</string>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="4">
+            <widget class="QLabel" name="labelNameIR2">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
+font: 13pt &quot;Century Gothic&quot;;
+font-weight: bold;
+color: rgb(96, 100, 103);
+background: transparent;</string>
+             </property>
+             <property name="text">
+              <string>2</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="4">
+            <widget class="QLabel" name="labelValueIR2">
+             <property name="styleSheet">
+              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
+font: 13pt &quot;Century Gothic&quot;;
+font-weight: bold;
+color: rgb(222, 223, 225);
+background-color: transparent;</string>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="labelValueIR7">
+             <property name="styleSheet">
+              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
+font: 13pt &quot;Century Gothic&quot;;
+font-weight: bold;
+color: rgb(222, 223, 225);
+background-color: transparent;</string>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="2">
+            <widget class="QLabel" name="labelNameIR8">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
+font: 13pt &quot;Century Gothic&quot;;
+font-weight: bold;
+color: rgb(96, 100, 103);
+background-color: transparent;</string>
+             </property>
+             <property name="text">
+              <string>8</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="4">
+            <widget class="QLabel" name="labelNameIR1">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
+font: 13pt &quot;Century Gothic&quot;;
+font-weight: bold;
+color: rgb(96, 100, 103);
+background: transparent;</string>
+             </property>
+             <property name="text">
+              <string>1</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="labelNameIR7">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
+font: 13pt &quot;Century Gothic&quot;;
+font-weight: bold;
+color: rgb(96, 100, 103);
+background-color: transparent;</string>
+             </property>
+             <property name="text">
+              <string>7</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="labelValueIR6">
+             <property name="styleSheet">
+              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
+font: 13pt &quot;Century Gothic&quot;;
+font-weight: bold;
+color: rgb(222, 223, 225);
+background-color: transparent;</string>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="2">
+            <widget class="QLabel" name="labelValueIR4">
+             <property name="styleSheet">
+              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
+font: 13pt &quot;Century Gothic&quot;;
+font-weight: bold;
+color: rgb(222, 223, 225);
+background-color: transparent;</string>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="4">
+            <widget class="QLabel" name="labelValueIR1">
+             <property name="styleSheet">
+              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
+font: 13pt &quot;Century Gothic&quot;;
+font-weight: bold;
+color: rgb(222, 223, 225);
+background-color: transparent;</string>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="labelNameIR6">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
+font: 13pt &quot;Century Gothic&quot;;
+font-weight: bold;
+color: rgb(96, 100, 103);
+background-color: transparent;</string>
+             </property>
+             <property name="text">
+              <string>6</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLabel" name="labelValueIR5">
+             <property name="styleSheet">
+              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
+font: 13pt &quot;Century Gothic&quot;;
+font-weight: bold;
+color: rgb(222, 223, 225);
+background-color: transparent;</string>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QLabel" name="labelNameIR4">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
+font: 13pt &quot;Century Gothic&quot;;
+font-weight: bold;
+color: rgb(96, 100, 103);
+background: transparent;</string>
+             </property>
+             <property name="text">
+              <string>4</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="QLabel" name="labelNameIR3">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
+font: 13pt &quot;Century Gothic&quot;;
+font-weight: bold;
+color: rgb(96, 100, 103);
+background: transparent;</string>
+             </property>
+             <property name="text">
+              <string>3</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="2">
+            <widget class="QLabel" name="labelValueIR8">
+             <property name="styleSheet">
+              <string notr="true">font: 13pt &quot;Siemens Sans&quot;;
+font: 13pt &quot;Century Gothic&quot;;
+font-weight: bold;
+color: rgb(222, 223, 225);
+background-color: transparent;</string>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3" colspan="2">
+            <widget class="QCheckBox" name="checkBoxIR">
              <property name="layoutDirection">
               <enum>Qt::RightToLeft</enum>
              </property>
@@ -2081,6 +2043,7 @@ QCheckBox {
     color: rgb(222, 223, 225);
     background-color: transparent;
     margin-right: 8px;
+	margin-top: 2px;
 }
 
 /* 2. El recuadro vacío (apagado) */
@@ -2105,6 +2068,44 @@ QCheckBox::indicator:checked {
              </property>
              <property name="text">
               <string>Read</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="buttonInfrared">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="layoutDirection">
+              <enum>Qt::LeftToRight</enum>
+             </property>
+             <property name="autoFillBackground">
+              <bool>false</bool>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton{
+	font: 13pt &quot;Century Gothic&quot;;
+	font-weight: bold;
+	color: rgb(222, 223, 225);
+	background-color: rgb(57, 63, 68);
+	margin-top: 2px;
+}
+
+QPushButton:hover{
+	color:  #00FA9A;
+}</string>
+             </property>
+             <property name="text">
+              <string>Infrared</string>
+             </property>
+             <property name="autoDefault">
+              <bool>false</bool>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
              </property>
             </widget>
            </item>

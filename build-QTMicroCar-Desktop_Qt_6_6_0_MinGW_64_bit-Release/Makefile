@@ -384,6 +384,7 @@ Makefile: ../QT/QTBackup/QTMicroCar.pro C:/Qt/6.6.0/mingw_64/mkspecs/win32-g++/q
 		C:/Qt/6.6.0/mingw_64/lib/Qt6QuickWidgets.prl \
 		C:/Qt/6.6.0/mingw_64/lib/Qt6Quick.prl \
 		C:/Qt/6.6.0/mingw_64/lib/Qt6OpenGL.prl \
+		C:/Qt/6.6.0/mingw_64/lib/Qt6PrintSupport.prl \
 		C:/Qt/6.6.0/mingw_64/lib/Qt6Widgets.prl \
 		C:/Qt/6.6.0/mingw_64/lib/Qt6Gui.prl \
 		C:/Qt/6.6.0/mingw_64/lib/Qt6SerialPort.prl \
@@ -709,6 +710,7 @@ C:/Qt/6.6.0/mingw_64/mkspecs/features/lex.prf:
 C:/Qt/6.6.0/mingw_64/lib/Qt6QuickWidgets.prl:
 C:/Qt/6.6.0/mingw_64/lib/Qt6Quick.prl:
 C:/Qt/6.6.0/mingw_64/lib/Qt6OpenGL.prl:
+C:/Qt/6.6.0/mingw_64/lib/Qt6PrintSupport.prl:
 C:/Qt/6.6.0/mingw_64/lib/Qt6Widgets.prl:
 C:/Qt/6.6.0/mingw_64/lib/Qt6Gui.prl:
 C:/Qt/6.6.0/mingw_64/lib/Qt6SerialPort.prl:

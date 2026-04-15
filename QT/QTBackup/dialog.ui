@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>549</width>
-    <height>198</height>
+    <width>720</width>
+    <height>401</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -16,323 +16,171 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
+  <property name="maximumSize">
+   <size>
+    <width>720</width>
+    <height>16777215</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(32, 31, 49);</string>
+   <string notr="true">background-color: rgb(33, 37, 40);
+border: 2px solid rgb(150, 150, 150);
+border-radius: 5px;</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="gridLayout" rowstretch="2,1,0">
+   <property name="leftMargin">
+    <number>5</number>
+   </property>
+   <property name="topMargin">
+    <number>5</number>
+   </property>
+   <property name="rightMargin">
+    <number>5</number>
+   </property>
+   <property name="bottomMargin">
+    <number>5</number>
+   </property>
+   <property name="verticalSpacing">
+    <number>5</number>
+   </property>
    <item row="0" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="1" column="1">
-        <widget class="QLabel" name="label_4">
-         <property name="styleSheet">
-          <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-color: rgb(172, 173, 183);</string>
-         </property>
-         <property name="text">
-          <string>SET MIN MS</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QSpinBox" name="spinBox_minMS">
-         <property name="styleSheet">
-          <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-background-color: rgb(0, 0 ,0);
-color: rgb(0, 232, 0);</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QSpinBox" name="spinBox_maxMS">
-         <property name="styleSheet">
-          <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-background-color: rgb(0, 0 ,0);
-color: rgb(0, 232, 0);</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLabel" name="label_5">
-         <property name="styleSheet">
-          <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-color: rgb(172, 173, 183);</string>
-         </property>
-         <property name="text">
-          <string>SET MAX MS</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-color: rgb(172, 173, 183);</string>
-         </property>
-         <property name="text">
-          <string>SERVO ANGLE</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QSpinBox" name="spinBox">
-         <property name="styleSheet">
-          <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-background-color: rgb(0, 0 ,0);
-color: rgb(0, 232, 0);</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QPushButton" name="pushButton">
-         <property name="styleSheet">
-          <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-background-color: rgb(189, 206, 214);
-color: rgb(47, 55, 77);</string>
-         </property>
-         <property name="text">
-          <string>SEND ANGLE</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3" rowspan="3">
-        <layout class="QVBoxLayout" name="verticalLayout_4">
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_5">
-           <item>
-            <widget class="QLabel" name="label_6">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-color: rgb(172, 173, 183);</string>
-             </property>
-             <property name="text">
-              <string>MAX MS</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLCDNumber" name="lcdNumber_maxMS">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">color: rgb(0, 232, 0);
-background-color: rgb(0, 0, 0);</string>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::NoFrame</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Sunken</enum>
-             </property>
-             <property name="digitCount">
-              <number>4</number>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_6">
-           <item>
-            <widget class="QLabel" name="label_7">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-color: rgb(172, 173, 183);</string>
-             </property>
-             <property name="text">
-              <string>MIN MS</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLCDNumber" name="lcdNumber_minMS">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">color: rgb(0, 232, 0);
-background-color: rgb(0, 0, 0);</string>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::NoFrame</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Sunken</enum>
-             </property>
-             <property name="digitCount">
-              <number>4</number>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_read">
-           <property name="styleSheet">
-            <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-background-color: rgb(189, 206, 214);
-color: rgb(47, 55, 77);</string>
-           </property>
-           <property name="text">
-            <string>READ MAX &amp;&amp; MIN</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="3" column="1" colspan="2">
-        <widget class="QPushButton" name="pushButton_maxMS">
-         <property name="styleSheet">
-          <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-background-color: rgb(189, 206, 214);
-color: rgb(47, 55, 77);</string>
-         </property>
-         <property name="text">
-          <string>SET MAX &amp;&amp; MIN MS</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_7">
-         <item>
-          <widget class="QLabel" name="label_3">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-color: rgb(172, 173, 183);</string>
-           </property>
-           <property name="text">
-            <string>ENGINE 2 POWER</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_2">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-color: rgb(172, 173, 183);</string>
-           </property>
-           <property name="text">
-            <string>ENGINE 1 POWER</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_8">
-         <property name="sizeConstraint">
-          <enum>QLayout::SetDefaultConstraint</enum>
-         </property>
-         <item>
-          <widget class="QSpinBox" name="spinBox_2">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-background-color: rgb(0, 0 ,0);
-color: rgb(0, 232, 0);</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="spinBox_3">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-background-color: rgb(0, 0 ,0);
-color: rgb(0, 232, 0);</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_2">
-         <property name="styleSheet">
-          <string notr="true">font: 700 9pt &quot;MS Sans Serif&quot;;
-background-color: rgb(189, 206, 214);
-color: rgb(47, 55, 77);</string>
-         </property>
-         <property name="text">
-          <string>SEND POWER</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
+    <widget class="QFrame" name="framePlot">
+     <property name="styleSheet">
+      <string notr="true">border: 2px solid rgb(150, 150, 150);
+background-color: rgb(57, 63, 68);
+border-radius: 5px;</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Panel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QCustomPlot" name="customPlot" native="true">
+        <property name="styleSheet">
+         <string notr="true">border: 0px;
+border-radius: 5px;</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QListWidget" name="listWidgetSignals">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>115</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Century Gothic</family>
+       <pointsize>13</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QListWidget{
+border: 2px solid rgb(150, 150, 150);
+background-color: rgb(57, 63, 68);
+border-radius: 5px;
+}
+
+/* 1. El texto y el margen que ya tenías */
+QListWidget:item {
+    font: 13pt &quot;Century Gothic&quot;;
+    font-weight: bold;
+    color: rgb(222, 223, 225);
+    background-color: transparent;
+    margin-right: 8px;
+	margin-top: 2px;
+}
+
+/* 2. El recuadro vacío (apagado) */
+QListWidget::indicator {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #393F44; /* El gris de tus bordes */
+    border-radius: 3px;
+    background-color: #22262a; /* El color de tu powerBar */
+}
+
+/* 3. El recuadro cuando pasas el mouse por encima (hover) */
+QListWidget::indicator:hover {
+    border: 2px solid #00FA9A; /* Se ilumina en verde menta */
+}
+
+/* 4. El recuadro cuando está activado (tildado) */
+QListWidget::indicator:checked {
+    background-color: #00FA9A; /* Se llena de verde menta */
+    border: 2px solid #00FA9A;
+}</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="layoutMode">
+      <enum>QListView::SinglePass</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QPushButton" name="buttonClear">
+     <property name="styleSheet">
+      <string notr="true">font: 12pt &quot;Century Gothic&quot;;
+font-weight: bold;
+background-color: rgb(57, 63, 68);
+color: rgb(227, 227, 229);</string>
+     </property>
+     <property name="text">
+      <string>Clear</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header>qcustomplot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

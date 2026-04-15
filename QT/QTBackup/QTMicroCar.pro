@@ -1,4 +1,4 @@
-QT       += core gui serialport network quick quickwidgets qml
+QT       += core gui serialport network quick quickwidgets qml widgets printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -11,11 +11,13 @@ CONFIG += c++17
 SOURCES += \
     dialog.cpp \
     main.cpp \
+    qcustomplot.cpp \
     qform1.cpp \
     qpaintbox.cpp
 
 HEADERS += \
     dialog.h \
+    qcustomplot.h \
     qform1.h \
     qpaintbox.h
 
