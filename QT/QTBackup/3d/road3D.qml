@@ -41,6 +41,8 @@ Rectangle {
     property int robotLogX: 0
     property int robotLogY: 0
     property int robotDir: 0 // 0: N, 1: E, 2: S, 3: W
+    property int startX: 0
+    property int startY: 0
     property int robotTargetX: 0
     property int robotTargetY: 0
     property int maxMazeCost: 1
@@ -50,6 +52,7 @@ Rectangle {
 
     property int robotAction: 0      // 0: IDLE, 1: FOLLOW_WALL, etc.
     property int runTimeSeconds: 0
+    property int operationMode: 0
 
     ListModel { id: blackCellsModel }
 
@@ -77,6 +80,58 @@ Rectangle {
         var m = Math.floor(totalSeconds / 60);
         var s = totalSeconds % 60;
         return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+    }
+
+    focus: true
+
+    // 2. MANEJADOR DE EVENTOS DE TECLADO
+    Keys.onPressed: (event) => {
+
+        // --- MOVIMIENTO (Flechas) ---
+        if (event.key === Qt.Key_Up) {
+            if (maze3D.robotLogY < 5) maze3D.robotLogY++; // Límite Norte (Fila 5)
+            event.accepted = true;
+        }
+        else if (event.key === Qt.Key_Down) {
+            if (maze3D.robotLogY > 0) maze3D.robotLogY--; // Límite Sur (Fila 0)
+            event.accepted = true;
+        }
+        else if (event.key === Qt.Key_Right) {
+            if (maze3D.robotLogX < 7) maze3D.robotLogX++; // Límite Este (Columna 7)
+            event.accepted = true;
+        }
+        else if (event.key === Qt.Key_Left) {
+            if (maze3D.robotLogX > 0) maze3D.robotLogX--; // Límite Oeste (Columna 0)
+            event.accepted = true;
+        }
+
+        // --- ROTACIÓN (Ctrl) ---
+        else if (event.key === Qt.Key_Control) {
+            // Sentido horario: N(0) -> E(1) -> S(2) -> W(3) -> Vuelve a N(0)
+            maze3D.robotDir = (maze3D.robotDir + 1) % 4;
+            event.accepted = true;
+        }
+
+        // --- APARICIÓN DE PAREDES (WASD) ---
+        else if (event.key === Qt.Key_W || event.key === Qt.Key_A ||
+                 event.key === Qt.Key_S || event.key === Qt.Key_D) {
+
+            // Calculamos el centro físico en el mundo 3D de la celda actual del robot
+            var cx = -71.75 + (maze3D.robotLogX * 20.5);
+            var cz = 51.25 - (maze3D.robotLogY * 20.5);
+
+            // Invocamos tu función reutilizando la misma matemática de updateCellWalls
+            if (event.key === Qt.Key_W) {
+                maze3D.addWallIfNotExists(cx, cz - 10.25, 0); // Arriba (Norte)
+            } else if (event.key === Qt.Key_D) {
+                maze3D.addWallIfNotExists(cx + 10.25, cz, 90); // Derecha (Este)
+            } else if (event.key === Qt.Key_S) {
+                maze3D.addWallIfNotExists(cx, cz + 10.25, 0); // Abajo (Sur)
+            } else if (event.key === Qt.Key_A) {
+                maze3D.addWallIfNotExists(cx - 10.25, cz, 90); // Izquierda (Oeste)
+            }
+            event.accepted = true;
+        }
     }
 
     Shortcut {
@@ -320,7 +375,7 @@ Rectangle {
             source: "#Rectangle"
 
             // Solo es visible si el targetX no es negativo
-            visible: maze3D.robotTargetX >= 0 && maze3D.robotTargetY >= 0
+            visible: maze3D.robotTargetX >= 0 && maze3D.robotTargetY >= 0 && maze3D.operationMode === 1
 
             // Usamos las variables del robotTarget
             x: -71.75 + (maze3D.robotTargetX * 20.5)
@@ -345,8 +400,8 @@ Rectangle {
             // Suponiendo que usás las variables del robot, o creaste startX/startY
             visible: maze3D.robotLogX >= 0 && maze3D.robotLogY >= 0
 
-            x: -71.75 + (maze3D.robotLogX * 20.5)
-            z: 51.25 - (maze3D.robotLogY * 20.5)
+            x: -71.75 + (maze3D.startX * 20.5)
+            z: 51.25 - (maze3D.startY * 20.5)
             y: 0.15 // Un pelín más bajo que el target por si se superponen
 
             eulerRotation.x: -90
@@ -595,6 +650,7 @@ Rectangle {
                 delegate: Model {
                     source: "#Rectangle" // Un plano cuadrado básico
 
+                    visible: maze3D.operationMode === 1
                     // Mismas coordenadas del suelo, pero centradas
                     x: -71.75 + (model.logX * 20.5)
                     z: 51.25 - (model.logY * 20.5)
@@ -724,9 +780,9 @@ Rectangle {
 
             PerspectiveCamera {
                 id: povCamera
-                position: Qt.vector3d(-3, -1, 0)
+                position: Qt.vector3d(2, -1, 0)
                 eulerRotation: Qt.vector3d(0, 90, 0)
-                fieldOfView: 85
+                fieldOfView: 50
             }
 
             // PerspectiveCamera {
@@ -888,15 +944,19 @@ Rectangle {
                         // 3. Verificamos si lo que chocamos es un Hitbox (si tiene las propiedades lógicas)
                         if (hitObj.logicalX !== undefined && hitObj.logicalY !== undefined) {
                             if (mouse.button === Qt.LeftButton) {
+                                if (maze3D.operationMode === 1) {
                                 // CLIC IZQUIERDO -> Marca la Meta (Target)
-                                maze3D.robotTargetX = hitObj.logicalX;
-                                maze3D.robotTargetY = hitObj.logicalY;
-                                console.log("Meta: X", maze3D.targetX, "Y", maze3D.targetY);
+                                    maze3D.robotTargetX = hitObj.logicalX;
+                                    maze3D.robotTargetY = hitObj.logicalY;
+                                    //console.log("Meta: X", maze3D.targetX, "Y", maze3D.targetY);
+                                }
                             } else if (mouse.button === Qt.RightButton) {
                                 // CLIC DERECHO -> Marca el Inicio (Start) o la posición del robot
                                 // (Asegurate de crear properties startX y startY en tu maze3D si vas a usar esto)
                                 maze3D.robotLogX = hitObj.logicalX;
                                 maze3D.robotLogY = hitObj.logicalY;
+                                maze3D.startX = hitObj.logicalX;
+                                maze3D.startY = hitObj.logicalY;
                                 console.log("Inicio: X", maze3D.startX, "Y", maze3D.startY);
                             }
                         }
@@ -1050,6 +1110,39 @@ Rectangle {
                     width: parent.width
                     spacing: 8
 
+                    // --- NUEVO TOGGLE DE MODO ---
+                    Rectangle {
+                        width: parent.width
+                        height: 32
+                        color: "#393F44"
+                        radius: 3
+                        clip: true
+
+                        Row {
+                            anchors.fill: parent
+
+                            // Opción 1: FIND MARKS
+                            Rectangle {
+                                width: parent.width / 2
+                                height: parent.height
+                                color: maze3D.operationMode === 0 ? "#00965C" : "transparent"
+                                radius: 3
+                                Text { anchors.centerIn: parent; text: "FIND MARKS"; color: "white"; font.family: "Century Gothic"; font.pixelSize: 10; font.bold: true }
+                                MouseArea { anchors.fill: parent; onClicked: maze3D.operationMode = 0 }
+                            }
+
+                            // Opción 2: EXPLORATION
+                            Rectangle {
+                                width: parent.width / 2
+                                height: parent.height
+                                color: maze3D.operationMode === 1 ? "#00965C" : "transparent"
+                                radius: 3
+                                Text { anchors.centerIn: parent; text: "EXPLORATION"; color: "white"; font.family: "Century Gothic"; font.pixelSize: 10; font.bold: true }
+                                MouseArea { anchors.fill: parent; onClicked: maze3D.operationMode = 1 }
+                            }
+                        }
+                    }
+
                     // 1. SET START
                     Rectangle {
                         width: parent.width; height: 32; radius: 3
@@ -1059,25 +1152,100 @@ Rectangle {
                         MouseArea { anchors.fill: parent; onClicked: maze3D.reqSetStart() }
                     }
 
-                    // 2. SET TARGET
+                    // // 2. SET TARGET
+                    // Rectangle {
+                    //     visible: maze3D.operationMode === 1
+                    //     width: parent.width; height: 32; radius: 3
+                    //     color: btnSetTargetHover.hovered ? "#00965C" : "#393F44"
+                    //     Text { anchors.centerIn: parent; text: "SET TARGET"; color: "white"; font.family: "Century Gothic"; font.pixelSize: 11; font.bold: true }
+                    //     HoverHandler { id: btnSetTargetHover }
+                    //     MouseArea { anchors.fill: parent; onClicked: maze3D.reqSetTarget() }
+                    // }
+
                     Rectangle {
-                        width: parent.width; height: 32; radius: 3
-                        color: btnSetTargetHover.hovered ? "#00965C" : "#393F44"
-                        Text { anchors.centerIn: parent; text: "SET TARGET"; color: "white"; font.family: "Century Gothic"; font.pixelSize: 11; font.bold: true }
-                        HoverHandler { id: btnSetTargetHover }
-                        MouseArea { anchors.fill: parent; onClicked: maze3D.reqSetTarget() }
+                        id: setTargetBtn
+                        width: parent.width
+                        radius: 3
+                        clip: true // Fundamental: corta el texto mientras la altura es menor a 32
+
+                        // 1. REEMPLAZAMOS VISIBLE POR ALTURA Y OPACIDAD
+                        height: maze3D.operationMode === 1 ? 32 : 0
+                        opacity: maze3D.operationMode === 1 ? 1.0 : 0.0
+
+                        // 2. ANIMACIÓN SUAVE (Esto elimina el bug del reflow)
+                        Behavior on height { NumberAnimation { duration: 150; easing.type: Easing.InOutQuad } }
+                        Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.InOutQuad } }
+
+                        // 3. COLOR (Protegido contra fantasmas mientras está invisible)
+                        color: targetMouseArea.containsMouse && maze3D.operationMode === 1 ? "#00965C" : "#393F44"
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "SET TARGET"
+                            color: "white"
+                            font.family: "Century Gothic"
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            id: targetMouseArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+
+                            // 4. DESACTIVAMOS TOTALMENTE SI NO ESTÁ EN MODO EXPLORACIÓN
+                            enabled: maze3D.operationMode === 1
+
+                            onClicked: maze3D.reqSetTarget()
+                        }
                     }
 
                     // 4. FIND BLACK CELLS (Modo Búsqueda de Celdas)
+                    // Rectangle {
+                    //     width: parent.width; height: 32; radius: 3
+                    //     color: btnFindBlackHover.hovered ? "#00965C" : "#393F44"
+                    //     Text {
+                    //         anchors.centerIn: parent; text: "FIND BLACK CELLS"
+                    //         color: "white"; font.family: "Century Gothic"; font.pixelSize: 10; font.bold: true
+                    //     }
+                    //     HoverHandler { id: btnFindBlackHover }
+                    //     MouseArea { anchors.fill: parent; onClicked: maze3D.reqFindBlackCells() }
+                    // }
+
                     Rectangle {
                         width: parent.width; height: 32; radius: 3
-                        color: btnFindBlackHover.hovered ? "#00965C" : "#393F44"
+                        color: startMouseArea.containsMouse ? "#00965C" : "#393F44"
+                        // color: btnStartUnifiedHover.hovered ? "#00965C" : "#393F44"
                         Text {
-                            anchors.centerIn: parent; text: "FIND BLACK CELLS"
-                            color: "white"; font.family: "Century Gothic"; font.pixelSize: 10; font.bold: true
+                            anchors.centerIn: parent
+                            text: "START"
+                            // text: maze3D.operationMode === 0 ? "START" : "START"
+                            color: "white"; font.family: "Century Gothic"; font.pixelSize: 11; font.bold: true
                         }
-                        HoverHandler { id: btnFindBlackHover }
-                        MouseArea { anchors.fill: parent; onClicked: maze3D.reqFindBlackCells() }
+                        MouseArea {
+                            id: startMouseArea
+                            anchors.fill: parent
+                            hoverEnabled: true // Obligatorio para leer containsMouse
+
+                            onClicked: {
+                                if (maze3D.operationMode === 0) {
+                                    maze3D.reqFindBlackCells();
+                                } else {
+                                    maze3D.reqStartExploration();
+                                }
+                            }
+                        }
+                        // HoverHandler { id: btnStartUnifiedHover }
+                        // MouseArea {
+                        //     anchors.fill: parent
+                        //     onClicked: {
+                        //         if (maze3D.operationMode === 0) {
+                        //             maze3D.reqFindBlackCells();
+                        //         } else {
+                        //             maze3D.reqStartExploration();
+                        //         }
+                        //     }
+                        // }
                     }
 
                     // // 3. START RUN
@@ -1090,13 +1258,13 @@ Rectangle {
                     // }
 
                     // 4. START EXPLORATION
-                    Rectangle {
-                        width: parent.width; height: 32; radius: 3
-                        color: btnStartExplorationHover.hovered ? "#00965C" : "#393F44"
-                        Text { anchors.centerIn: parent; text: "START EXPLORATION"; color: "white"; font.family: "Century Gothic"; font.pixelSize: 11; font.bold: true }
-                        HoverHandler { id: btnStartExplorationHover }
-                        MouseArea { anchors.fill: parent; onClicked: maze3D.reqStartExploration() }
-                    }
+                    // Rectangle {
+                    //     width: parent.width; height: 32; radius: 3
+                    //     color: btnStartExplorationHover.hovered ? "#00965C" : "#393F44"
+                    //     Text { anchors.centerIn: parent; text: "START EXPLORATION"; color: "white"; font.family: "Century Gothic"; font.pixelSize: 11; font.bold: true }
+                    //     HoverHandler { id: btnStartExplorationHover }
+                    //     MouseArea { anchors.fill: parent; onClicked: maze3D.reqStartExploration() }
+                    // }
 
                     // 5. STOP (Emergencia - Naranja distintivo)
                     Rectangle {
@@ -1240,10 +1408,7 @@ Rectangle {
 /*##^##
 Designer {
     D{i:0;matPrevEnvDoc:"SkyBox";matPrevEnvValueDoc:"preview_studio";matPrevModelDoc:"#Sphere"}
-D{i:5;cameraSpeed3d:1;cameraSpeed3dMultiplier:1}D{i:6;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}
-D{i:13;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}D{i:16;cameraSpeed3d:1;cameraSpeed3dMultiplier:1}
-D{i:17;cameraSpeed3d:1;cameraSpeed3dMultiplier:1}D{i:26;cameraSpeed3d:1;cameraSpeed3dMultiplier:1}
-D{i:43;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}
+D{i:10;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}D{i:49;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}
 }
 ##^##*/
 

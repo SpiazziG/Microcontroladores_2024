@@ -205,8 +205,8 @@ void QForm1::OnQTimer1(){
     static uint8_t time20ms = 2;
     static uint8_t time500ms = 50;
 
-    static double carPos = 0.0;
-    static double power = 0.0;
+    // static double carPos = 0.0;
+    // static double power = 0.0;
 
     uint8_t buf[3];
 
@@ -225,7 +225,7 @@ void QForm1::OnQTimer1(){
         case 0:
             // El Heartbeat suele ser vital para mantener viva la conexión.
             // Te recomiendo dejarlo siempre activo, sin CheckBox.
-            Heartbeat();
+            // Heartbeat();
             break;
 
         case 1:
@@ -276,12 +276,12 @@ void QForm1::OnQTimer1(){
         //     carPos = 0.0;
         // updateCarPosition(carPos);
 
-        if (power < 1.0)
-            power += 0.001;
-        else
-            power = 0;
+        // if (power < 1.0)
+        //     power += 0.001;
+        // else
+        //     power = 0;
 
-        updateMotorPower(power, power);
+        // updateMotorPower(power, power);
     } else {
         time500ms--;
     }
@@ -517,6 +517,10 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         break;
     case GET_IR_SENSORS:
     {
+        // uint8_t *data = &rxBuf[1];
+
+        // DecodeIRSensors(&data[8]);
+
         w.u32 = 0;
         uint8_t baseIndex;
         int16_t leftIR, rightIR;
@@ -530,16 +534,17 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         leftIR = (rxBuf[14] << 8) | rxBuf[13];
 
         // For 12 bits measures
-        // for (int i = 0; i < 8; ++i){
-        //     baseIndex = 1 + (i * 2);
-        //     w.u8[0] = rxBuf[baseIndex];
-        //     w.u8[1] = rxBuf[baseIndex + 1];
+        for (int i = 0; i < 8; ++i){
+            baseIndex = 1 + (i * 2);
+            w.u8[0] = rxBuf[baseIndex];
+            w.u8[1] = rxBuf[baseIndex + 1];
 
-        //     QString labelName = QString("labelValueIR%1").arg(i + 1);
-        //     QLabel* label = this->findChild<QLabel*>(labelName);
-        //     if(label)
-        //         label->setText(QString("%1").arg(w.i32, 4, 10, QChar(' ')));
-        // }
+            QString labelName = QString("labelValueIR%1").arg(i + 1);
+            QLabel* label = this->findChild<QLabel*>(labelName);
+            if(label)
+                label->setText(QString("%1").arg(w.i32, 4, 10, QChar(' ')));
+        }
+
 
         for (int i = 0; i < 8; ++i) {
             baseIndex = 1 + (i * 2);
@@ -589,20 +594,21 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
             }
         }
 
-        centerDifference = rightIR - leftIR;
 
-        if (abs(centerDifference) < CENTER_CAR_DEADZONE)
-            centerDifference = 0;
+        // centerDifference = rightIR - leftIR;
 
-        normalizedMovement = (centerDifference) / 4095.0;
-        newCarPos = 0.5 - (normalizedMovement * 0.5);
+        // if (abs(centerDifference) < CENTER_CAR_DEADZONE)
+        //     centerDifference = 0;
 
-        if (newCarPos > 0.65)
-            newCarPos = 0.65;
-        else if (newCarPos < 0.35)
-            newCarPos = 0.35;
+        // normalizedMovement = (centerDifference) / 4095.0;
+        // newCarPos = 0.5 - (normalizedMovement * 0.5);
 
-        updateCarPosition(newCarPos);
+        // if (newCarPos > 0.65)
+        //     newCarPos = 0.65;
+        // else if (newCarPos < 0.35)
+        //     newCarPos = 0.35;
+
+        // updateCarPosition(newCarPos);
 
         // For millimeter measures
         // for (int i = 0; i < 8; ++i){
@@ -614,9 +620,9 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         //         label->setText(QString("%1").arg(w.i32, 4, 10, QChar(' ')));
         // }
 
-        if (dialog->isVisible()) {
-            dialog->refreshPlot();
-        }
+        // if (dialog->isVisible()) {
+        //     dialog->refreshPlot();
+        // }
         break;
     }
     case GET_MPU_DATA:
@@ -785,48 +791,26 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         break;
     case GET_INTERSECTION_TYPE:
     {
-        uint8_t intersectionIndex = rxBuf[1];
+        // uint8_t intersectionIndex = rxBuf[1];
 
-        if (intersectionIndex & (1 << 0)) {
-            updateRightSensor(false);
-        } else {
-            updateRightSensor(true);
-        }
-
-        if (intersectionIndex & (1 << 1)) {
-            updateFrontSensor(true);
-        } else {
-            updateFrontSensor(false);
-        }
-
-        if (intersectionIndex & (1 << 2)) {
-            updateLeftSensor(false);
-        } else {
-            updateLeftSensor(true);
-        }
         // if (intersectionIndex & (1 << 0)) {
-        //     ui->labelRightIntersectionState->setText("|");
-        //     ui->labelRightIntersectionState->setStyleSheet("color: rgb(255, 136, 0); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
+        //     updateRightSensor(false);
         // } else {
-        //     ui->labelRightIntersectionState->setText("→");
-        //     ui->labelRightIntersectionState->setStyleSheet("color: rgb(50, 205, 50); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
+        //     updateRightSensor(true);
         // }
 
         // if (intersectionIndex & (1 << 1)) {
-        //     ui->labelFrontIntersectionState->setText("-");
-        //     ui->labelFrontIntersectionState->setStyleSheet("color: rgb(255, 136, 0); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
+        //     updateFrontSensor(true);
         // } else {
-        //     ui->labelFrontIntersectionState->setText("↑");
-        //     ui->labelFrontIntersectionState->setStyleSheet("color: rgb(50, 205, 50); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
+        //     updateFrontSensor(false);
         // }
 
         // if (intersectionIndex & (1 << 2)) {
-        //     ui->labelLeftIntersectionState->setText("|");
-        //     ui->labelLeftIntersectionState->setStyleSheet("color: rgb(255, 136, 0); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
+        //     updateLeftSensor(false);
         // } else {
-        //     ui->labelLeftIntersectionState->setText("←");
-        //     ui->labelLeftIntersectionState->setStyleSheet("color: rgb(50, 205, 50); font: 13pt Siemens Sans; font-weight: bold; background-color: transparent");
+        //     updateLeftSensor(true);
         // }
+
     }
         break;
     case GET_SPECIAL_CELL:
@@ -840,6 +824,7 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
     }
         break;
     case GET_MAP_INFO:
+    {
         mapData.currentX = rxBuf[1];
         mapData.currentY = rxBuf[2];
         mapData.maze[mapData.currentX][mapData.currentY].walls = rxBuf[3];
@@ -877,6 +862,20 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
                           Q_ARG(QVariant, mapData.currentY),
                           Q_ARG(QVariant, mapData.maze[mapData.currentX][mapData.currentY].walls));
         }
+    }
+        break;
+    case STREAM_TELEMETRY:
+        {
+        // data apunta al inicio de la carga útil (ignorando el byte del comando)
+        uint8_t *data = &rxBuf[1];
+
+        // Llamamos a cada función pasándole la dirección de memoria exacta
+        // donde empieza su bloque de información.
+        DecodeMapAndState(&data[0]);  // Empieza en el byte 0
+        DecodeIRSensors(&data[8]);    // Empieza en el byte 8
+        DecodeMotors(&data[24]);
+        DecodeMPU(&data[26]);
+        }
         break;
     //case SERVO_CONFIG:
         /*
@@ -892,6 +891,140 @@ void QForm1::DecodeCmd(uint8_t *rxBuf){
         emit maxMinValues(min, max);
         */
       //  break;
+    }
+}
+
+void QForm1::DecodeIRSensors(const uint8_t *data) {
+    _work w;
+    double currentTime = m_telemetryTimer.elapsed() / 1000.0;
+
+    for (int i = 0; i < 8; ++i) {
+        // Como 'data' ya empieza en el byte 8 del buffer original,
+        // aquí simplemente leemos de 2 en 2 desde el índice 0.
+        int baseIndex = i * 2;
+        w.u8[0] = data[baseIndex];
+        w.u8[1] = data[baseIndex + 1];
+        int value = w.u16[0];
+
+        m_historyIR[i].append(QPointF(currentTime, value));
+
+        if (dialog->isVisible()) {
+            QString signalName = QString("IR Sensor %1").arg(i + 1);
+            dialog->addLiveTelemetry(signalName, currentTime, value);
+        }
+
+        QString labelName = QString("labelValueIR%1").arg(i + 1);
+        QLabel* label = this->findChild<QLabel*>(labelName);
+
+        if (label) {
+            label->setText(QString("%1").arg(value, 4, 10, QChar(' ')));
+            QString colorStyle;
+
+            if (i == 3 || i == 7) {
+                int gray = (value * 255) / 4095;
+                int textColor = (gray < 128) ? 0 : 255;
+                colorStyle = QString("color: rgb(%1,%1,%1); font: 13pt 'Century Gothic'; font-weight: bold; background-color: transparent;").arg(textColor);
+            } else {
+                int r, g;
+                if (value < 2048) {
+                    r = (value * 255) / 2048;
+                    g = 255;
+                } else {
+                    r = 255;
+                    g = 255 - ((value - 2048) * 255) / 2047;
+                }
+                colorStyle = QString("color: rgb(%1, %2, 0); font: 13pt 'Century Gothic'; font-weight: bold; background-color: transparent;").arg(r).arg(g);
+            }
+            label->setStyleSheet(colorStyle);
+        }
+    }
+
+    if (dialog->isVisible()) dialog->refreshPlot();
+}
+
+void QForm1::DecodeMPU(const uint8_t *data) {
+    _work w;
+
+    // --- 1. Acelerómetro (6 Bytes: data[0] a data[5]) ---
+    w.u8[0] = data[0]; w.u8[1] = data[1];
+    accValues[X_AXIS] = ((float)w.i16[0] / 16384.0f) * 9.806f;
+
+    w.u8[0] = data[2]; w.u8[1] = data[3];
+    accValues[Y_AXIS] = ((float)w.i16[0] / 16384.0f) * 9.806f;
+
+    w.u8[0] = data[4]; w.u8[1] = data[5];
+    accValues[Z_AXIS] = ((float)w.i16[0] / 16384.0f) * 9.806f;
+
+    // --- 2. Giroscopio (6 Bytes: data[6] a data[11]) ---
+    w.u8[0] = data[6]; w.u8[1] = data[7];
+    gyroValues[X_AXIS] = (w.i16[0]) / 65.5f;
+
+    w.u8[0] = data[8]; w.u8[1] = data[9];
+    gyroValues[Y_AXIS] = (w.i16[0]) / 65.5f;
+
+    // Manteniendo tu lógica original para el eje Z
+    w.i32 = 0;
+    w.u8[0] = data[10]; w.u8[1] = data[11];
+    gyroValues[Z_AXIS] = (w.u8[1]<<8) | w.u8[0];
+
+    // --- 3. Yaw (2 Bytes: data[12] y data[13]) ---
+    w.u8[0] = data[12]; w.u8[1] = data[13];
+    yaw = w.i16[0];
+
+    // --- Actualización de la UI ---
+    ui->labelAccX->setText(QString("%1").arg(accValues[X_AXIS]/10.0, 1, 'f', 3));
+    ui->labelAccY->setText(QString("%1").arg(accValues[Y_AXIS]/10.0, 1, 'f', 3));
+    ui->labelAccZ->setText(QString("%1").arg(accValues[Z_AXIS]/10.0, 1, 'f', 3));
+
+    ui->labelGyroX->setText(QString("%1").arg(gyroValues[X_AXIS]));
+    ui->labelGyroY->setText(QString("%1").arg(gyroValues[Y_AXIS]));
+    ui->labelGyroZ->setText(QString("%1").arg(gyroValues[Z_AXIS]));
+}
+
+void QForm1::DecodeMotors(const uint8_t* data) {
+    // --- 3. MOTORES (2 Bytes) ---
+    uint8_t leftSpeed = data[0];
+    uint8_t rightSpeed = data[1];
+
+    // Aquí puedes enlazar la actualización a tu interfaz QML o Widgets
+    // updateMotorPower(leftSpeed / 100.0, rightSpeed / 100.0);
+}
+
+void QForm1::DecodeMapAndState(const uint8_t* data) {
+    // --- 1. MAPA Y ESTADO (8 Bytes) ---
+    mapData.currentX = data[0];
+    mapData.currentY = data[1];
+    mapData.maze[mapData.currentX][mapData.currentY].walls = data[2];
+    mapData.currentDirection = data[3];
+
+    uint8_t currentAction = data[4];
+    uint8_t cellState = data[5];
+    uint8_t marksCount = data[6];
+    uint8_t markDetected = data[7];
+
+    mapData.maze[mapData.currentX][mapData.currentY].visited = 1;
+
+    QString dirText;
+    switch(mapData.currentDirection) {
+    case 0: dirText = "NORTH"; break;
+    case 1: dirText = "EAST";  break;
+    case 2: dirText = "SOUTH"; break;
+    case 3: dirText = "WEST";  break;
+    default: dirText = "UNKNOWN"; break;
+    }
+    ui->labelCurrentDirectionValue->setText(dirText);
+
+    calculateFloodFill();
+
+    if (m_qmlRootObject) {
+        m_qmlRootObject->setProperty("robotLogX", mapData.currentX);
+        m_qmlRootObject->setProperty("robotLogY", mapData.currentY);
+        m_qmlRootObject->setProperty("robotDir", mapData.currentDirection);
+
+        QMetaObject::invokeMethod(m_qmlRootObject, "updateCellWalls",
+                                  Q_ARG(QVariant, mapData.currentX),
+                                  Q_ARG(QVariant, mapData.currentY),
+                                  Q_ARG(QVariant, mapData.maze[mapData.currentX][mapData.currentY].walls));
     }
 }
 
@@ -1396,15 +1529,27 @@ void QForm1::Integrate(){
 }
 
 void QForm1::on_powerButton_clicked(){
-    if(ENGINES_ON == 0){
-        ENGINES_ON = 1;
-        ui->leftEnginePowerLabel->setText(QString("%1").arg(100, 1, 10, QChar('0')));
-        ui->rightEnginePowerLabel->setText(QString("%1").arg(100, 1, 10, QChar('0')));
-    } else {
-        ENGINES_ON = 0;
-        ui->leftEnginePowerLabel->setText(QString("%1").arg(0, 1, 10, QChar('0')));
-        ui->rightEnginePowerLabel->setText(QString("%1").arg(0, 1, 10, QChar('0')));
-    }
+
+    int left  = ui->leftEngineDial->value();
+    int right = ui->rightEngineDial->value();
+
+    uint8_t buf[3];
+
+    buf[0] = SET_MOTOR_TEST;
+
+    buf[1] = static_cast<int8_t>(left);
+    buf[2] = static_cast<int8_t>(right);
+
+    SendCMD(buf, 3);
+    // if(ENGINES_ON == 0){
+    //     ENGINES_ON = 1;
+    //     ui->leftEnginePowerLabel->setText(QString("%1").arg(100, 1, 10, QChar('0')));
+    //     ui->rightEnginePowerLabel->setText(QString("%1").arg(100, 1, 10, QChar('0')));
+    // } else {
+    //     ENGINES_ON = 0;
+    //     ui->leftEnginePowerLabel->setText(QString("%1").arg(0, 1, 10, QChar('0')));
+    //     ui->rightEnginePowerLabel->setText(QString("%1").arg(0, 1, 10, QChar('0')));
+    // }
 }
 
 
@@ -2151,7 +2296,9 @@ void QForm1::onQmlStartChanged() {
 
 void QForm1::on_pushButton_clicked()
 {
-    ui->stackedWidget->setCurrentIndex(5);
+    ui->leftEngineDial->setValue(0);
+    ui->rightEngineDial->setValue(0);
+    // ui->stackedWidget->setCurrentIndex(5);
 }
 
 void QForm1::on_checkBoxAccelerometer_toggled(bool checked)
@@ -2290,3 +2437,13 @@ void QForm1::on_resetMaze_requested() {
     // Forzamos un redibujado de la vista 2D por si acaso
     // DrawBackground();
 }
+
+void QForm1::on_rightEngineDial_valueChanged(int value){
+    ui->rightEnginePowerLabel->setText(QString("%1").arg(value));
+}
+
+
+void QForm1::on_leftEngineDial_valueChanged(int value){
+    ui->leftEnginePowerLabel->setText(QString("%1").arg(value));
+}
+

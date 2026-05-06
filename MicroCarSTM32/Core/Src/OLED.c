@@ -549,7 +549,7 @@ void OLED_DrawDigitalEye(OLED_Handle_s *handle, uint8_t x, uint8_t y, uint8_t w,
 	OLED_DrawPixel(handle, x + w - 2, y + h - 2, White);
 }
 
-void OLED_DrawBidirectionalBar(OLED_Handle_s *handle, uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t val, int32_t maxScale) {
+void OLED_DrawBidirectionalBar(OLED_Handle_s *handle, uint8_t x, uint8_t y, uint8_t w, uint8_t h, int32_t val, int32_t maxScale) {
 	// Dibujar contorno
 	OLED_DrawRect(handle, x, y, w, h, White);
 
@@ -558,7 +558,7 @@ void OLED_DrawBidirectionalBar(OLED_Handle_s *handle, uint8_t x, uint8_t y, uint
 	OLED_DrawVerticalLine(handle, midX, y, h, White);
 
 	// Calcular relleno
-	int16_t absVal = (val < 0) ? -val : val;
+	int32_t absVal = (val < 0) ? -val : val;
 
 	int8_t halfW = (w - 4) / 2;
 
@@ -581,7 +581,7 @@ void OLED_DrawBidirectionalBar(OLED_Handle_s *handle, uint8_t x, uint8_t y, uint
 
 	char str[6];
 
-	sprintf(str, "%4d", val);
+	sprintf(str, "%4ld", val);
 	OLED_SetCursor(handle, 94, y);
 	OLED_WriteString(handle, str, Font_7x10, White);
 

@@ -125,9 +125,11 @@ typedef enum {
 	DISPLAY_MOTORS,
 	DISPLAY_SOFTWARE,
 	DISPLAY_RUN,
+	DISPLAY_RUN_MODE_SELECT,
 	DISPLAY_CLEAR,
 	DISPLAY_CONFIG_START,
 	DISPLAY_CONFIG_TARGET,
+	DISPLAY_END_SCREEN,
 } DisplayPage_e;
 
 typedef enum {
@@ -154,6 +156,7 @@ typedef enum {
 	ACTION_AFTER_TURN,
 	ACTION_TURN_PIVOT,
 	ACTION_BACK_WALL_ALIGN,
+	ACTION_MOTOR_TEST,
 } Robot_Action_e;
 
 typedef enum {
@@ -248,7 +251,7 @@ typedef struct {
 // Wi-Fi configuration macros
 #define WIFI_SSID				"FCAL"//"FCAL" "InternetPlus_86aa10" "LabPrototip" "InternetPlus_8e2fbb"
 #define WIFI_PASSWORD			"fcalconcordia.06-2019"//"fcalconcordia.06-2019" "wlan7955ef" "labproto" "Akhantos2340"
-#define WIFI_UDP_REMOTE_IP		"172.23.229.43"//"192.168.1.18"	//La IP de la PC 172.23.229.43 "192.168.1.31"
+#define WIFI_UDP_REMOTE_IP		"111.22.333.44"//"172.23.229.43"//"192.168.1.18"	//La IP de la PC 172.23.229.43 "192.168.1.31"
 #define WIFI_UDP_REMOTE_PORT	30010				//El puerto UDP en la PC
 #define WIFI_UDP_LOCAL_PORT		30000
 
@@ -263,6 +266,7 @@ typedef struct {
 #define OLED_UPDATE_REQUEST		flag1.bit.b2
 #define I2C_BUS_IS_BUSY			flag1.bit.b3
 #define LINE_DETECTED_TURNING	flag1.bit.b4
+#define SHOW_EYES_SCREEN		flag1.bit.b5
 
 // Timer counter macros
 #define t1MS					timeCounter.t1ms
@@ -405,6 +409,7 @@ uint8_t runConfigStep = 0;
 //////////////////////////////// OTHER VARIABLES ///////////////////////////////
 // Robot control and algorithm variables
 Robot_Mode_e currentMode;
+Robot_Mode_e selectedRunMode;
 Robot_Action_e currentAction;
 
 CellCrossingState_e cellState;
@@ -417,7 +422,7 @@ IntersectionType_e detectedIntersection;
 uint8_t intersectionType;
 int16_t pivotDegreesTarget;
 
-uint8_t markDetected = 0, marksCount = 0;
+uint8_t markDetected = 0, marksCount = 0, currentMarkTargetIndex = 0;;
 Point_s markLocations[3];
 
 uint8_t showIrInMillimeters;
@@ -528,7 +533,7 @@ void DecodeCMD(struct UNERBUSHandle *aBus, uint8_t iStartData);
 const char* GetFirmwareVersion_String(void);
 
 void I2C_State_Control(void);
-void I2C_Bus_Recovery(void);
+//void I2C_Bus_Recovery(void);
 void MPU_Read_Completed_Callback(void *context);
 void OLED_Write_Completed_Callback(void *context);
 ///////////////////////// TIMING FUNCTIONS PROTOTYPES //////////////////////////
@@ -693,12 +698,12 @@ void I2C_State_Control(void){
 	}
 }
 
-void I2C_Bus_Recovery(void) {
-//	// 1. Detener cualquier transferencia DMA que haya quedado a medias
+//void I2C_Bus_Recovery(void) {
+//	// Detener cualquier transferencia DMA que haya quedado a medias
 //	if (hi2c2.hdmatx != NULL) HAL_DMA_Abort(hi2c2.hdmatx);
 //	if (hi2c2.hdmarx != NULL) HAL_DMA_Abort(hi2c2.hdmarx);
 //
-//	// 2. Reseteo violento por hardware del periférico I2C2
+//	// Reseteo violento por hardware del periférico I2C2
 //	__HAL_RCC_I2C2_FORCE_RESET();
 //	__NOP();
 //	__NOP();
@@ -706,19 +711,19 @@ void I2C_Bus_Recovery(void) {
 //	__NOP();
 //	__HAL_RCC_I2C2_RELEASE_RESET();
 //
-//	// 3. Reinicializar el periférico con tu configuración original
+//	// Reinicializar el periférico con la configuración original
 //	MX_I2C2_Init();
 //
-//	// 4. Liberar el bus
+//	// Liberar el bus
 //	I2C_BUS_IS_BUSY = 0;
 //	MPU_READ_REQUEST = 0;
 //
-//	// 5. Resetear la máquina de estados del OLED.
+//	// Resetear la máquina de estados del OLED.
 //	// Lo mandamos a 8 para que aborte el cuadro actual y espere a que
 //	// Do100ms() pida un cuadro nuevo. Esto evita glitches gráficos.
 //	myOled.updatePageState = 0;
 //	myOled.currentPageToUpdate = 8;
-}
+//}
 
 void DecodeCMD(struct UNERBUSHandle *aBus, uint8_t iStartData){
 	uint8_t id;
@@ -759,8 +764,16 @@ void DecodeCMD(struct UNERBUSHandle *aBus, uint8_t iStartData){
 		length = MPU_DATA_BUFFER_SIZE + 1;
 		break;
 	case SET_MOTOR_TEST:
-		ENGINE_SetLeftSpeed(&myEngines, UNERBUS_GetUInt8(aBus));
-		ENGINE_SetRightSpeed(&myEngines, UNERBUS_GetUInt8(aBus));
+		int8_t leftSpeed = UNERBUS_GetInt8(aBus);
+		int8_t rightSpeed = UNERBUS_GetInt8(aBus);
+
+		currentAction = ACTION_MOTOR_TEST;
+
+		ENGINE_SetLeftSpeed(&myEngines, leftSpeed);
+		ENGINE_SetRightSpeed(&myEngines, rightSpeed);
+
+		if (leftSpeed == 0 && rightSpeed == 0)
+			currentAction = ACTION_IDLE;
 		break;
 	case SET_PWM_CONFIG:
 		myEngines.pwmMaxPeriod = UNERBUS_GetUInt8(aBus);
@@ -948,53 +961,47 @@ void Do100ms(){
 	if(t1S)
 		t1S--;
 
+
 	Heartbeat();
 
 	ChangeDisplayPage(currentPage);
 
-//	if (currentMode == MODE_EXPLORING_MAZE || currentMode == MODE_FINDING_MARKS) {
-//		uint8_t buf[8];
-//		buf[0] = cx;
-//		buf[1] = cy;
-//		buf[2] = currentPosition.maze[cx][cy].walls;
-//		buf[3] = currentDirection;
-//		buf[4] = currentAction;       // Para saber en Qt si está pivotando, centrando, etc.
-//		buf[5] = cellState;           // Para saber si está en línea, adentro, etc.
-//		buf[6] = marksCount;          // Cuántas marcas lleva
-//		buf[7] = markDetected;        // 1 si está sobre una celda negra ahora mismo
-//
-//		// --- 2. SENSORES IR (16 Bytes: [8] a [23]) ---
-//		for (uint8_t i = 0; i < 8; i++) {
-//			// En lugar de escribir a mano cada línea, un loop es más limpio
-//			buf[8 + (i * 2)] = myInfraredValues.filteredSamples[i] & 0xFF;
-//			buf[9 + (i * 2)] = (myInfraredValues.filteredSamples[i] >> 8) & 0xFF;
-//		}
-//
-//		// --- 3. MOTORES (2 Bytes: [24] y [25]) ---
-//		buf[24] = myEngines.currentLeftSpeed;
-//		buf[25] = myEngines.currentRightSpeed;
-//
-//		// --- 4. MPU6050 GIROSCOPIO CRUDO (6 Bytes: [26] a [31]) ---
-//		buf[26] = myMpuValues.data.gyroX & 0xFF;
-//		buf[27] = (myMpuValues.data.gyroX >> 8) & 0xFF;
-//		buf[28] = myMpuValues.data.gyroY & 0xFF;
-//		buf[29] = (myMpuValues.data.gyroY >> 8) & 0xFF;
-//		buf[30] = myMpuValues.data.gyroZ & 0xFF;
-//		buf[31] = (myMpuValues.data.gyroZ >> 8) & 0xFF;
-//
-//		// --- 5. MPU6050 ACELERÓMETRO CRUDO (6 Bytes: [32] a [37]) ---
-//		buf[32] = myMpuValues.data.accelX & 0xFF;
-//		buf[33] = (myMpuValues.data.accelX >> 8) & 0xFF;
-//		buf[34] = myMpuValues.data.accelY & 0xFF;
-//		buf[35] = (myMpuValues.data.accelY >> 8) & 0xFF;
-//		buf[36] = myMpuValues.data.accelZ & 0xFF;
-//		buf[37] = (myMpuValues.data.accelZ >> 8) & 0xFF;
-//
-//		// Enviamos el bloque entero de 38 bytes
-//		UNERBUS_Write(&unerbusESP01, buf, 38);
-//		UNERBUS_Send(&unerbusESP01, STREAM_TELEMETRY, 38);
-//	}
+	static uint8_t telemetryDivisor = 0;
+	telemetryDivisor++;
 
+	if (telemetryDivisor >= 2) { // 2 ejecuciones de 100ms = 200ms
+		telemetryDivisor = 0; // Reiniciamos el contador
+
+		if (currentMode == MODE_EXPLORING_MAZE || currentMode == MODE_FINDING_MARKS) {
+			uint8_t buf[40];
+			buf[0] = currentPosition.currentX;
+			buf[1] = currentPosition.currentY;
+			buf[2] = currentPosition.maze[currentPosition.currentX][currentPosition.currentY].walls;
+			buf[3] = currentDirection;
+			buf[4] = currentAction;       // Para saber en Qt si está pivotando, centrando, etc.
+			buf[5] = cellState;           // Para saber si está en línea, adentro, etc.
+			buf[6] = marksCount;          // Cuántas marcas lleva
+			buf[7] = markDetected;        // 1 si está sobre una celda negra ahora mismo
+
+			// --- 2. SENSORES IR (16 Bytes: [8] a [23]) ---
+			for (uint8_t i = 0; i < 8; i++) {
+				// En lugar de escribir a mano cada línea, un loop es más limpio
+				buf[8 + (i * 2)] = myInfraredValues.filteredSamples[i] & 0xFF;
+				buf[9 + (i * 2)] = (myInfraredValues.filteredSamples[i] >> 8) & 0xFF;
+			}
+
+			// --- 3. MOTORES (2 Bytes: [24] y [25]) ---
+			buf[24] = myEngines.currentLeftSpeed;
+			buf[25] = myEngines.currentRightSpeed;
+
+			// --- 4. MPU6050  CRUDO (6 Bytes: [26] a [39]) ---
+			MPU6050_Compose_Number(&myMpuValues, &buf[26]);
+
+			// Enviamos el bloque entero de 40 bytes
+			UNERBUS_Write(&unerbusESP01, buf, 40);
+			UNERBUS_Send(&unerbusESP01, STREAM_TELEMETRY, 38);
+		}
+	}
 	/*
 	if(heartbeatmask & heartbeat)
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
@@ -1050,13 +1057,11 @@ void Robot_StateMachine() {
 				currentAction = ACTION_TURN_PIVOT;
 
 				PID_Reset(&myTurnValues);
-//				MPU6050_Reset_Yaw(&myMpuValues);
 
-				// --- ¡EL FIX DE FINALIZACIÓN! ---
 				if (currentPosition.currentX == currentPosition.targetX && currentPosition.currentY == currentPosition.targetY) {
-					Robot_Stop(); // Si era la meta, nos apagamos en el centro exacto.
+					Robot_Stop(); // Si era la meta, apagar en el centro exacto.
 				} else {
-					currentAction = ACTION_TURN_PIVOT; // Si no, seguimos con el giro.
+					currentAction = ACTION_TURN_PIVOT; // Si no, seguir con el giro.
 					PID_Reset(&myTurnValues);
 				}
 			}
@@ -1068,24 +1073,23 @@ void Robot_StateMachine() {
 		break;
 	case ACTION_BACK_WALL_ALIGN:
 	{
-		// 1. Apagamos los sensores IR. Usamos EXCLUSIVAMENTE el giroscopio
+		// Usa EXCLUSIVAMENTE el giroscopio
 		// para mantener la línea recta perfecta en reversa.
 		int32_t errorGyro = myMpuValues.data.relativeYawScaled / YAW_SCALE;
 
 		int32_t errorTotal = errorGyro * GYRO_COMPENSATION_GAIN;
 
-		// 2. Calculamos la corrección usando el PID de reversa
+		// Calcular la corrección usando el PID de reversa
 		PID_Compute(&myReverseValues, errorTotal, 10);
 		int8_t correction = (int8_t)myReverseValues.output;
 
-		// 3. Aplicamos la corrección a los motores.
-		// Nota: La fórmula matemática para mantener el centro con el giroscopio
+		// Aplicamos la corrección a los motores.
+		// La fórmula matemática para mantener el centro con el giroscopio
 		// ya contempla la inversión de giro, por lo que los signos quedan igual.
 		ENGINE_SetLeftSpeed(&myEngines, myReverseValues.base - correction);
 		ENGINE_SetRightSpeed(&myEngines, myReverseValues.base + correction);
 
-		// 4. Esperamos el impacto (1450 ms).
-		// Si ves que golpea muy violento, podés bajar este tiempo a 1200 o 1000.
+		// Esperamos el impacto (1450 ms).
 		if (HAL_GetTick() - alignStartTime >= 1450) {
 			ENGINE_SetLeftSpeed(&myEngines, 0);
 			ENGINE_SetRightSpeed(&myEngines, 0);
@@ -1095,6 +1099,8 @@ void Robot_StateMachine() {
 		}
 		break;
 	}
+	case ACTION_MOTOR_TEST:
+		break;
 	default:
 		currentAction = ACTION_IDLE;
 		break;
@@ -1102,15 +1108,21 @@ void Robot_StateMachine() {
 }
 
 void Robot_Stop(void) {
-    // 1. Frenamos físicamente el robot
+    // Frenar físicamente el robot
     ENGINE_SetLeftSpeed(&myEngines, 0);
     ENGINE_SetRightSpeed(&myEngines, 0);
 
-    // 2. Reseteamos la máquina de estados lógicos
+    if (currentPosition.currentX == currentPosition.targetX && currentPosition.currentY == currentPosition.targetY) {
+		currentPage = DISPLAY_END_SCREEN;
+	} else {
+		currentPage = DISPLAY_MENU;
+	}
+
+    // Resetear la máquina de estados lógicos
     currentMode = MODE_IDLE;
     currentAction = ACTION_IDLE;
 
-    // 3. Forzamos la interfaz a volver al menú principal
+    // Forzar la interfaz a volver al menú principal
     currentPage = DISPLAY_MENU;
     ChangeDisplayPage(DISPLAY_MENU);
 }
@@ -1129,11 +1141,15 @@ void Robot_ExploreMaze(void) {
 	// Forzamos las paredes de la esquina inicial (Oeste y Sur)
 //	currentPosition.maze[0][0].walls |= (1 << WEST) | (1 << SOUTH) | (1 << NORTH);
 	// -------------------------------
-	Map_UpdateCell((FILTERED_LEFT_IR > 350) ? 1 : 0,
-		    (FILTERED_FRONT_LEFT_IR > 350 || FILTERED_FRONT_RIGHT_IR > 350) ? 1 : 0,
-		    (FILTERED_RIGHT_IR > 350) ? 1 : 0);
+	uint8_t hasLeft = (FILTERED_LEFT_IR > 350) ? 1 : 0;
+	uint8_t hasFront = (FILTERED_FRONT_LEFT_IR > 350 || FILTERED_FRONT_RIGHT_IR > 350) ? 1 : 0;
+	uint8_t hasRight = (FILTERED_RIGHT_IR > 350) ? 1 : 0;
 
-	detectedIntersection = INTERSECTION_UNKNOWN;
+	Map_UpdateCell(hasLeft, hasFront, hasRight);
+
+	Map_AddWallToMap(currentPosition.currentX, currentPosition.currentY, (currentDirection + 2) % 4);
+
+	detectedIntersection = (IntersectionType_e)((hasLeft << 2) | (hasFront << 1) | hasRight);
 	cellState = CELL_INSIDE_CELL;
 
 	PID_Reset(&myWallValues);
@@ -1144,7 +1160,95 @@ void Robot_ExploreMaze(void) {
 	referenceLeftWall = 42;
 	referenceRightWall = 42;
 
-	currentAction = ACTION_FOLLOW_WALL;
+	if (currentPosition.currentX == currentPosition.targetX && currentPosition.currentY == currentPosition.targetY) {
+		Robot_Stop(); // Ya estamos donde queremos ir
+		return;
+	}
+
+	FloodFill_Calculate();
+
+	int8_t nextTurn = Robot_CalculateNextMove();
+
+	// 3. DECIDIR ACCIÓN INICIAL
+	if (nextTurn != 0) {
+		// El camino nos pide girar
+		switch(nextTurn) {
+			case 1: pivotDegreesTarget = -90; Map_UpdateDirection(1); break;
+			case -1: pivotDegreesTarget = 90; Map_UpdateDirection(-1); break;
+			case 2: pivotDegreesTarget = 180; Map_UpdateDirection(2); break;
+		}
+		currentAction = ACTION_TURN_PIVOT; // Girar sobre el eje sin avanzar
+	} else {
+		// El camino es recto, avanzar normal
+		currentAction = ACTION_FOLLOW_WALL;
+	}
+}
+
+void Robot_StartFindingMarks(void) {
+    currentMode = MODE_FINDING_MARKS;
+    currentPage = DISPLAY_RUN;
+    ChangeDisplayPage(DISPLAY_RUN);
+
+    referenceLeftWall = 42;
+    referenceRightWall = 42;
+    marksCount = 0; // Reiniciar contador
+
+    currentPosition.maze[currentPosition.currentX][currentPosition.currentY].visited = 1;
+
+    uint8_t hasLeft = (FILTERED_LEFT_IR > 350) ? 1 : 0;
+	uint8_t hasFront = (FILTERED_FRONT_LEFT_IR > 350 || FILTERED_FRONT_RIGHT_IR > 350) ? 1 : 0;
+	uint8_t hasRight = (FILTERED_RIGHT_IR > 350) ? 1 : 0;
+
+	Map_UpdateCell(hasLeft, hasFront, hasRight);
+
+	Map_AddWallToMap(currentPosition.currentX, currentPosition.currentY, (currentDirection + 2) % 4);
+
+	detectedIntersection = (IntersectionType_e)((hasLeft << 2) | (hasFront << 1) | hasRight);
+
+    cellState = CELL_INSIDE_CELL;
+
+    PID_Reset(&myWallValues);
+	PID_Reset(&myTurnValues);
+	PID_Reset(&myStopValues);
+	MPU6050_Reset_Yaw(&myMpuValues);
+
+	// DEFINIR EL OBJETIVO (DOBLE LÓGICA)
+	if (marksCount >= 3) {
+		// LÓGICA A (RECORRIDO): Ya conoce las 3 marcas.
+		currentMarkTargetIndex = 0;
+		currentPosition.targetX = markLocations[currentMarkTargetIndex].x;
+		currentPosition.targetY = markLocations[currentMarkTargetIndex].y;
+
+		// ¿Ya estamos parados en la primera marca en la largada?
+//		if (currentPosition.currentX == currentPosition.targetX && currentPosition.currentY == currentPosition.targetY) {
+//			currentMarkTargetIndex++;
+//			currentPosition.targetX = markLocations[currentMarkTargetIndex].x;
+//			currentPosition.targetY = markLocations[currentMarkTargetIndex].y;
+//		}
+	} else {
+		// LÓGICA B (BÚSQUEDA): Aún faltan marcas. Busca la celda no visitada más cercana.
+		if (!Map_SetTargetToNearestUnvisited()) {
+			Robot_Stop(); // Failsafe: Mapa explorado 100% pero no estaban las 3 marcas
+			return;
+		}
+	}
+
+	FloodFill_Calculate();
+	int8_t nextTurn = Robot_CalculateNextMove();
+
+	// DECIDIR ACCIÓN INICIAL
+	if (nextTurn != 0) {
+		// First move will be a turn if the target is not the front cell
+		switch(nextTurn) {
+			case 1: pivotDegreesTarget = -90; Map_UpdateDirection(1); break;
+			case -1: pivotDegreesTarget = 90; Map_UpdateDirection(-1); break;
+			case 2: pivotDegreesTarget = 180; Map_UpdateDirection(2); break;
+		}
+		currentAction = ACTION_TURN_PIVOT;
+	} else {
+		// The target is the first cell -> go straight
+		currentAction = ACTION_FOLLOW_WALL;
+	}
 }
 
 void Robot_FollowWall_Control(void) {
@@ -1170,9 +1274,9 @@ void Robot_FollowWall_Control(void) {
 		hasLeftWall = (DIST_LEFT_IR < LATERAL_WALL_THRESHOLD_MM) ? 1 : 0;
 		hasRightWall = (DIST_RIGHT_IR < LATERAL_WALL_THRESHOLD_MM) ? 1 : 0;
 
-		// --- FILTRO DE ANCHO DE PASILLO ---
+		// FILTRO DE ANCHO DE PASILLO
 		if (hasLeftWall && hasRightWall) {
-			#define MAX_CORRIDOR_SUM_MM 115 // Tu suma máxima nominal (ej: 110 + 10mm de tolerancia)
+			#define MAX_CORRIDOR_SUM_MM 115 // Suma máxima nominal (ej: 110 + 10mm de tolerancia)
 
 			uint16_t corridorSum = DIST_LEFT_IR + DIST_RIGHT_IR;
 
@@ -1181,9 +1285,9 @@ void Robot_FollowWall_Control(void) {
 				// significa que estamos en una intersección doble (T o Cruce +)
 				if (DIST_LEFT_IR > 50 && DIST_RIGHT_IR > 50) {
 					hasLeftWall = 0;
-					hasRightWall = 0; // Desactivamos ambas, que el Gyro mantenga el centro
+					hasRightWall = 0; // Desactivamos ambas, que el giroscopio mantenga el centro
 				}
-				// Si no, es una apertura simple (solo una pared se fue)
+				// Si no, es una apertura simple
 				else {
 					if (DIST_LEFT_IR > DIST_RIGHT_IR) {
 						hasLeftWall = 0;  // Se abrió la izquierda
@@ -1232,7 +1336,7 @@ void Robot_FollowWall_Control(void) {
 		correction = 0;
 	}
 
-	// --- INICIO PID FRENO ---
+	// INICIO PID FRENO
 	int8_t currentBaseSpeed = myWallValues.base; // Guardamos la velocidad base original temporalmente
 
 	// Tomamos el valor más bajo de los dos sensores frontales por seguridad
@@ -1253,6 +1357,14 @@ void Robot_FollowWall_Control(void) {
 
 			currentBaseSpeed = (int8_t)myStopValues.output;
 
+			int8_t STOP_MIN_PWM = 30; // % mínimo que mueve al robot
+
+			if (currentBaseSpeed > 0 && currentBaseSpeed < STOP_MIN_PWM) {
+				currentBaseSpeed = STOP_MIN_PWM;
+			} else if (currentBaseSpeed < 0 && currentBaseSpeed > -STOP_MIN_PWM) {
+				currentBaseSpeed = -STOP_MIN_PWM; // Para que la reversa también tenga fuerza
+			}
+
 			// Si estamos dentro del rango objetivo, cortamos todo y salimos
 			if (abs(errorDistance) <= stopToleranceMm) {
 				ENGINE_SetLeftSpeed(&myEngines, 0);
@@ -1260,9 +1372,7 @@ void Robot_FollowWall_Control(void) {
 
 				PID_Reset(&myStopValues);
 				PID_Reset(&myWallValues);
-//				MPU6050_Reset_Yaw(&myMpuValues);
 
-				// Cambia el estado aquí según la lógica de tu laberinto
 				currentAction = ACTION_TURN_PIVOT;
 
 				if (currentPosition.currentX == currentPosition.targetX && currentPosition.currentY == currentPosition.targetY) {
@@ -1270,7 +1380,7 @@ void Robot_FollowWall_Control(void) {
 				} else {
 					currentAction = ACTION_TURN_PIVOT;
 				}
-				return; // Abortamos para no sobrescribir el 0
+				return; // Abortar para no sobrescribir el 0
 			}
 		} else {
 			PID_Reset(&myStopValues);
@@ -1295,8 +1405,10 @@ void Robot_Turn_Control(int16_t degreesToTurn) {
 		if (pathBlocked) {
 			if (degreesToTurn > 0) {
 				pivotDegreesTarget += 90;
+				Map_UpdateDirection(-1);
 			} else {
 				pivotDegreesTarget -= 90;
+				Map_UpdateDirection(1);
 			}
 
 			return;
@@ -1304,9 +1416,16 @@ void Robot_Turn_Control(int16_t degreesToTurn) {
 
 		uint8_t wallBehind = 0;
 
-		if (degreesToTurn > 0) {
+		if (degreesToTurn == 180 || degreesToTurn == -180) {
+			// En un giro de 180°, la pared que queda atrás es la que estaba ENFRENTE (0b010)
+			if (detectedIntersection & 0b010) wallBehind = 1;
+		}
+		else if (degreesToTurn > 0) { // Giro a la izquierda (+90)
+			// La pared que queda atrás es la DERECHA original (0b001)
 			if (detectedIntersection & 0b001) wallBehind = 1;
-		} else {
+		}
+		else if (degreesToTurn < 0) { // Giro a la derecha (-90)
+			// La pared que queda atrás es la IZQUIERDA original (0b100)
 			if (detectedIntersection & 0b100) wallBehind = 1;
 		}
 
@@ -1317,7 +1436,6 @@ void Robot_Turn_Control(int16_t degreesToTurn) {
 			currentAction = ACTION_AFTER_TURN;
 		}
 
-//		currentAction = ACTION_AFTER_TURN;
 		PID_Reset(&myWallValues);
 		PID_Reset(&myTurnValues);
 		MPU6050_Reset_Yaw(&myMpuValues);
@@ -1346,15 +1464,15 @@ void Robot_Turn_Control(int16_t degreesToTurn) {
 }
 
 IntersectionType_e Robot_IdentifyIntersection(void) {
-    // 1. Determinar el estado de las paredes
+    // Determinar el estado de las paredes
     uint8_t frontWall = (PERCEPTION_FRONT_LEFT | PERCEPTION_FRONT_RIGHT);
     uint8_t leftWall  = PERCEPTION_DIAG_LEFT;
     uint8_t rightWall = PERCEPTION_DIAG_RIGHT;
 
-    // 2. Combinar los estados en un índice de 3 bits
+    // Combinar los estados en un índice de 3 bits
     uint8_t intersectionIndex = (leftWall << 2) | (frontWall << 1) | (rightWall);
 
-    // 3. Devolver el resultado directamente desde la tabla
+    // Devolver el resultado directamente desde la tabla
     return (IntersectionType_e)intersectionIndex;
 //    return intersectionLUT[intersectionIndex];
 }
@@ -1366,14 +1484,12 @@ void Robot_CheckCellCrossing(void) {
 	uint8_t frontLine = (FILTERED_FRONT_UNDER_IR < LINE_DETECTION_THRESHOLD);
     uint8_t rearLine  = (FILTERED_REAR_UNDER_IR < LINE_DETECTION_THRESHOLD);
 
-    static int8_t earlyIntersection = 0; // finalIntersection;
-//    static uint8_t hasClearedFirstLine = 0, markDetected = 0;
+    static int8_t earlyIntersection = 0;
 
 
     switch (cellState) {
         case CELL_INSIDE_CELL:
             if (frontLine) { 		// Wait until the front sensor see the line
-//            	ChangeDisplayPage(currentPage);
 
             	myVelocity.time_frontLineDetect = HAL_GetTick();
 
@@ -1390,7 +1506,7 @@ void Robot_CheckCellCrossing(void) {
 
 				detectedIntersection = (IntersectionType_e)((hasLeftWall << 2) | (hasFrontWall << 1) | hasRightWall);
 
-				// 3. Actualizamos el mapa de una
+				// 3. Actualizamos el mapa
 				Map_UpdateCoordinates();
 				Map_UpdateCell(hasLeftWall, hasFrontWall, hasRightWall);
 
@@ -1413,7 +1529,7 @@ void Robot_CheckCellCrossing(void) {
 				// 4. Saltamos directamente al estado trasero
 				cellState = CELL_REAR_LINE;
 
-				// 5. Disparamos la acción de centrado (acá usaríamos el timeToCenter hardcodeado que hablamos antes)
+				// 5. Disparamos la acción de centrado
 				if (pivotDegreesTarget != 0 || (currentPosition.currentX == currentPosition.targetX && currentPosition.currentY == currentPosition.targetY)) {
 					currentAction = ACTION_CENTER_IN_CELL;
 					centeringStartTime = HAL_GetTick();
@@ -1456,15 +1572,9 @@ void Robot_CheckCellCrossing(void) {
                 } else {
                 	markDetected = 0;
 
-//                	// 1. Evaluar pared frontal (Usando milímetros para más seguridad
-//    				uint8_t hasFrontWall = (FILTERED_FRONT_LEFT_IR > WALL_PRESENCE_THR || FILTERED_FRONT_RIGHT_IR > WALL_PRESENCE_THR) ? 1 : 0;
-//    				uint8_t hasLeftWall = (FILTERED_LEFT_IR > WALL_PRESENCE_THR) ? 1 : 0;
-//    				uint8_t hasRightWall = (FILTERED_RIGHT_IR > WALL_PRESENCE_THR) ? 1 : 0;
-//
-//    				Robot_ProcessIntersection(hasLeftWall, hasFrontWall, hasRightWall);
                 }
 
-            	// 1. Evaluar pared frontal (Usando milímetros para más seguridad
+            	// 1. Evaluar paredes
 				uint8_t hasFrontWall = (FILTERED_FRONT_LEFT_IR > WALL_PRESENCE_THR || FILTERED_FRONT_RIGHT_IR > WALL_PRESENCE_THR) ? 1 : 0;
 				uint8_t hasLeftWall = (FILTERED_LEFT_IR > WALL_PRESENCE_THR) ? 1 : 0;
 				uint8_t hasRightWall = (FILTERED_RIGHT_IR > WALL_PRESENCE_THR) ? 1 : 0;
@@ -1502,16 +1612,15 @@ void Robot_CheckCellCrossing(void) {
 					}
 
 					Map_UpdateCoordinates();
-//					Mark_SaveLocation(currentPosition.currentX, currentPosition.currentY);
 
-					// 1. Leemos las paredes de la nueva celda
+					// Leemos las paredes de la nueva celda
 					uint8_t hasFrontWall = (FILTERED_FRONT_LEFT_IR > WALL_PRESENCE_THR || FILTERED_FRONT_RIGHT_IR > WALL_PRESENCE_THR) ? 1 : 0;
 					uint8_t hasLeftWall = (FILTERED_LEFT_IR > WALL_PRESENCE_THR) ? 1 : 0;
 					uint8_t hasRightWall = (FILTERED_RIGHT_IR > WALL_PRESENCE_THR) ? 1 : 0;
 
 					Robot_ProcessIntersection(hasLeftWall, hasFrontWall, hasRightWall);
 
-					// 4. Apagamos la bandera para que la siguiente celda sea normal
+					// Apagamos la bandera para que la siguiente celda sea normal
 					markDetected = 0;
 					cellState = CELL_CROSS_FINISHED;
 				} else {
@@ -1525,8 +1634,6 @@ void Robot_CheckCellCrossing(void) {
             break;
         case CELL_CROSS_FINISHED:
             // NEW CELL CONFIRMED
-            // 1. Update coordinates
-            // 2. Reset relatives variables
 
             // Return to initial state
             cellState = CELL_INSIDE_CELL;
@@ -1535,14 +1642,13 @@ void Robot_CheckCellCrossing(void) {
 }
 
 void Robot_ProcessIntersection(uint8_t hasLeftWall, uint8_t hasFrontWall, uint8_t hasRightWall) {
-    // 1. Guardar la intersección
+    // Guardar la intersección
     detectedIntersection = (IntersectionType_e)((hasLeftWall << 2) | (hasFrontWall << 1) | hasRightWall);
 
-    // 2. Actualizar mapa
-//    Map_UpdateCoordinates();
+    // Actualizar mapa
     Map_UpdateCell(hasLeftWall, hasFrontWall, hasRightWall);
 
-    // 3. Calcular siguiente movimiento (FloodFill)
+    // Calcular siguiente movimiento (FloodFill)
     if (currentMode == MODE_EXPLORING_MAZE) {
     	// Verify if the robot reached the end
         if (currentPosition.currentX == currentPosition.targetX && currentPosition.currentY == currentPosition.targetY) {
@@ -1562,18 +1668,31 @@ void Robot_ProcessIntersection(uint8_t hasLeftWall, uint8_t hasFrontWall, uint8_
     } else if (currentMode == MODE_FINDING_MARKS) {
     	// 1. Condición de victoria: ¿Ya encontró las 3?
 		if (marksCount >= 3) {
-			pivotDegreesTarget = 0;
-			Robot_Stop();
+			// --- LÓGICA A (RECORRIDO SECUENCIAL) ---
+			if (currentPosition.currentX == currentPosition.targetX && currentPosition.currentY == currentPosition.targetY) {
+				currentMarkTargetIndex++; // Pasamos a la siguiente marca
+
+				if (currentMarkTargetIndex >= 3) {
+					pivotDegreesTarget = 0;
+					Robot_Stop();
+				} else {
+					currentPosition.targetX = markLocations[currentMarkTargetIndex].x;
+					currentPosition.targetY = markLocations[currentMarkTargetIndex].y;
+				}
+			}
+//			pivotDegreesTarget = 0;
+//			Robot_Stop();
 		} else {
-			// 2. ¿Llegó a la celda que estaba yendo a explorar?
+			// ¿Llegó a la celda que estaba yendo a explorar?
 			if (currentPosition.currentX == currentPosition.targetX && currentPosition.currentY == currentPosition.targetY) {
 				// Buscamos una NUEVA celda en la niebla para setear como Target
 				if (!Map_SetTargetToNearestUnvisited()) {
+					pivotDegreesTarget = 0;
 					Robot_Stop(); // Error: El laberinto se exploró al 100% y no había 3 marcas
 				}
 			}
 
-			// 3. Ya sea que mantenga el target anterior o le hayamos dado uno nuevo, calculamos la ruta:
+			// Ya sea que mantenga el target anterior o le hayamos dado uno nuevo, calculamos la ruta:
 			if (currentMode == MODE_FINDING_MARKS) {
 				FloodFill_Calculate();
 				int8_t nextTurn = Robot_CalculateNextMove();
@@ -1587,18 +1706,15 @@ void Robot_ProcessIntersection(uint8_t hasLeftWall, uint8_t hasFrontWall, uint8_
 		}
     }
 
-    // crear una bandera local para saber si estamos en la celda final
+    // Crear una bandera local para saber si estamos en la celda final
     uint8_t isTarget = (currentPosition.currentX == currentPosition.targetX && currentPosition.currentY == currentPosition.targetY);
 
-    // 4. Disparar la acción de centrado si es necesario
+    // Disparar la acción de centrado si es necesario
     if (pivotDegreesTarget != 0 || isTarget) {
     	uint8_t distanceToCenter = 40;
 
         if (markDetected) {
-			// Como cortamos el timer de Negro -> Blanco, ya estamos más adelante.
-			// Restamos el ancho de la línea/cinta (aprox 20mm).
-			// Podés ajustar este '20' fino si gira un poquito antes o un poquito después.
-			distanceToCenter = 35;
+			distanceToCenter = 50;
 		}
 
         timeToCenter = (distanceToCenter * 1000) / myVelocity.currentVelocity_mm_s;
@@ -1608,17 +1724,17 @@ void Robot_ProcessIntersection(uint8_t hasLeftWall, uint8_t hasFrontWall, uint8_
 }
 
 void Mark_SaveLocation(uint8_t x, uint8_t y) {
-    // 1. Si ya encontramos las 3, no hacemos nada extra
+    // Si ya encontramos las 3, no hacemos nada extra
     if (marksCount >= 3) return;
 
-    // 2. Revisar si esta marca ya la habíamos encontrado antes (Filtro Anti-Duplicados)
+    // Revisar si esta marca ya la habíamos encontrado antes (Filtro Anti-Duplicados)
     for (uint8_t i = 0; i < marksCount; i++) {
         if (markLocations[i].x == x && markLocations[i].y == y) {
             return; // Ya la tenemos registrada, abortamos
         }
     }
 
-    // 3. Es una marca nueva. La guardamos en el índice correspondiente.
+    // Es una marca nueva. La guardamos en el índice correspondiente.
     markLocations[marksCount].x = x;
     markLocations[marksCount].y = y;
     marksCount++;
@@ -1626,7 +1742,7 @@ void Mark_SaveLocation(uint8_t x, uint8_t y) {
     UNERBUS_WriteByte(&unerbusESP01, x);
 	UNERBUS_WriteByte(&unerbusESP01, y);
 	UNERBUS_WriteByte(&unerbusESP01, marksCount); // Enviamos el progreso (1/3, 2/3, etc)
-	UNERBUS_Send(&unerbusESP01, GET_SPECIAL_CELL, 4); // 0xE5 -> GET_SPECIAL_CELL
+	UNERBUS_Send(&unerbusESP01, GET_SPECIAL_CELL, 4); // 0xE5
 }
 
 uint8_t Map_SetTargetToNearestUnvisited(void) {
@@ -1674,55 +1790,26 @@ uint8_t Map_SetTargetToNearestUnvisited(void) {
     return 0; // Todo explorado
 }
 
-void Robot_StartFindingMarks(void) {
-    currentMode = MODE_FINDING_MARKS;
-    currentPage = DISPLAY_RUN;
-    ChangeDisplayPage(DISPLAY_RUN);
-
-    referenceLeftWall = 42;
-    referenceRightWall = 42;
-    marksCount = 0; // Reiniciar contador
-
-    detectedIntersection = INTERSECTION_UNKNOWN;
-    cellState = CELL_INSIDE_CELL;
-    currentAction = ACTION_FOLLOW_WALL;
-
-    PID_Reset(&myWallValues);
-    MPU6050_Reset_Yaw(&myMpuValues);
-
-    currentPosition.maze[currentPosition.currentX][currentPosition.currentY].visited = 1;
-
-	// 2. Leemos las paredes iniciales (igual que en ExploreMaze) para que el BFS
-	// no intente mandar al robot hacia una pared sólida en su primer movimiento.
-	Map_UpdateCell((FILTERED_LEFT_IR > 350) ? 1 : 0,
-				   (FILTERED_FRONT_LEFT_IR > 350 || FILTERED_FRONT_RIGHT_IR > 350) ? 1 : 0,
-				   (FILTERED_RIGHT_IR > 350) ? 1 : 0);
-
-    // El target inicial será la primera celda sin visitar
-    Map_SetTargetToNearestUnvisited();
-}
-
 void FloodFill_Calculate(void) {
-    // 1. Reiniciamos los costos a 255
+    // Reiniciamos los costos a 255
     for (uint8_t x = 0; x < 8; x++) {
         for (uint8_t y = 0; y < 8; y++) {
             currentPosition.maze[x][y].cost = 255;
         }
     }
 
-    // 2. Cola para el BFS (Ocupa 512 bytes en RAM, la Bluepill tiene de sobra)
+    // Cola para el BFS
     Point_s queue[64];
     uint16_t head = 0;
     uint16_t tail = 0;
 
-    // 3. Establecemos la meta y la encolamos
-    // (Asumimos que mazeTargetX y mazeTargetY ya están declaradas como variables globales)
+    // Establecemos la meta y la encolamos
     currentPosition.maze[currentPosition.targetX][currentPosition.targetY].cost = 0;
     queue[tail].x = currentPosition.targetX;
     queue[tail].y = currentPosition.targetY;
     tail++;
 
-    // 4. Inundación
+    // Inundación
     while (head < tail) {
         uint8_t cx = queue[head].x;
         uint8_t cy = queue[head].y;
@@ -1831,10 +1918,10 @@ int8_t Robot_CalculateNextMove(void) {
 }
 
 void Map_AddWallToMap(uint8_t x, uint8_t y, uint8_t dir) {
-    // 1. Pared en la celda actual
+    // Pared en la celda actual
     currentPosition.maze[x][y].walls |= (1 << dir);
 
-    // 2. Pared espejada en la celda vecina (para que el Flood Fill no intente cruzar)
+    // Pared espejada en la celda vecina (para que el Flood Fill no intente cruzar)
     if (dir == 0 && y < 7) currentPosition.maze[x][y+1].walls |= (1 << 2); // Norte -> Vecino Sur
     if (dir == 1 && x < 7) currentPosition.maze[x+1][y].walls |= (1 << 3); // Este -> Vecino Oeste
     if (dir == 2 && y > 0)  currentPosition.maze[x][y-1].walls |= (1 << 0); // Sur -> Vecino Norte
@@ -1895,8 +1982,8 @@ void Map_UpdateDirection(int8_t turnDir) {
 void Map_UpdateCoordinates(void) {
 	switch(currentDirection){
 		case NORTH:
-			if(currentPosition.currentY < 7) currentPosition.currentY++; //y--;
-			// Asumiendo (0,0) arriba-izquierda. Si (0,0) es abajo, sería Y++.
+			if(currentPosition.currentY < 7) currentPosition.currentY++;
+			// Asumiendo (0,0) abajo-izquierda
 			break;
 		case EAST:
 			if(currentPosition.currentX < 7) currentPosition.currentX++;
@@ -1947,59 +2034,60 @@ void DrawRobotEyes(OLED_Handle_s *handle, IntersectionType_e intersection, Robot
 		}
 	}
 
+
 	// 3. Expresiones según el estado (Solo aplican si NO está parpadeando)
-	if (!isBlinking) {
-		if (action == ACTION_TURN_PIVOT) {
-			// Acción: Girando -> Mira hacia el lado del giro por anticipación
-			if (turnTarget > 0) { // Girando a la izquierda
-				x_L = 1; x_R = 41;
-				y_L = 10; w_L = 26; h_L = 42; // Efecto de perspectiva (ojo más finito)
-			} else { // Girando a la derecha
-				x_L = 64; x_R = 101;
-				w_R = 26; y_R = 10; h_R = 42;
-			}
-		} else if (action == ACTION_BACK_WALL_ALIGN) {
-			// Acción: Retrocediendo/Alineándose -> Ojos chiquitos, como de precaución/susto
-			w_L = 14; h_L = 16; y_L = baseY + 8;
-			w_R = 14; h_R = 16; y_R = baseY + 8;
-		} else {
-			// Acción: Avanzando/Explorando -> Reacciona a lo que ve enfrente
-			switch(intersection) {
-				case INTERSECTION_DEAD_END:
-					// Sorprendido al ver un callejón sin salida (ojos más redondos)
-					w_L = 13; h_L = 15; y_L = baseY + 10;
-					break;
-				case INTERSECTION_CROSSROAD:
-				case INTERSECTION_T_ROAD:
-					// Concentrado, evaluando qué camino tomar (Cejas fruncidas)
-					showEyebrow = 1;
-					y_L = baseY + 10;
-					y_R = baseY + 10;
-					break;
-				case INTERSECTION_RIGHT_SQUARE:
-				case INTERSECTION_RIGHT_FRONT_OPEN:
-					// Mira de reojo a la derecha (viendo el hueco de la pared)
-					x_L = 1;
-					x_R = 41;
-					y_L = 10;
-					w_L = 26;
-					h_L = 42;
-					break;
-				case INTERSECTION_LEFT_SQUARE:
-				case INTERSECTION_LEFT_FRONT_OPEN:
-					// Mira de reojo a la izquierda
-					x_L = 64;
-					x_R = 101;
-					y_R = 10;
-					h_R = 42;
-					w_R = 26;
-					break;
-				default:
-					// INTERSECTION_UNKNOWN (Pasillo normal) usa los valores base
-					break;
-			}
-		}
-	}
+//	if (!isBlinking) {
+//		if (action == ACTION_TURN_PIVOT) {
+//			// Acción: Girando -> Mira hacia el lado del giro por anticipación
+//			if (turnTarget > 0) { // Girando a la izquierda
+//				x_L = 1; x_R = 41;
+//				y_L = 10; w_L = 26; h_L = 42; // Efecto de perspectiva (ojo más finito)
+//			} else { // Girando a la derecha
+//				x_L = 64; x_R = 101;
+//				w_R = 26; y_R = 10; h_R = 42;
+//			}
+//		} else if (action == ACTION_BACK_WALL_ALIGN) {
+//			// Acción: Retrocediendo/Alineándose -> Ojos chiquitos, como de precaución/susto
+//			w_L = 14; h_L = 16; y_L = baseY + 8;
+//			w_R = 14; h_R = 16; y_R = baseY + 8;
+//		} else {
+//			// Acción: Avanzando/Explorando -> Reacciona a lo que ve enfrente
+//			switch(intersection) {
+//				case INTERSECTION_DEAD_END:
+//					// Sorprendido al ver un callejón sin salida (ojos más redondos)
+//					w_L = 13; h_L = 15; y_L = baseY + 10;
+//					break;
+//				case INTERSECTION_CROSSROAD:
+//				case INTERSECTION_T_ROAD:
+//					// Concentrado, evaluando qué camino tomar (Cejas fruncidas)
+//					showEyebrow = 1;
+//					y_L = baseY + 10;
+//					y_R = baseY + 10;
+//					break;
+//				case INTERSECTION_RIGHT_SQUARE:
+//				case INTERSECTION_RIGHT_FRONT_OPEN:
+//					// Mira de reojo a la derecha (viendo el hueco de la pared)
+//					x_L = 1;
+//					x_R = 41;
+//					y_L = 10;
+//					w_L = 26;
+//					h_L = 42;
+//					break;
+//				case INTERSECTION_LEFT_SQUARE:
+//				case INTERSECTION_LEFT_FRONT_OPEN:
+//					// Mira de reojo a la izquierda
+//					x_L = 64;
+//					x_R = 101;
+//					y_R = 10;
+//					h_R = 42;
+//					w_R = 26;
+//					break;
+//				default:
+//					// INTERSECTION_UNKNOWN (Pasillo normal) usa los valores base
+//					break;
+//			}
+//		}
+//	}
 
 	// 4. Dibujar los ojos en el buffer
 	OLED_DrawDigitalEye(handle, x_L, y_L, w_L, h_L);
@@ -2023,8 +2111,6 @@ void ChangeDisplayPage(DisplayPage_e page){
 		case DISPLAY_CLEAR:
 			OLED_Fill(&myOled, Black);
 			break;
-//		case DISPLAY_INITIALIZING:
-//			break;
 		case DISPLAY_MENU:
 			currentTitle = "Menu";
 			OLED_Fill(&myOled, Black);
@@ -2037,7 +2123,7 @@ void ChangeDisplayPage(DisplayPage_e page){
 			        scrollOffset = currentSelection;
 			    }
 
-			    // 4. DIBUJAR LISTA DE OPCIONES
+			    // DIBUJAR LISTA DE OPCIONES
 			    for (int i = 0; i < MAX_VISIBLE_ITEMS; i++) {
 			        int8_t itemIndex = scrollOffset + i;
 
@@ -2052,7 +2138,7 @@ void ChangeDisplayPage(DisplayPage_e page){
 
 			            // Escribe el texto en NEGRO
 			            OLED_SetCursor(&myOled, 15, y_pos);
-			            sprintf(strAux, "%s", menuItems[itemIndex]); // Sin ">", la barra basta
+			            sprintf(strAux, "%s", menuItems[itemIndex]);
 			            OLED_WriteString(&myOled, strAux, Font_7x10, Black);
 			        }
 			        else {
@@ -2064,120 +2150,160 @@ void ChangeDisplayPage(DisplayPage_e page){
 			        }
 			    }
 			break;
+		case DISPLAY_RUN_MODE_SELECT:
+			currentTitle = "Select Mode";
+			OLED_Fill(&myOled, Black);
+
+			int y_pos_explore = MENU_START_Y;
+			int y_pos_marks = MENU_START_Y + MENU_ITEM_HEIGHT;
+
+			if (selectedRunMode == MODE_EXPLORING_MAZE) {
+				// Resaltar Explore
+				OLED_DrawFilledRect(&myOled, 15, y_pos_explore - 1, 98, MENU_ITEM_HEIGHT - 1, White);
+				OLED_SetCursor(&myOled, 15, y_pos_explore);
+				OLED_WriteString(&myOled, "Explore Maze", Font_7x10, Black);
+
+				// Find Marks normal
+				OLED_SetCursor(&myOled, 15, y_pos_marks);
+				OLED_WriteString(&myOled, "Find Marks", Font_7x10, White);
+			} else {
+				// Explore normal
+				OLED_SetCursor(&myOled, 15, y_pos_explore);
+				OLED_WriteString(&myOled, "Explore Maze", Font_7x10, White);
+
+				// Resaltar Find Marks
+				OLED_DrawFilledRect(&myOled, 15, y_pos_marks - 1, 98, MENU_ITEM_HEIGHT - 1, White);
+				OLED_SetCursor(&myOled, 15, y_pos_marks);
+				OLED_WriteString(&myOled, "Find Marks", Font_7x10, Black);
+			}
+			break;
 		case DISPLAY_RUN:
 			/////////////////////////////////////////////////// DEBUG
 			OLED_Fill(&myOled, Black);
-			int y_pos = MENU_START_Y + (MENU_ITEM_HEIGHT);
-			OLED_SetCursor(&myOled, 1, y_pos-26);
-			switch(currentAction) {
-			case ACTION_IDLE:
-				sprintf(str, "IDLE");
-				break;
-			case ACTION_FOLLOW_WALL:
-				sprintf(str, "FOLLOW WALL");
-				break;
-			case ACTION_CENTER_IN_CELL:
-				sprintf(str, "CENTER CELL");
-				break;
-			case ACTION_AFTER_TURN:
-				sprintf(str, "AFTER TURN");
-				break;
-			case ACTION_TURN_PIVOT:
-				sprintf(str, "PIVOT");
-				break;
-			case ACTION_BACK_WALL_ALIGN:
-				sprintf(str, "ALIGN");
-				break;
-			}
-			OLED_WriteString(&myOled, str, Font_7x10, White);
+			if (SHOW_EYES_SCREEN) {
+				if (markDetected && currentMode == MODE_FINDING_MARKS) {
+					OLED_Fill(&myOled, Black);
+					sprintf(str, "MARK %d", marksCount);
+					OLED_SetCursor(&myOled, 16, 19);
+					OLED_WriteString(&myOled, str, Font_16x26, White);
+					break; //Evita que dibuje el resto de la interfaz de RUN
+				}
 
-			OLED_SetCursor(&myOled, 1, y_pos-12);
+				OLED_Fill(&myOled, Black);
+				int y_pos = MENU_START_Y + (MENU_ITEM_HEIGHT);
+				OLED_SetCursor(&myOled, 1, y_pos-26);
+				switch(currentAction) {
+				case ACTION_IDLE:
+					sprintf(str, "IDLE");
+					break;
+				case ACTION_FOLLOW_WALL:
+					sprintf(str, "FOLLOW WALL");
+					break;
+				case ACTION_CENTER_IN_CELL:
+					sprintf(str, "CENTER CELL");
+					break;
+				case ACTION_AFTER_TURN:
+					sprintf(str, "AFTER TURN");
+					break;
+				case ACTION_TURN_PIVOT:
+					sprintf(str, "PIVOT");
+					break;
+				case ACTION_BACK_WALL_ALIGN:
+					sprintf(str, "ALIGN");
+					break;
+				default:
+					break;
+				}
+				OLED_WriteString(&myOled, str, Font_7x10, White);
 
-			if(markDetected) {
-				sprintf(str, "MARK | %d ", marksCount);
+				OLED_SetCursor(&myOled, 1, y_pos-12);
+
+				if(markDetected) {
+					sprintf(str, "MARK | %d ", marksCount);
+				} else {
+					sprintf(str, "NO MARK   ");
+				}
+
+	//			int32_t currentYaw = myMpuValues.data.relativeYawScaled / YAW_SCALE;
+	//			sprintf(str, "Tgt:%d Now:%ld", pivotDegreesTarget, currentYaw);
+
+				OLED_WriteString(&myOled, str, Font_7x10, White);
+
+				OLED_SetCursor(&myOled, 1, y_pos);
+
+				switch(detectedIntersection) {
+					case INTERSECTION_RIGHT_FRONT_OPEN:
+						sprintf(str, "<- |");
+						break;
+					case INTERSECTION_RIGHT_SQUARE:
+						sprintf(str, "<-");
+						break;
+					case INTERSECTION_CROSSROAD:
+						sprintf(str, "CROSS");
+						break;
+					case INTERSECTION_LEFT_FRONT_OPEN:
+						sprintf(str, "| ->");
+						break;
+					case INTERSECTION_LEFT_SQUARE:
+						sprintf(str, "->");
+						break;
+					case INTERSECTION_T_ROAD:
+						sprintf(str, "T");
+						break;
+					case INTERSECTION_UNKNOWN:
+						sprintf(str, "HALL");
+						break;
+					case INTERSECTION_DEAD_END:
+						sprintf(str, "DEAD");
+				}
+				OLED_WriteString(&myOled, str, Font_7x10, White);
+
+				OLED_SetCursor(&myOled, 1, y_pos+12);
+
+	//			sprintf(str, "%d %d %d", snapDiagLeft, snapFront, snapDiagRight);
+	//			sprintf(str, "L:%3d R:%3d", myEngines.currentLeftSpeed, myEngines.currentRightSpeed);
+	//	        switch(cellState) {
+	//	            case CELL_INSIDE_CELL:
+	//	            	sprintf(str, "C: INSIDE");
+	//	            	break;
+	//	            case CELL_FRONT_LINE:
+	//	            	sprintf(str, "C: FRONT");
+	//	            	break;
+	//	            case CELL_REAR_LINE:
+	//	            	sprintf(str, "C: REAR");
+	//	                break;
+	//	            case CELL_CROSS_FINISHED:
+	//	            	sprintf(str, "C: END");
+	//	            	break;
+	//	        }
+	//			sprintf(str, "%d %d %d", PERCEPTION_DIAG_LEFT, (PERCEPTION_FRONT_LEFT | PERCEPTION_FRONT_RIGHT), PERCEPTION_DIAG_RIGHT);
+				sprintf(str, "LW:%d  RW:%d", activeLeftWall, activeRightWall);
+				OLED_WriteString(&myOled, str, Font_7x10, White);
+				OLED_SetCursor(&myOled, 1, y_pos+24);
+				switch(cellState) {
+					case CELL_INSIDE_CELL:
+						sprintf(str, "C: INSIDE");
+						break;
+					case CELL_FRONT_LINE:
+						sprintf(str, "C: FRONT");
+						break;
+					case CELL_REAR_LINE:
+						sprintf(str, "C: REAR");
+						break;
+					case CELL_CROSS_FINISHED:
+						sprintf(str, "C: END");
+						break;
+				}
+				OLED_WriteString(&myOled, str, Font_7x10, White);
 			} else {
-				sprintf(str, "NO MARK   ");
+				DrawRobotEyes(&myOled, detectedIntersection, currentAction, pivotDegreesTarget);
 			}
-
-//			int32_t currentYaw = myMpuValues.data.relativeYawScaled / YAW_SCALE;
-//			sprintf(str, "Tgt:%d Now:%ld", pivotDegreesTarget, currentYaw);
-
-			OLED_WriteString(&myOled, str, Font_7x10, White);
-
-			OLED_SetCursor(&myOled, 1, y_pos);
-
-	        switch(detectedIntersection) {
-	            case INTERSECTION_RIGHT_FRONT_OPEN:
-	            	sprintf(str, "<- |");
-	            	break;
-	            case INTERSECTION_RIGHT_SQUARE:
-	            	sprintf(str, "<-");
-	            	break;
-	            case INTERSECTION_CROSSROAD:
-	            	sprintf(str, "CROSS");
-	                break;
-	            case INTERSECTION_LEFT_FRONT_OPEN:
-	            	sprintf(str, "| ->");
-	            	break;
-	            case INTERSECTION_LEFT_SQUARE:
-	            	sprintf(str, "->");
-	                break;
-	            case INTERSECTION_T_ROAD:
-	            	sprintf(str, "T");
-	                break;
-	            case INTERSECTION_UNKNOWN:
-	            	sprintf(str, "HALL");
-	            	break;
-	            case INTERSECTION_DEAD_END:
-	            	sprintf(str, "DEAD");
-	        }
-			OLED_WriteString(&myOled, str, Font_7x10, White);
-
-			OLED_SetCursor(&myOled, 1, y_pos+12);
-
-//			sprintf(str, "%d %d %d", snapDiagLeft, snapFront, snapDiagRight);
-//			sprintf(str, "L:%3d R:%3d", myEngines.currentLeftSpeed, myEngines.currentRightSpeed);
-//	        switch(cellState) {
-//	            case CELL_INSIDE_CELL:
-//	            	sprintf(str, "C: INSIDE");
-//	            	break;
-//	            case CELL_FRONT_LINE:
-//	            	sprintf(str, "C: FRONT");
-//	            	break;
-//	            case CELL_REAR_LINE:
-//	            	sprintf(str, "C: REAR");
-//	                break;
-//	            case CELL_CROSS_FINISHED:
-//	            	sprintf(str, "C: END");
-//	            	break;
-//	        }
-//			sprintf(str, "%d %d %d", PERCEPTION_DIAG_LEFT, (PERCEPTION_FRONT_LEFT | PERCEPTION_FRONT_RIGHT), PERCEPTION_DIAG_RIGHT);
-			sprintf(str, "LW:%d  RW:%d", activeLeftWall, activeRightWall);
-			OLED_WriteString(&myOled, str, Font_7x10, White);
-			OLED_SetCursor(&myOled, 1, y_pos+24);
-			switch(cellState) {
-				case CELL_INSIDE_CELL:
-					sprintf(str, "C: INSIDE");
-					break;
-				case CELL_FRONT_LINE:
-					sprintf(str, "C: FRONT");
-					break;
-				case CELL_REAR_LINE:
-					sprintf(str, "C: REAR");
-					break;
-				case CELL_CROSS_FINISHED:
-					sprintf(str, "C: END");
-					break;
-			}
-			OLED_WriteString(&myOled, str, Font_7x10, White);
-
-//			if(markDetected) {
-//				OLED_Fill(&myOled, Black);
-//				sprintf(str, "MARK %d", marksCount);
-////				OLED_SetCursor(&myOled, x, y);
-//				OLED_SetCursor(&myOled, 16, 19);
-//				OLED_WriteString(&myOled, str, Font_16x26, White);
-//			}
+			break;
+		case DISPLAY_END_SCREEN:
+			OLED_Fill(&myOled, Black);
+			OLED_SetCursor(&myOled, 40, 20);
+			OLED_WriteString(&myOled, "END", Font_16x26, White);
+			break;
 
 			/////////////////////////////////////////////// OJOS
 //		    uint8_t baseW = 23;
@@ -2259,7 +2385,7 @@ void ChangeDisplayPage(DisplayPage_e page){
 //		    }
 
 //			DrawRobotEyes(&myOled, detectedIntersection, currentAction, pivotDegreesTarget);
-			break;
+//			break;
 		case DISPLAY_IR_SENSORS:
 			currentTitle = menuItems[MENU_IR_DATA];
 			OLED_Fill(&myOled, Black);
@@ -2303,12 +2429,12 @@ void ChangeDisplayPage(DisplayPage_e page){
 			if (displayYaw > 180) displayYaw -= 360;
 			if (displayYaw < -180) displayYaw += 360;
 
-			snprintf(str, sizeof(str), "Yaw: %ld °", yawDeg);
+			snprintf(str, sizeof(str), "Yaw");
 			OLED_SetCursor(&myOled, 0, y);
 			OLED_WriteString(&myOled, str, Font_7x10, White);
 
 			y += 12;
-			OLED_DrawBidirectionalBar(&myOled, 0, y, 128, 8, displayYaw, 180);
+			OLED_DrawBidirectionalBar(&myOled, 0, y, 90, 8, displayYaw, 180);
 
 			y += 12;
 			snprintf(str, sizeof(str), "Gz: %d", myMpuValues.data.gyroZ);
@@ -2347,13 +2473,17 @@ void ChangeDisplayPage(DisplayPage_e page){
 			currentTitle = menuItems[MENU_DRIVE_MOTOR];
 			OLED_Fill(&myOled, Black);
 
-			y += 12;
-			OLED_DrawBidirectionalBar(&myOled, 15, y, 75, 10, myEngines.currentLeftSpeed, 100);
+			y += 4;
+			OLED_SetCursor(&myOled, 0, y);
+			OLED_WriteString(&myOled, "L", Font_7x10, White);
+			OLED_DrawBidirectionalBar(&myOled, 12, y, 78, 10, myEngines.currentLeftSpeed, 100);
 
-			y += 12;
-			OLED_DrawBidirectionalBar(&myOled, 15, y, 75, 10, myEngines.currentRightSpeed, 100);
+			y += 16;
+			OLED_SetCursor(&myOled, 0, y);
+			OLED_WriteString(&myOled, "R", Font_7x10, White);
+			OLED_DrawBidirectionalBar(&myOled, 12, y, 78, 10, myEngines.currentRightSpeed, 100);
 
-			y += 12;
+			y += 16;
 
 			snprintf(str, sizeof(str), "PWM Max: %d", myEngines.pwmMaxPeriod);
 			OLED_SetCursor(&myOled, 0, y);
@@ -2470,8 +2600,7 @@ static void ButtonNormalPress(void) {
 		//ChangeDisplayPage(DISPLAY_MENU);
 	} else if (currentPage == DISPLAY_IR_SENSORS) {
 		showIrInMillimeters = !showIrInMillimeters; // Alterna entre 0 y 1
-	}
-	else if (currentPage == DISPLAY_CONFIG_START) {
+	} else if (currentPage == DISPLAY_CONFIG_START) {
 		if (runConfigStep == 0) {
 			currentPosition.currentX = (currentPosition.currentX + 1) % 8;
 		} else if (runConfigStep == 1) {
@@ -2485,6 +2614,16 @@ static void ButtonNormalPress(void) {
 		} else if (runConfigStep == 1) {
 			currentPosition.targetY = (currentPosition.targetY + 1) % 8;
 		}
+	} else if (currentPage == DISPLAY_RUN_MODE_SELECT) {
+		// Alternar entre los dos modos
+		if (selectedRunMode == MODE_EXPLORING_MAZE) {
+			selectedRunMode = MODE_FINDING_MARKS;
+		} else {
+			selectedRunMode = MODE_EXPLORING_MAZE;
+		}
+	} else if (currentPage == DISPLAY_RUN) {
+		SHOW_EYES_SCREEN = !SHOW_EYES_SCREEN;
+//		ChangeDisplayPage(DISPLAY_RUN);
 	}
 	return;
 }
@@ -2500,8 +2639,10 @@ static void ButtonLongPress(void) {
 			switch(currentSelection) {
 			case MENU_START:
 //				Robot_ExploreMaze();
-				currentPage = DISPLAY_CONFIG_START;
-				runConfigStep = 0;
+				selectedRunMode = MODE_EXPLORING_MAZE; // Modo por defecto al entrar
+				currentPage = DISPLAY_RUN_MODE_SELECT;
+//				currentPage = DISPLAY_CONFIG_START;
+//				runConfigStep = 0;
 				break;
 			case MENU_IR_DATA:
 				currentPage = DISPLAY_IR_SENSORS;
@@ -2529,7 +2670,12 @@ static void ButtonLongPress(void) {
 			runConfigStep++;
 			if (runConfigStep > 2) {
 				runConfigStep = 0;
-				currentPage = DISPLAY_CONFIG_TARGET;
+
+				if (selectedRunMode == MODE_FINDING_MARKS) {
+					Robot_StartFindingMarks(); // Saltea el Target y arranca
+				} else {
+					currentPage = DISPLAY_CONFIG_TARGET; // Va a configurar el Target
+				}
 			}
 			break;
 		case DISPLAY_CONFIG_TARGET:
@@ -2538,6 +2684,12 @@ static void ButtonLongPress(void) {
 				Robot_ExploreMaze();
 			}
 			break;
+		case DISPLAY_RUN_MODE_SELECT:
+			// Confirmamos el modo y pasamos a configurar el inicio
+			currentPage = DISPLAY_CONFIG_START;
+			runConfigStep = 0;
+			break;
+
 		default:
 			currentPage = DISPLAY_MENU;
 			ChangeDisplayPage(DISPLAY_MENU);
@@ -2691,11 +2843,12 @@ int main(void)
 //  PID_Init(&myWallValues, 10, 0, 1500, -55, 55); // P = 1 // 45
   PID_Init(&myWallValues, 70, 0, 5500, -45, 45);
   myTurnValues.base = TURN_MIN_PWM;
-  myWallValues.base = 45;
+  myWallValues.base = 43;
 
   PID_Init(&myReverseValues, 70, 0, 6000, -45, 45);
   myReverseValues.base = 45;
-  PID_Init(&myStopValues, 1700, 0, 6000, -80, 35);
+//  PID_Init(&myStopValues, 4000, 0, 300, -80, 35);
+  PID_Init(&myStopValues, 200, 0, 800, -50, 40);
   myStopValues.base = 35;
   // IR Sensors Initialization
   Infrared_Init(&myInfraredValues);

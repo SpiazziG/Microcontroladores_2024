@@ -121,7 +121,7 @@ void OLED_DrawFilledRect(OLED_Handle_s *handle, int16_t x, int16_t y, int16_t w,
 void OLED_DrawHeader(OLED_Handle_s *handle, const char* title, uint32_t ticks);
 void OLED_DrawSensorWidget(OLED_Handle_s *handle, char *label, uint16_t val, uint8_t col, uint8_t row);
 void OLED_DrawDigitalEye(OLED_Handle_s *handle,uint8_t x, uint8_t y, uint8_t w, uint8_t h);
-void OLED_DrawBidirectionalBar(OLED_Handle_s *handle, uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t val, int32_t maxScale);
+void OLED_DrawBidirectionalBar(OLED_Handle_s *handle, uint8_t x, uint8_t y, uint8_t w, uint8_t h, int32_t val, int32_t maxScale);
 /*
 uint8_t OLED_Init(I2C_HandleTypeDef *hi2c);
 

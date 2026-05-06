@@ -112,15 +112,15 @@ public:
     QLabel *labelAngularSpeed;
     QFrame *frameEngines;
     QGridLayout *gridLayout_5;
-    QCheckBox *checkBoxEngines;
-    QLabel *leftEngineLabel;
-    QDial *rightEngineDial;
-    QPushButton *powerButton;
-    QDial *leftEngineDial;
-    QLabel *leftEnginePowerLabel;
-    QLabel *rightEnginePowerLabel;
-    QLabel *rightEngineLabel;
     QLabel *enginesLabel;
+    QLabel *rightEnginePowerLabel;
+    QLabel *leftEnginePowerLabel;
+    QLabel *rightEngineLabel;
+    QCheckBox *checkBoxEngines;
+    QPushButton *powerButton;
+    QDial *rightEngineDial;
+    QLabel *leftEngineLabel;
+    QDial *leftEngineDial;
     QFrame *frameInfrared;
     QGridLayout *gridLayout_6;
     QLabel *labelNameIR5;
@@ -1112,6 +1112,56 @@ public:
         gridLayout_5 = new QGridLayout(frameEngines);
         gridLayout_5->setObjectName("gridLayout_5");
         gridLayout_5->setContentsMargins(0, 0, 0, 0);
+        enginesLabel = new QLabel(frameEngines);
+        enginesLabel->setObjectName("enginesLabel");
+        sizePolicy1.setHeightForWidth(enginesLabel->sizePolicy().hasHeightForWidth());
+        enginesLabel->setSizePolicy(sizePolicy1);
+        enginesLabel->setMinimumSize(QSize(0, 25));
+        enginesLabel->setMaximumSize(QSize(16777215, 25));
+        enginesLabel->setStyleSheet(QString::fromUtf8("font: 13pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"color: rgb(222, 223, 225);\n"
+"background-color: transparent;\n"
+"margin-top: 2px;"));
+        enginesLabel->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
+        enginesLabel->setIndent(10);
+
+        gridLayout_5->addWidget(enginesLabel, 1, 0, 1, 1);
+
+        rightEnginePowerLabel = new QLabel(frameEngines);
+        rightEnginePowerLabel->setObjectName("rightEnginePowerLabel");
+        rightEnginePowerLabel->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
+"font: 13pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"color: rgb(222, 223, 225);\n"
+"background-color: transparent;"));
+        rightEnginePowerLabel->setAlignment(Qt::AlignCenter);
+
+        gridLayout_5->addWidget(rightEnginePowerLabel, 6, 1, 1, 1);
+
+        leftEnginePowerLabel = new QLabel(frameEngines);
+        leftEnginePowerLabel->setObjectName("leftEnginePowerLabel");
+        leftEnginePowerLabel->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
+"font: 13pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"color: rgb(222, 223, 225);\n"
+"background-color: transparent;"));
+        leftEnginePowerLabel->setAlignment(Qt::AlignCenter);
+
+        gridLayout_5->addWidget(leftEnginePowerLabel, 6, 0, 1, 1);
+
+        rightEngineLabel = new QLabel(frameEngines);
+        rightEngineLabel->setObjectName("rightEngineLabel");
+        sizePolicy1.setHeightForWidth(rightEngineLabel->sizePolicy().hasHeightForWidth());
+        rightEngineLabel->setSizePolicy(sizePolicy1);
+        rightEngineLabel->setStyleSheet(QString::fromUtf8("font: 13pt \"Century Gothic\";\n"
+"font-weight: bold;\n"
+"color: rgb(96, 100, 103);\n"
+"background-color: transparent;"));
+        rightEngineLabel->setAlignment(Qt::AlignCenter);
+
+        gridLayout_5->addWidget(rightEngineLabel, 3, 1, 1, 1);
+
         checkBoxEngines = new QCheckBox(frameEngines);
         checkBoxEngines->setObjectName("checkBoxEngines");
         checkBoxEngines->setLayoutDirection(Qt::RightToLeft);
@@ -1147,26 +1197,6 @@ public:
 
         gridLayout_5->addWidget(checkBoxEngines, 1, 1, 1, 1);
 
-        leftEngineLabel = new QLabel(frameEngines);
-        leftEngineLabel->setObjectName("leftEngineLabel");
-        sizePolicy1.setHeightForWidth(leftEngineLabel->sizePolicy().hasHeightForWidth());
-        leftEngineLabel->setSizePolicy(sizePolicy1);
-        leftEngineLabel->setMinimumSize(QSize(108, 0));
-        leftEngineLabel->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
-"font: 13pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"color: rgb(96, 100, 103);\n"
-"background-color: transparent;"));
-        leftEngineLabel->setAlignment(Qt::AlignCenter);
-
-        gridLayout_5->addWidget(leftEngineLabel, 3, 0, 1, 1);
-
-        rightEngineDial = new QDial(frameEngines);
-        rightEngineDial->setObjectName("rightEngineDial");
-        rightEngineDial->setStyleSheet(QString::fromUtf8("background-color: rgb(96, 100, 103);"));
-
-        gridLayout_5->addWidget(rightEngineDial, 5, 1, 1, 1);
-
         powerButton = new QPushButton(frameEngines);
         powerButton->setObjectName("powerButton");
         sizePolicy1.setHeightForWidth(powerButton->sizePolicy().hasHeightForWidth());
@@ -1185,64 +1215,39 @@ public:
 
         gridLayout_5->addWidget(powerButton, 8, 0, 1, 2);
 
-        leftEngineDial = new QDial(frameEngines);
-        leftEngineDial->setObjectName("leftEngineDial");
-        leftEngineDial->setStyleSheet(QString::fromUtf8("background-color: rgb(96, 100, 103);"));
-        leftEngineDial->setMaximum(100);
-        leftEngineDial->setInvertedAppearance(false);
-        leftEngineDial->setWrapping(false);
+        rightEngineDial = new QDial(frameEngines);
+        rightEngineDial->setObjectName("rightEngineDial");
+        rightEngineDial->setStyleSheet(QString::fromUtf8("background-color: rgb(96, 100, 103);"));
+        rightEngineDial->setMinimum(-100);
+        rightEngineDial->setMaximum(100);
 
-        gridLayout_5->addWidget(leftEngineDial, 5, 0, 1, 1);
+        gridLayout_5->addWidget(rightEngineDial, 5, 1, 1, 1);
 
-        leftEnginePowerLabel = new QLabel(frameEngines);
-        leftEnginePowerLabel->setObjectName("leftEnginePowerLabel");
-        leftEnginePowerLabel->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
+        leftEngineLabel = new QLabel(frameEngines);
+        leftEngineLabel->setObjectName("leftEngineLabel");
+        sizePolicy1.setHeightForWidth(leftEngineLabel->sizePolicy().hasHeightForWidth());
+        leftEngineLabel->setSizePolicy(sizePolicy1);
+        leftEngineLabel->setMinimumSize(QSize(108, 0));
+        leftEngineLabel->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
 "font: 13pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"color: rgb(222, 223, 225);\n"
-"background-color: transparent;"));
-        leftEnginePowerLabel->setAlignment(Qt::AlignCenter);
-
-        gridLayout_5->addWidget(leftEnginePowerLabel, 6, 0, 1, 1);
-
-        rightEnginePowerLabel = new QLabel(frameEngines);
-        rightEnginePowerLabel->setObjectName("rightEnginePowerLabel");
-        rightEnginePowerLabel->setStyleSheet(QString::fromUtf8("font: 13pt \"Siemens Sans\";\n"
-"font: 13pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"color: rgb(222, 223, 225);\n"
-"background-color: transparent;"));
-        rightEnginePowerLabel->setAlignment(Qt::AlignCenter);
-
-        gridLayout_5->addWidget(rightEnginePowerLabel, 6, 1, 1, 1);
-
-        rightEngineLabel = new QLabel(frameEngines);
-        rightEngineLabel->setObjectName("rightEngineLabel");
-        sizePolicy1.setHeightForWidth(rightEngineLabel->sizePolicy().hasHeightForWidth());
-        rightEngineLabel->setSizePolicy(sizePolicy1);
-        rightEngineLabel->setStyleSheet(QString::fromUtf8("font: 13pt \"Century Gothic\";\n"
 "font-weight: bold;\n"
 "color: rgb(96, 100, 103);\n"
 "background-color: transparent;"));
-        rightEngineLabel->setAlignment(Qt::AlignCenter);
+        leftEngineLabel->setAlignment(Qt::AlignCenter);
 
-        gridLayout_5->addWidget(rightEngineLabel, 3, 1, 1, 1);
+        gridLayout_5->addWidget(leftEngineLabel, 3, 0, 1, 1);
 
-        enginesLabel = new QLabel(frameEngines);
-        enginesLabel->setObjectName("enginesLabel");
-        sizePolicy1.setHeightForWidth(enginesLabel->sizePolicy().hasHeightForWidth());
-        enginesLabel->setSizePolicy(sizePolicy1);
-        enginesLabel->setMinimumSize(QSize(0, 25));
-        enginesLabel->setMaximumSize(QSize(16777215, 25));
-        enginesLabel->setStyleSheet(QString::fromUtf8("font: 13pt \"Century Gothic\";\n"
-"font-weight: bold;\n"
-"color: rgb(222, 223, 225);\n"
-"background-color: transparent;\n"
-"margin-top: 2px;"));
-        enginesLabel->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
-        enginesLabel->setIndent(10);
+        leftEngineDial = new QDial(frameEngines);
+        leftEngineDial->setObjectName("leftEngineDial");
+        leftEngineDial->setStyleSheet(QString::fromUtf8("background-color: rgb(96, 100, 103);"));
+        leftEngineDial->setMinimum(-100);
+        leftEngineDial->setMaximum(100);
+        leftEngineDial->setOrientation(Qt::Horizontal);
+        leftEngineDial->setInvertedAppearance(false);
+        leftEngineDial->setInvertedControls(false);
+        leftEngineDial->setWrapping(false);
 
-        gridLayout_5->addWidget(enginesLabel, 1, 0, 1, 1);
+        gridLayout_5->addWidget(leftEngineDial, 5, 0, 1, 1);
 
 
         gridLayout_7->addWidget(frameEngines, 2, 0, 1, 1);
@@ -2945,7 +2950,7 @@ public:
         retranslateUi(QForm1);
 
         telemetryTabButton->setDefault(false);
-        stackedWidget->setCurrentIndex(4);
+        stackedWidget->setCurrentIndex(1);
         tabWidget_2->setCurrentIndex(0);
         tabWidget->setCurrentIndex(1);
 
@@ -3005,13 +3010,13 @@ public:
         labelRoll->setText(QCoreApplication::translate("QForm1", "0.000", nullptr));
         labelZ_G->setText(QCoreApplication::translate("QForm1", "Z", nullptr));
         labelAngularSpeed->setText(QCoreApplication::translate("QForm1", "Angular Speed [\302\260/s]", nullptr));
-        checkBoxEngines->setText(QCoreApplication::translate("QForm1", "Read", nullptr));
-        leftEngineLabel->setText(QCoreApplication::translate("QForm1", "Left", nullptr));
-        powerButton->setText(QCoreApplication::translate("QForm1", "SET", nullptr));
-        leftEnginePowerLabel->setText(QCoreApplication::translate("QForm1", "0", nullptr));
-        rightEnginePowerLabel->setText(QCoreApplication::translate("QForm1", "0", nullptr));
-        rightEngineLabel->setText(QCoreApplication::translate("QForm1", "Right", nullptr));
         enginesLabel->setText(QCoreApplication::translate("QForm1", "Engines", nullptr));
+        rightEnginePowerLabel->setText(QCoreApplication::translate("QForm1", "0", nullptr));
+        leftEnginePowerLabel->setText(QCoreApplication::translate("QForm1", "0", nullptr));
+        rightEngineLabel->setText(QCoreApplication::translate("QForm1", "Right", nullptr));
+        checkBoxEngines->setText(QCoreApplication::translate("QForm1", "Read", nullptr));
+        powerButton->setText(QCoreApplication::translate("QForm1", "SET", nullptr));
+        leftEngineLabel->setText(QCoreApplication::translate("QForm1", "Left", nullptr));
         labelNameIR5->setText(QCoreApplication::translate("QForm1", "5", nullptr));
         labelValueIR3->setText(QCoreApplication::translate("QForm1", "0", nullptr));
         labelNameIR2->setText(QCoreApplication::translate("QForm1", "2", nullptr));

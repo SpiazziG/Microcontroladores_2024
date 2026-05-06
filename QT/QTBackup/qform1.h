@@ -186,6 +186,18 @@ private slots:
 
     void on_resetMaze_requested();
 
+    void DecodeMapAndState(const uint8_t* data);
+
+    void DecodeIRSensors(const uint8_t* data);
+
+    void DecodeMotors(const uint8_t* data);
+
+    void DecodeMPU(const uint8_t* data);
+
+    void on_rightEngineDial_valueChanged(int value);
+
+    void on_leftEngineDial_valueChanged(int value);
+
 protected:
     void keyPressEvent(QKeyEvent *event) override;
 
@@ -293,6 +305,9 @@ private:
         SET_MAZE_START          = 0xED,
         GET_INTERSECTION_TYPE   = 0xEE,
         GET_MAP_INFO            = 0xEF,
+
+        // Stream Telemetry Mode
+        STREAM_TELEMETRY		= 0xE3,
     } Command_e;
 
     typedef enum {
